@@ -283,10 +283,25 @@ pop r2;
 pop r3;
 ```
 
+Similarly, stack operations support immediate values,
+
+``` 
+push imm16;
+pop imm16; 
+```
+
+with similar notational sugar for pushing and popping multiple values from the stack.
+
+``` 
+push imm16, imm16, imm16, ...;
+pop imm16, imm16, imm16, ...;
+```
+
+
 ### Branching
 
 Labels are written in capital letters, digits, underscores, or hyphens, ended with a colon. Labels may denote either functions, or instructions to branch 
-to. Branching commands are executed using instructions `goto rd;`, `goto imm16;`, or `goto LABEL;`.
+to. Branching commands are executed using instructions `goto rd;`, `goto imm26;`, or `goto LABEL;`.
 
 > Example
 > ``` 
@@ -362,6 +377,8 @@ ret;        //These instructions do the same thing.
 If multiple function calls are chained in one another, it is often necessary to push the link register onto the stack,
 and pop it after the function call. 
 
+**Note** - Chaining a `flag;` instruction is not supported for `goto` or `call` instructions. 
+
 ### Other Notes
 
 **Whitespace Format** - Tokens must be separated by at least one whitespace. For instance, `r1+r2` is invalid, while
@@ -381,3 +398,8 @@ An instruction that does nothing and wastes a clock cycle can be written as just
 These are pseudo-instructions for `r0 = 0;`. Note that adding extra semicolons at the end of an instruction also counts as adding extra null instructions.
 For example, `[r1] = r2;;` is actually 2 instructions. 
 
+## Instruction Encoding
+
+Below is the full instruction set encoding of the Sugar ISA. Any other opcodes are undefined, or reserved for future updates. 
+
+![instructionset.jpeg](items/instructionset.jpeg)
