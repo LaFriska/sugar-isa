@@ -42,6 +42,7 @@ Least significant four bits represents the ALU flag, which are
 - Zero (Z), set to `b1`, if the previous ALU operation results in 0.
 - Carry (C), set to `b2`, if the previous operation is an arithmetic operation and an unsigned carry-out occurs.
 - Overflow (V), set to `b3` if the result overflowed the signed range. 
+- Other bits are undefined and reserved for future updates. 
 
 The flag register is set by a `flag;` instruction, or chained `flag;` instruction in arithmetic or logical instructions.
 More information can be found in the Sugar Assembly section of this document. 
@@ -82,6 +83,9 @@ Immediate values can be written as hexadecimal, decimal, or binary in the follow
 - Hexadecimal: `0xABCD`
 - Decimal: `1234`
 - Binary: `0b0110111`
+
+Sugar uses two immediate values, arithmetic, logical and memory operations uses an `imm16`, while branching and
+function calls use `imm26`. 
 
 ### Comments 
 
@@ -343,15 +347,9 @@ as follows.
 
 ### Function Calls 
 
-A function call is just a `goto` instruction that saves `pc + 4` into the link register. Hence, the following notation
-is used for function calls.
-``` 
-goto LABEL -> lr = pc + 4;
-goto imm26 -> lr = pc + 4;
-goto rd -> lr = pc + 4;
-```
+A function call achieves the same result, but saves the instruction after the call to the link register `lr`. 
 
-A notational sugar can be used to simplify these instructions: 
+Syntax:
 ``` 
 call LABEL;
 call imm26; 
@@ -363,10 +361,9 @@ Of course, we can also use conditional execution for `call`, and chained `goto` 
 > Example
 > ```
 > callv FUNCTION;
-> gotov FUNCTION -> lr = pc + 4; //These instructions do the same thing.  
 > ```
 
-Then, returning from a function call is just a `goto` to the link register. Again, a notational sugar is defined for 
+Then, returning from a function call is just a `goto` to the link register. A notational sugar is defined for 
 simplicity.
 
 ``` 
