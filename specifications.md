@@ -399,6 +399,21 @@ only required where needed to avoid ambiguity. This can be formalised by the fol
 > ```
 > Note that immediates count as alphanumerical tokens. 
 
+Despite the loose whitespace rules, it is still *seriously recommended* to insert consistent whitespaces
+between tokens, and write a single instruction per line of code. For instance, this is bad.
+
+``` 
+r1 =r2+r3;r3= [r5+1];;
+```
+
+This however, is much cleaner.
+
+``` 
+r1 = r2 + r3;
+r3 = [r5 + 1];
+;
+```
+
 **Null instruction** -
 An instruction that does nothing and wastes a clock cycle can be written as just an empty instruction ended with a semicolon.
 > Example
