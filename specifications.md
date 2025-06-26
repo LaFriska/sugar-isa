@@ -60,7 +60,7 @@ stack pointer to move to `0xFFFFFFFC`.
 ### Link Register 
 
 The link register holds the return address of a function call, initially set to 0. When a `call` instruction occurs, 
-`lr` is pushed to the stack, and when `ret` is called, `lr` is popped from the stack which then sets `pc`.
+`lr` is pushed to the stack, and when `return` is called, `lr` is popped from the stack which then sets `pc`.
 
 ### Temporary Registers
 
@@ -304,7 +304,7 @@ pop imm16, imm16, imm16, ...;
 
 ### Branching
 
-Labels are written in capital letters, digits, underscores, or hyphens, ended with a colon. Labels may denote either functions, or instructions to branch 
+Labels are written with at least one capital letter, 0 or more digits or underscores, and must end in `:`. Labels may denote either functions, or instructions to branch 
 to. Branching commands are executed using instructions `goto rd;`, `goto imm26;`, or `goto LABEL;`.
 
 > Example
@@ -368,7 +368,7 @@ simplicity.
 
 ``` 
 goto lr;
-ret;        //These instructions do the same thing.
+return;        //These instructions do the same thing.
 ```
 
 If multiple function calls are chained in one another, it is often necessary to push the link register onto the stack,
@@ -378,8 +378,26 @@ and pop it after the function call.
 
 ### Other Notes
 
-**Whitespace Format** - Tokens must be separated by at least one whitespace. For instance, `r1+r2` is invalid, while
-`r1 + r2` is valid. The only exception is the semicolon, as whitespaces around it is not necessary. 
+**Whitespace Format** - Sugar follows C-style flexible whitespace, where whitespaces may separate tokens but are
+only required where needed to avoid ambiguity. This can be formalised by the following rule:
+> Rule: *At least one whitespace is required between adjacent alphanumerical tokens, possibly with underscores.*
+> 
+> Example:
+> ```
+> //These instructions are valid.
+> r1+=r2 ;
+> r1 += r2;
+> goto MAIN_FUNCTION;
+> r1 = r3 ^ r4->flag;
+> push r3;push r2;
+> goton 0x1234;
+> 
+> //These instructions are invalid.
+> pushr1;
+> gotoMAIN_FUNCTION;
+> goton0x1234
+> ```
+> Note that immediates count as alphanumerical tokens. 
 
 **Null instruction** -
 An instruction that does nothing and wastes a clock cycle can be written as just an empty instruction ended with a semicolon.
