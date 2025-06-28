@@ -3,9 +3,16 @@ package xyz.haroldgao.sugarisa.tokeniser;
 /**
  * Thrown when a strings containing invalid tokens are input into the tokeniser.
  * */
-public class TokenException extends Exception {
+public abstract class TokenException extends Exception {
 
-    public TokenException(String buffer, int pchar, int pline, int p){
-        StringBuilder sb = new StringBuilder("Syntax error at " + pline + ":" + pchar + ".");
+    public TokenException(int pchar, int pline, String message){
+        super("Syntax error at " + pline + ":" + pchar + ". " + message);
     }
+
+    public static class InvalidImmediateException extends TokenException{
+        public InvalidImmediateException(int pchar, int pline, String immediate) {
+            super(pchar, pline, "The following immediate value is incorrectly formatted: " + "\"" + immediate + "\".");
+        }
+    }
+
 }

@@ -1,13 +1,19 @@
 package xyz.haroldgao.sugarisa.tokeniser;
 
-import java.util.Iterator;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A tokeniser for Sugar assembly code. See the specification.md file in root directory.
  * A tokeniser takes a string input and converts it to a list of tokens. This is done sequentially
  * using an Iterator.
  * */
-public class Tokeniser implements Iterator<Token> {
+public class Tokeniser {
+
+    private static final Set<Character> HEX_CHARS = new HashSet<>(List.of('a','b','c','d','e','f'));
 
     private final String buffer;
 
@@ -25,7 +31,6 @@ public class Tokeniser implements Iterator<Token> {
     /**
      * Returns whether the buffer contains further tokens.
      * */
-    @Override
     public boolean hasNext() {
         return p < buffer.length();
     }
@@ -33,8 +38,7 @@ public class Tokeniser implements Iterator<Token> {
     /**
      * Returns the next token. We can assume that p is pointing at a non-whitespace character.
      * */
-    @Override
-    public Token next() {
+    public Token next() throws TokenException {
 
         if(!hasNext()) return null;
 
@@ -70,17 +74,24 @@ public class Tokeniser implements Iterator<Token> {
 
         StringBuilder sb = new StringBuilder();
 
-        boolean hasUpperCase = false;
-        boolean hasLowerCase = false;
-
-
-        while(p < buffer.length() && !isWhitespace(buffer.charAt(p))){
+        while(p < buffer.length() && !breaksAlphanumericalToken(buffer.charAt(p))){
             sb.append(buffer.charAt(p));
             incrementPointers();
         }
 
-        //todo
+        String word = sb.toString();
 
+        if(word.startsWith("0x")){
+
+            if(word.length() == 2)
+                throw new TokenException.InvalidImmediateException(pchar, pline, "");
+
+            String hex = word.substring(2);
+            if(!isValidHex(hex)) throw new TokenException.InvalidImmediateException(pchar, pline, hex);
+
+            return new Token(TokenType.IMM_HEX, hex);
+
+        }
         return null;
     }
 
@@ -111,6 +122,15 @@ public class Tokeniser implements Iterator<Token> {
         processWhitespace();
     }
 
+    protected static boolean isValidHex(@NotNull String str){
+        if(str.isEmpty()) return false;
+        for (int i = 0; i < str.length(); i++) {
+            if(!HEX_CHARS.contains(str.charAt(i)) && !Character.isDigit(str.charAt(i)))
+                return false;
+        }
+        return true;
+    }
+
     /**
      * Sets the pointer to the first character that is not a whitespace.
      * */
@@ -136,5 +156,9 @@ public class Tokeniser implements Iterator<Token> {
      * */
     protected static boolean isWhitespace(char c) {
         return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f';
+    }
+
+    protected static boolean breaksAlphanumericalToken(char c){
+        return !Character.isAlphabetic(c) && !Character.isDigit(c) && c != '_';
     }
 }
