@@ -70,13 +70,16 @@ public class Tokeniser implements Iterator<Token> {
 
         StringBuilder sb = new StringBuilder();
 
+        boolean hasUpperCase = false;
+        boolean hasLowerCase = false;
+
+
         while(p < buffer.length() && !isWhitespace(buffer.charAt(p))){
             sb.append(buffer.charAt(p));
             incrementPointers();
         }
 
         //todo
-
 
         return null;
     }
