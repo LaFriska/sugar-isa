@@ -11,17 +11,17 @@ public class TokeniserUtilTest {
 
     @Test
     public void testIsWhiteSpace(){
-        assertTrue(Tokeniser.isWhitespace('\n'));
-        assertTrue(Tokeniser.isWhitespace(' '));
-        assertTrue(Tokeniser.isWhitespace('\r'));
-        assertTrue(Tokeniser.isWhitespace('\f'));
-        assertTrue(Tokeniser.isWhitespace('\t'));
+        assertTrue(TokeniserUtils.isWhitespace('\n'));
+        assertTrue(TokeniserUtils.isWhitespace(' '));
+        assertTrue(TokeniserUtils.isWhitespace('\r'));
+        assertTrue(TokeniserUtils.isWhitespace('\f'));
+        assertTrue(TokeniserUtils.isWhitespace('\t'));
 
-        assertFalse(Tokeniser.isWhitespace('a'));
-        assertFalse(Tokeniser.isWhitespace(';'));
-        assertFalse(Tokeniser.isWhitespace(':'));
-        assertFalse(Tokeniser.isWhitespace('*'));
-        assertFalse(Tokeniser.isWhitespace('%'));
+        assertFalse(TokeniserUtils.isWhitespace('a'));
+        assertFalse(TokeniserUtils.isWhitespace(';'));
+        assertFalse(TokeniserUtils.isWhitespace(':'));
+        assertFalse(TokeniserUtils.isWhitespace('*'));
+        assertFalse(TokeniserUtils.isWhitespace('%'));
     }
 
     @Test

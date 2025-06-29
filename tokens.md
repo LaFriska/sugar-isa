@@ -1,39 +1,39 @@
 # Tokens for Sugar Assembly
 
-| Token         | Specification                                                      |
-|---------------|--------------------------------------------------------------------|
-| `LABEL`       | At least one capital letter, 0 or more digits or underscores.      |
-| `IMM_HEX`     | `0x` followed by one or more case-insensitive hex characters.      |
-| `IMM_DEC`     | Decimal number, one or more digits, possibly with a negative sign. |
-| `IMM_BIN`     | `0b` followed by one or more binary digits.                        |
-| `COMMENT`     | `//` followed by any series of characters without line break.      |
-| `EQ`          | `=`                                                                |
-| `TERM`        | `;`                                                                |
-| `COLON`       | `:`                                                                |
-| `ADD`         | `+`                                                                |
-| `SUB`         | `-`                                                                |
-| `MUL`         | `*`                                                                |
-| `DIV`         | `/`                                                                |
-| `MOD`         | `%`                                                                |
-| `AND`         | `&`                                                                |
-| `OR`          | `\|`                                                               |
-| `XOR`         | `^`                                                                |
-| `NOT`         | `!`                                                                |
-| `LEFT_SHIFT`  | `<<`                                                               |
-| `RIGHT_SHIFT` | `>>`                                                               |
-| `ADD_EQ`      | `+=`                                                               |
-| `SUB_EQ`      | `-=`                                                               |
-| `MUL_EQ`      | `*=`                                                               |
-| `DIV_EQ`      | `/=`                                                               |
-| `MOD_EQ`      | `%=`                                                               |
-| `AND_EQ`      | `&=`                                                               |
-| `OR_EQ`       | `\|=`                                                              |
-| `XOR_EQ`      | `^=`                                                               |
-| `CHAIN`       | `->`                                                               |
-| `COMMA`       | `,`                                                                |
-| `LBRAC`       | `[`                                                                |
-| `RBRAC`       | `]`                                                                |
-| `KEYWORD`     | See next section.                                                  |
+| Token         | Specification                                                 |
+|---------------|---------------------------------------------------------------|
+| `LABEL`       | At least one capital letter, 0 or more digits or underscores. |
+| `IMM_HEX`     | `0x` followed by one or more case-insensitive hex characters. |
+| `IMM_DEC`     | One or more decimal digits.                                   |
+| `IMM_BIN`     | `0b` followed by one or more binary digits.                   |
+| `COMMENT`     | `//` followed by any series of characters without line break. |
+| `EQ`          | `=`                                                           |
+| `TERM`        | `;`                                                           |
+| `COLON`       | `:`                                                           |
+| `ADD`         | `+`                                                           |
+| `SUB`         | `-`                                                           |
+| `MUL`         | `*`                                                           |
+| `DIV`         | `/`                                                           |
+| `MOD`         | `%`                                                           |
+| `AND`         | `&`                                                           |
+| `OR`          | `\|`                                                          |
+| `XOR`         | `^`                                                           |
+| `NOT`         | `!`                                                           |
+| `LEFT_SHIFT`  | `<<`                                                          |
+| `RIGHT_SHIFT` | `>>`                                                          |
+| `ADD_EQ`      | `+=`                                                          |
+| `SUB_EQ`      | `-=`                                                          |
+| `MUL_EQ`      | `*=`                                                          |
+| `DIV_EQ`      | `/=`                                                          |
+| `MOD_EQ`      | `%=`                                                          |
+| `AND_EQ`      | `&=`                                                          |
+| `OR_EQ`       | `\|=`                                                         |
+| `XOR_EQ`      | `^=`                                                          |
+| `CHAIN`       | `->`                                                          |
+| `COMMA`       | `,`                                                           |
+| `LBRAC`       | `[`                                                           |
+| `RBRAC`       | `]`                                                           |
+| `KEYWORD`     | See next section.                                             |
 
 ## Keywords
 
