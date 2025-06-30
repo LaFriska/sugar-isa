@@ -5,25 +5,25 @@ package xyz.haroldgao.sugarisa.tokeniser;
  * */
 public abstract class TokenException extends RuntimeException {
 
-    public TokenException(int pchar, int pline, String message){
-        super("Syntax error at " + pline + ":" + pchar + ". " + message);
+    public TokenException(Tokeniser t, String message){
+        super("Syntax error at " + t.pline + ":" + t.pchar + ". " + message + "\n\n" + "Assembly Code:" + "\n" + t.buffer);
     }
 
     public static class InvalidImmediateException extends TokenException{
-        public InvalidImmediateException(int pchar, int pline, String immediate) {
-            super(pchar, pline, "The following immediate value is incorrectly formatted: " + "\"" + immediate + "\".");
+        public InvalidImmediateException(Tokeniser t, String immediate) {
+            super(t, "The following immediate value is incorrectly formatted: " + "\"" + immediate + "\".");
         }
     }
 
     public static class UnexpectedSymbolException extends TokenException{
-        public UnexpectedSymbolException(int pchar, int pline, char symbol) {
-            super(pchar, pline, "Unexpected symbol found: " + "\"" + symbol + "\".");
+        public UnexpectedSymbolException(Tokeniser t, char symbol) {
+            super(t, "Unexpected symbol found: " + "\"" + symbol + "\".");
         }
     }
 
     public static class UnexpectedWordException extends TokenException{
-        public UnexpectedWordException(int pchar, int pline, String word) {
-            super(pchar, pline, "Unexpected word found: " + "\"" + word + "\".");
+        public UnexpectedWordException(Tokeniser t, String word) {
+            super(t, "Unexpected word found: " + "\"" + word + "\".");
         }
     }
 

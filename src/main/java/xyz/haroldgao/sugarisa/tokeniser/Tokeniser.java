@@ -2,7 +2,9 @@ package xyz.haroldgao.sugarisa.tokeniser;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.Predicate;
 
 /**
@@ -12,13 +14,13 @@ import java.util.function.Predicate;
  */
 public class Tokeniser implements Iterator<Token> {
 
-    private final String buffer;
+    protected final String buffer;
 
-    private int pchar = 1; //pointer to the character in a given line of code
+    protected int pchar = 1; //pointer to the character in a given line of code
 
-    private int pline = 1; //pointer to the line of code.
+    protected int pline = 1; //pointer to the line of code.
 
-    private int p = 0; //pointer to the char within the buffer.
+    protected int p = 0; //pointer to the char within the buffer.
 
     public Tokeniser(String buffer) {
         this.buffer = buffer;
@@ -51,7 +53,7 @@ public class Tokeniser implements Iterator<Token> {
 
             assert tokType.value != null;
 
-            if (buffer.startsWith(tokType.value)) {
+            if (buffer.charAt(p) == tokType.value.charAt(0) && (p+1 < buffer.length() && buffer.charAt(p+1) == tokType.value.charAt(1))) {
                 updatePointer(2);
                 return new Token(tokType);
             }
@@ -62,14 +64,14 @@ public class Tokeniser implements Iterator<Token> {
 
             assert tokType.value != null;
 
-            if (buffer.startsWith(tokType.value)) {
+            if (String.valueOf(buffer.charAt(p)).equals(tokType.value)) {
                 updatePointer(1);
                 return new Token(tokType);
             }
         }
 
         if(TokeniserUtils.breaksAlphanumericalToken(buffer.charAt(p))){
-            throw new TokenException.UnexpectedSymbolException(pchar, pline, buffer.charAt(p));
+            throw new TokenException.UnexpectedSymbolException(this, buffer.charAt(p));
         }
 
         //Here we assume the token is alphanumerical possibly with underscores.
@@ -114,7 +116,15 @@ public class Tokeniser implements Iterator<Token> {
             return new Token(TokenType.KEYWORD, word);
         }
 
-        throw new TokenException.UnexpectedWordException(pchar, pline, word);
+        throw new TokenException.UnexpectedWordException(this, word);
+    }
+
+    public List<Token> getAllTokens(){
+        ArrayList<Token> res = new ArrayList<>();
+        while(hasNext()){
+            res.add(next());
+        }
+        return res;
     }
 
     /**
@@ -154,11 +164,11 @@ public class Tokeniser implements Iterator<Token> {
      */
     private @NotNull Token tokeniseImmediate(String word, Predicate<Character> pred) {
         if (word.length() == 2)
-            throw new TokenException.InvalidImmediateException(pchar, pline, "");
+            throw new TokenException.InvalidImmediateException(this, "");
 
         String hex = word.substring(2);
         if (!TokeniserUtils.isValid(hex, pred))
-            throw new TokenException.InvalidImmediateException(pchar, pline, hex);
+            throw new TokenException.InvalidImmediateException(this, hex);
 
         return new Token(TokenType.IMM_HEX, hex);
     }

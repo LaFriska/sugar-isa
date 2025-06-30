@@ -3,6 +3,8 @@ package xyz.haroldgao.sugarisa.tokeniser;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Represents a token type for Sugar assembly.
@@ -47,10 +49,10 @@ public enum TokenType {
 
 
     //Array of tokens with two characters.
-    public static final TokenType[] TWO_CHAR_TOKENS = filterBySize(2);
+    public static final Set<TokenType> TWO_CHAR_TOKENS = filterBySize(2);
 
     //Array of tokens with a single character as its value.
-    public static final TokenType[] SINGLE_CHAR_TOKENS = filterBySize(1);
+    public static final Set<TokenType> SINGLE_CHAR_TOKENS = filterBySize(1);
 
     /**
      * Value of the token, if null, it means the value depends on the substring being processed.
@@ -62,10 +64,10 @@ public enum TokenType {
         this.value = defaultValue;
     }
 
-    static TokenType[] filterBySize(int size){
+    static Set<TokenType> filterBySize(int size){
         return Arrays.stream(TokenType.values())
                 .filter((t) -> t.value != null && t.value.length() == size)
-                .toArray(TokenType[]::new);
+                .collect(Collectors.toSet());
     }
 
 }

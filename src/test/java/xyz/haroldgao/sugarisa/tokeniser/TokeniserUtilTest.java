@@ -26,19 +26,25 @@ public class TokeniserUtilTest {
 
     @Test
     public void testTokenTypeSegregation(){
-        TokenType[] singleChar = TokenType.SINGLE_CHAR_TOKENS;
-        TokenType[] twoChar = TokenType.TWO_CHAR_TOKENS;
 
-        for (TokenType tokenType : singleChar) {
+        for (TokenType tokenType : TokenType.SINGLE_CHAR_TOKENS) {
             assertNotNull(tokenType.value);
             assertEquals(1, tokenType.value.length());
         }
 
-        for (TokenType tokenType : twoChar) {
+        for (TokenType tokenType : TokenType.TWO_CHAR_TOKENS) {
             assertNotNull(tokenType.value);
             assertEquals(2, tokenType.value.length());
         }
 
+    }
+
+    @Test
+    public void testTokenToString(){
+        assertEquals("{COMMENT, This is a comment.}", new Token(TokenType.COMMENT, "This is a comment.").toString());
+        assertEquals("{LABEL, This is a label.}", new Token(TokenType.LABEL, "This is a label.").toString());
+        assertEquals("{;}", new Token(TokenType.TERM, "This is a comment.").toString());
+        assertEquals("{+=}", new Token(TokenType.ADD_EQ, "Add eq.").toString());
     }
 
 }
