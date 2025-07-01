@@ -4,9 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import xyz.haroldgao.sugarisa.Register;
 
 /**
- * Concrete implementation of {@link ALUInstruction} representing an ADD instruction.
+ * Concrete implementation of {@link DuoDPInstruction} representing an ADD instruction.
  * */
-public final class AddInstruction extends ALUInstruction{
+public final class AddInstruction extends DuoDPInstruction {
 
     public AddInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Register rb) {
         super(rd, ra, rb);

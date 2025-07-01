@@ -4,9 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import xyz.haroldgao.sugarisa.Register;
 
 /**
- * Concrete implementation of {@link ALUInstruction} representing an OR instruction.
+ * Concrete implementation of {@link DuoDPInstruction} representing an OR instruction.
  * */
-public final class OrInstruction extends ALUInstruction {
+public final class OrInstruction extends DuoDPInstruction {
 
     public OrInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Register rb) {
         super(rd, ra, rb);

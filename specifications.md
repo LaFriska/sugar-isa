@@ -177,6 +177,8 @@ Note that for syntactical sugar above, `rb` could also be replaced with `imm16`.
 > r3 |= 0b1;
 > ```
 
+For the "not" instruction, `ra` may be replaced with `imm16`. For instance, `r1 = !0b0101110011000010;` is valid Sugar assembly. 
+
 ### Keeping the ALU Flags
 
 By default, arithmetic and logical operations do not update the flag register (`fl`). In order to set `fl` by the resulting

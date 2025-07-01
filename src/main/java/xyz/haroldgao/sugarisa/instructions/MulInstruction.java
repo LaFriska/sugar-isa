@@ -4,9 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import xyz.haroldgao.sugarisa.Register;
 
 /**
- * Concrete implementation of {@link ALUInstruction} representing an MUL instruction.
+ * Concrete implementation of {@link DuoDPInstruction} representing an MUL instruction.
  * */
-public final class MulInstruction extends ALUInstruction{
+public final class MulInstruction extends DuoDPInstruction {
 
     public MulInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Register rb) {
         super(rd, ra, rb);

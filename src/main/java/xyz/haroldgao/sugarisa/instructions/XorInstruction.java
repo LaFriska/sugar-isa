@@ -4,9 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import xyz.haroldgao.sugarisa.Register;
 
 /**
- * Concrete implementation of {@link ALUInstruction} representing an XOR instruction.
+ * Concrete implementation of {@link DuoDPInstruction} representing an XOR instruction.
  * */
-public final class XorInstruction extends ALUInstruction {
+public final class XorInstruction extends DuoDPInstruction {
 
     public XorInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Register rb) {
         super(rd, ra, rb);

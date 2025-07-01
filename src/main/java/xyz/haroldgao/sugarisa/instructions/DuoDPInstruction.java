@@ -6,10 +6,9 @@ import xyz.haroldgao.sugarisa.ArchitecturalState;
 import xyz.haroldgao.sugarisa.Register;
 
 /**
- * Represents an ALU instruction, which is the union of arithmetic and logical operations, involving
- * three registers, or two registers and one immediate value.
+ * Represents a data processing instructions that accepts TWO arguments, involving in rd, ra and rb/imm16.
  * */
-abstract class ALUInstruction extends Instruction {
+abstract class DuoDPInstruction extends Instruction {
 
     private final @NotNull Format format;
 
@@ -24,7 +23,7 @@ abstract class ALUInstruction extends Instruction {
     /**
      * R-format constructor.
      * */
-    protected ALUInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Register rb){
+    protected DuoDPInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Register rb){
         format = Format.R;
         this.imm16 = null;
         this.rb = rb;
@@ -35,7 +34,7 @@ abstract class ALUInstruction extends Instruction {
     /**
      * I-format constructor.
      * */
-    protected ALUInstruction(@NotNull Register rd, @NotNull Register ra, int imm16){
+    protected DuoDPInstruction(@NotNull Register rd, @NotNull Register ra, int imm16){
         format = Format.I;
         this.imm16 = imm16;
         this.rb = null;
