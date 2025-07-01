@@ -5,6 +5,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+/**
+ * Abstract class representing an arbitrary set of test cases targetting {@link Tokeniser#next()}.
+ * */
 @RunWith(Parameterized.class)
 public abstract class TokeniserTest {
 
@@ -22,6 +25,9 @@ public abstract class TokeniserTest {
             Assert.assertEquals(tokenStrings[count], tokeniser.next().toString());
             count++;
         }
+        Assert.assertEquals("The number of tokens extracted from the string buffer does not match " +
+                        "                               the length of the expected string array.",
+                                                count, tokenStrings.length);
     }
 
 }

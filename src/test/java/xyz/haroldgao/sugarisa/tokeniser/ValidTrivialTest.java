@@ -13,14 +13,7 @@ import java.util.Collection;
  * The assembly code does not have to be correct, just syntactically valid at the token level.
  * Every test case here is getData.
  * */
-@RunWith(Parameterized.class)
-public class ValidTrivialTest {
-
-    @Parameterized.Parameter(0)
-    public String assembly; //Assembly code.
-
-    @Parameterized.Parameter(1)
-    public String[] tokenStrings; //String representation of tokens.
+public class ValidTrivialTest extends TokeniserTest{
 
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
@@ -94,28 +87,6 @@ public class ValidTrivialTest {
                 }
         });
         return data;
-    }
-
-
-    @Test
-    public void test(){
-        Tokeniser tokeniser = new Tokeniser(assembly);
-        int count = 0;
-        while(tokeniser.hasNext()){
-            Assert.assertEquals(tokenStrings[count], tokeniser.next().toString());
-            count++;
-        }
-    }
-
-    /**
-     * Tests empty case.
-     * */
-    @Test
-    public void testEmpty(){
-        Tokeniser empty1 = new Tokeniser("  \n \t ");
-        Tokeniser empty2 = new Tokeniser("");
-        Assert.assertFalse(empty1.hasNext());
-        Assert.assertFalse(empty2.hasNext());
     }
 
 }
