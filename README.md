@@ -13,7 +13,7 @@ specification, see the [specifications](specifications.md).
  
 This project achieves *two* goals: fully specify Sugar using markdowns, and emulate 
 Sugar assembly by implementing an Emulator library in Java. The emulator follows a 
-three-stage protocal.
+three-stage protocol.
 1. **Tokenise** - Sugar assembly as a string is processed into internal representation of tokens.
 2. **Parse** - The list of tokens are parsed and converted into internal representation of instructions.
 3. **Execute** - The list of instruction can then be executed sequentially in a simulated microarchitecture in Java. 
