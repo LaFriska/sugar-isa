@@ -27,4 +27,11 @@ public abstract class TokenException extends RuntimeException {
         }
     }
 
+    public static class NoMoreTokensException extends TokenException{
+
+        public NoMoreTokensException(Tokeniser t) {
+            super(t, "No more tokens can be extracted from the remaining buffer.");
+        }
+    }
+
 }

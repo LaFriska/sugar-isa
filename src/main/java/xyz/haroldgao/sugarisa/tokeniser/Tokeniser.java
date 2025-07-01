@@ -37,14 +37,19 @@ public class Tokeniser implements Iterator<Token> {
 
     /**
      * Returns the next token. We can assume that p is pointing at a non-whitespace character.
+     *
+     * @throws TokenException.InvalidImmediateException if an immediate value is incorrectly formatted.
+     * @throws TokenException.UnexpectedSymbolException if an unexpected (untokenisable) symbol has been found in the buffer.
+     * @throws TokenException.UnexpectedWordException if an unexpected word has been found (a word that is not an immediate, keyword, or label).
+     * @throws TokenException.NoMoreTokensException if no further tokens may be extracted from the buffer.
      */
     @Override
-    public Token next() {
+    public @NotNull Token next() {
 
-        if (!hasNext()) return null;
+        if (!hasNext()) throw new TokenException.NoMoreTokensException(this);
 
         //Tokenise comments
-        if (buffer.startsWith("//")) {
+        if (nextTwoChars("//")) {
             return tokeniseComment();
         }
 
@@ -53,7 +58,7 @@ public class Tokeniser implements Iterator<Token> {
 
             assert tokType.value != null;
 
-            if (buffer.charAt(p) == tokType.value.charAt(0) && (p+1 < buffer.length() && buffer.charAt(p+1) == tokType.value.charAt(1))) {
+            if (nextTwoChars(tokType.value)) {
                 updatePointer(2);
                 return new Token(tokType);
             }
@@ -89,13 +94,13 @@ public class Tokeniser implements Iterator<Token> {
         //Hex immediates
         if (word.startsWith("0x")) {
             processWhitespace();
-            return tokeniseImmediate(word, (c) -> (TokeniserUtils.HEX_CHARS.contains(c) || Character.isDigit(c)));
+            return tokeniseImmediate(word, TokenType.IMM_HEX, TokeniserUtils.IS_HEX_DIGIT);
         }
 
         //Binary immediates
         if (word.startsWith("0b")) {
             processWhitespace();
-            return tokeniseImmediate(word, (c) -> (c == '0' || c == '1'));
+            return tokeniseImmediate(word, TokenType.IMM_BIN, TokeniserUtils.IS_BINARY_DIGIT);
         }
 
         //Decimals
@@ -117,6 +122,15 @@ public class Tokeniser implements Iterator<Token> {
         }
 
         throw new TokenException.UnexpectedWordException(this, word);
+    }
+
+    /**
+     * Returns whether the two characters from the pointer p are exactly that of a given
+     * string.
+     * */
+    private boolean nextTwoChars(@NotNull String tokenValue) {
+        return buffer.charAt(p) == tokenValue.charAt(0) &&
+               (p + 1 < buffer.length() && buffer.charAt(p + 1) == tokenValue.charAt(1));
     }
 
     public List<Token> getAllTokens(){
@@ -156,13 +170,14 @@ public class Tokeniser implements Iterator<Token> {
     }
 
     /**
-     * Tokenises a, immediate, given a hex immediate given a character-wise predicate and a string.
+     * Tokenises an immediate, given a hex immediate given a character-wise predicate and a string.
      *
      * @param pred a predicate where each character in the string must satisfy for validity to hold.
+     * @param type the {@link TokenType} of the resulting tokenisation.
      * @throws TokenException.InvalidImmediateException if the word contains invalid (non-hexadecimal) characters
      *                                                  according to the predicate.
      */
-    private @NotNull Token tokeniseImmediate(String word, Predicate<Character> pred) {
+    private @NotNull Token tokeniseImmediate(String word, TokenType type, Predicate<Character> pred) {
         if (word.length() == 2)
             throw new TokenException.InvalidImmediateException(this, "");
 
@@ -170,7 +185,7 @@ public class Tokeniser implements Iterator<Token> {
         if (!TokeniserUtils.isValid(hex, pred))
             throw new TokenException.InvalidImmediateException(this, hex);
 
-        return new Token(TokenType.IMM_HEX, hex);
+        return new Token(type, hex);
     }
 
     /**

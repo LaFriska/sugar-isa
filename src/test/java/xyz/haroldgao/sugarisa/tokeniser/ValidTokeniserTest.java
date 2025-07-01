@@ -25,7 +25,12 @@ public class ValidTokeniserTest {
     public static Collection<Object[]> data(){
         ArrayList<Object[]> data = new ArrayList<>();
 
+        trivial(data);
 
+        return data;
+    }
+
+    private static void trivial(ArrayList<Object[]> data) {
         String[] simple = {
                 "<<", ">>", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "->",
                 "=", ";", ":", "+", "-", "*", "/", "%", "&", "|", "^", "!", ",", "[", "]"
@@ -45,7 +50,55 @@ public class ValidTokeniserTest {
             });
         }
 
-        return data;
+        //Labels
+        data.add(new Object[]{
+                "HELLO_WORLD_123",
+                new String[]{
+                        "{LABEL, HELLO_WORLD_123}"
+                }
+        });
+
+        //Hex immediates
+        data.add(new Object[]{
+                "0x1234ABCD",
+                new String[]{
+                        "{IMM_HEX, 1234ABCD}"
+                }
+        });
+
+        //Bin immediates
+        data.add(new Object[]{
+                "0b11001010",
+                new String[]{
+                        "{IMM_BIN, 11001010}"
+                }
+        });
+
+        //Decimal immediates
+        data.add(new Object[]{
+                "123456789012",
+                new String[]{
+                        "{IMM_DEC, 123456789012}"
+                }
+        });
+
+        //Comments
+        data.add(new Object[]{
+                "//This is a comment",
+                new String[]{
+                        "{COMMENT, This is a comment}"
+                }
+        });
+
+        //Complex comments
+        data.add(new Object[]{
+                ": //This is another comment \n ->",
+                new String[]{
+                        "{:}",
+                        "{COMMENT, This is another comment }",
+                        "{->}"
+                }
+        });
     }
 
     @Test
@@ -56,6 +109,15 @@ public class ValidTokeniserTest {
             Assert.assertEquals(tokenStrings[count], tokeniser.next().toString());
             count++;
         }
+    }
+
+    /**
+     * Tests empty case.
+     * */
+    @Test
+    public void testEmpty(){
+        Tokeniser tokeniser = new Tokeniser("  \n \t ");
+        Assert.assertFalse(tokeniser.hasNext());
     }
 
 }

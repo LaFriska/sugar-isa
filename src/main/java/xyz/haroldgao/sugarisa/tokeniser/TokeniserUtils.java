@@ -10,6 +10,10 @@ import java.util.function.Predicate;
 public class TokeniserUtils {
     static final Set<Character> HEX_CHARS = new HashSet<>(List.of('a','b','c','d','e','f'));
 
+    static final Predicate<Character> IS_HEX_DIGIT = (c) -> (TokeniserUtils.HEX_CHARS.contains(Character.toLowerCase(c)) || Character.isDigit(c));
+
+    static final Predicate<Character> IS_BINARY_DIGIT = (c) -> (c == '0' || c == '1');
+
     /**
      * Given an arbitrary string, and a char-wise predicate, returns true if and only if
      * each character in the string satisfies the predicate.
