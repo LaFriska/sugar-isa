@@ -22,7 +22,7 @@ public enum Register {
     PC(14),
     SP(15);
 
-    private final int id;
+    public final int id;
 
     Register(int id){
         this.id = id;
