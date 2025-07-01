@@ -46,8 +46,12 @@ public abstract class SoloDPInstruction extends Instruction{
      * */
     protected abstract int operate(int raValueOrImm16);
 
+    /**
+     * Execution delegates to the operate method, as specific instructions depends on concrete implementations only
+     * through the operate method. This method is declared fine as no further overwriting is necessary.
+     * */
     @Override
-    protected void execute(ArchitecturalState state) {
+    final public void execute(ArchitecturalState state) {
         state.write(rd, operate(format == Format.R ? state.read(ra) : imm16));
     }
 }

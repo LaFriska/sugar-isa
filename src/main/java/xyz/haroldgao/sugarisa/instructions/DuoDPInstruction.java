@@ -57,7 +57,7 @@ abstract class DuoDPInstruction extends Instruction {
      * the operate method.
      * */
     @Override
-    final protected void execute(ArchitecturalState state) {
+    final public void execute(ArchitecturalState state) {
          state.write(rd, operate(state.read(ra), format == Format.I ? imm16 : state.read(rb)));
     }
 }
