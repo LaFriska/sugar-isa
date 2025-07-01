@@ -1,4 +1,4 @@
-import xyz.haroldgao.sugarisa.Register;
+package xyz.haroldgao.sugarisa;
 
 /**
  * Represents the architectural state, along with getters and setters for various parameters.

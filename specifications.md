@@ -93,7 +93,7 @@ Following C-style syntax, use double-slash to denote a comment. For instance,
 
 `r3 = r1 + r2; // this is a comment`.
 
-### Set Instruction (Move)
+### Set xyz.haroldgao.sugarisa.instructions.Instruction (Move)
 
 Sets a register to a value held by another register, or an immediate. 
 
@@ -428,7 +428,7 @@ An instruction that does nothing and wastes a clock cycle can be written as just
 These are pseudo-instructions for `r0 = 0;`. Note that adding extra semicolons at the end of an instruction also counts as adding extra null instructions.
 For example, `[r1] = r2;;` is actually 2 instructions. 
 
-## Instruction Encoding
+## xyz.haroldgao.sugarisa.instructions.Instruction Encoding
 
 Below is the full instruction set encoding of the Sugar ISA. Any other opcodes are undefined, or reserved for future updates. 
 
