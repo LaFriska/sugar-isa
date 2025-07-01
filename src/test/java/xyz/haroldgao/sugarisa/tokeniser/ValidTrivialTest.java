@@ -9,11 +9,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Tests assembly code that should not cause any exceptions to be thrown by the tokeniser.
+ * Tests tokenisation of assembly code that should not cause any exceptions to be thrown by the tokeniser.
  * The assembly code does not have to be correct, just syntactically valid at the token level.
+ * Every test case here is getData.
  * */
 @RunWith(Parameterized.class)
-public class ValidTokeniserTest {
+public class ValidTrivialTest {
 
     @Parameterized.Parameter(0)
     public String assembly; //Assembly code.
@@ -24,13 +25,6 @@ public class ValidTokeniserTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
         ArrayList<Object[]> data = new ArrayList<>();
-
-        trivial(data);
-
-        return data;
-    }
-
-    private static void trivial(ArrayList<Object[]> data) {
         String[] simple = {
                 "<<", ">>", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "->",
                 "=", ";", ":", "+", "-", "*", "/", "%", "&", "|", "^", "!", ",", "[", "]"
@@ -99,7 +93,9 @@ public class ValidTokeniserTest {
                         "{->}"
                 }
         });
+        return data;
     }
+
 
     @Test
     public void test(){
@@ -116,8 +112,10 @@ public class ValidTokeniserTest {
      * */
     @Test
     public void testEmpty(){
-        Tokeniser tokeniser = new Tokeniser("  \n \t ");
-        Assert.assertFalse(tokeniser.hasNext());
+        Tokeniser empty1 = new Tokeniser("  \n \t ");
+        Tokeniser empty2 = new Tokeniser("");
+        Assert.assertFalse(empty1.hasNext());
+        Assert.assertFalse(empty2.hasNext());
     }
 
 }
