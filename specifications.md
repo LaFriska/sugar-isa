@@ -435,6 +435,11 @@ For example, `[r1] = r2;;` is actually 2 instructions.
 
 ## Instruction Encoding
 
-Below is the full instruction set encoding of the Sugar ISA. Any other opcodes are undefined, or reserved for future updates. 
+Below is the full instruction set encoding of the Sugar ISA. 
+
+- Any other opcodes are undefined, or reserved for future updates. 
+- `f` denotes the instruction format, `0` for R-format and `1` for I-format.
+- `sf` is the set-flag bit, denoting whether the operation should set the flag register.
+- `p` determines whether a pre/post offset memory operation should use pre-offset or post-offset.
 
 ![instructions.png](items/instructions.png)
