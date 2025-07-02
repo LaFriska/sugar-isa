@@ -437,4 +437,4 @@ For example, `[r1] = r2;;` is actually 2 instructions.
 
 Below is the full instruction set encoding of the Sugar ISA. Any other opcodes are undefined, or reserved for future updates. 
 
-![instructionset.jpeg](items/instructionset.jpeg)
+![instructions.png](items/instructions.png)
