@@ -44,7 +44,7 @@ Least significant four bits represents the ALU flag, which are
 - Overflow (V), set to `b3` if the result overflowed the signed range. 
 - Other bits are undefined and reserved for future updates. 
 
-The flag register is set by a `flag;` instruction, or chained `flag;` instruction in arithmetic or logical instructions.
+The flag register is set by a chained `flag;` after arithmetic or logical instructions.
 More information can be found in the Sugar Assembly section of this document. 
 
 ### Program Counter
@@ -84,8 +84,9 @@ Immediate values can be written as hexadecimal, decimal, or binary in the follow
 - Decimal: `1234`
 - Binary: `0b0110111`
 
-Sugar uses two immediate values, arithmetic, logical and memory operations uses an `imm16`, while branching and
-function calls use `imm26`. 
+Sugar uses immediate values of three different widths, arithmetic, logical and memory operations uses an `imm16`, 
+except the set and not instructions, which use `imm22`,
+while stack instructions, branching and function calls use `imm26`. 
 
 ### Comments 
 
@@ -93,11 +94,11 @@ Following C-style syntax, use double-slash to denote a comment. For instance,
 
 `r3 = r1 + r2; // this is a comment`.
 
-### Set xyz.haroldgao.sugarisa.instructions.Instruction (Move)
+### Set Instruction (Move)
 
 Sets a register to a value held by another register, or an immediate. 
 
-Syntax: `rd = ra`, `rd = imm16`. 
+Syntax: `rd = ra`, `rd = imm22`. 
 
 > Example:
 > ```
@@ -123,6 +124,7 @@ rd = ra / rb;
 rd = ra % rb;
 ```
 The following syntactical sugar may also be used,
+3. xor, `^`
 
 ``` 
 rd += rb;
@@ -133,13 +135,12 @@ rd %= rb;
 ```
 which replaces `ra` with `rd`.
 
-### Logical Operations 
+### Logical Operations
 
 There are 6 logical operations.
 
 1. and, `&`
 2. or, `|`
-3. xor, `^`
 4. not, `!`
 5. left-shift, `<<`
 6. right-shift, `>>`
@@ -177,18 +178,20 @@ Note that for syntactical sugar above, `rb` could also be replaced with `imm16`.
 > r3 |= 0b1;
 > ```
 
-For the "not" instruction, `ra` may be replaced with `imm16`. For instance, `r1 = !0b0101110011000010;` is valid Sugar assembly. 
+For the not instruction, `ra` may be replaced with `imm22`.
+
+For instance, `r1 = !0b1111010101110011000010;` is valid Sugar assembly, although an I-format not is typically redundant.
 
 ### Keeping the ALU Flags
 
 By default, arithmetic and logical operations do not update the flag register (`fl`). In order to set `fl` by the resulting
-ALUFLAGs from the previous logical or arithmetic operation, a `flag;` instruction may be used. Alternatively, `fl` could also
-be updated by chaining `flag;` to an arithmetic or logical operation, which is more efficient.
+ALUFLAGs of an operation, chain a `flag;` instruction to the instruction like so.
 
 > Example
 > ```
 > r1 = r2 + r3 -> flag; 
 > ```
+Note that the not and set instruction does not allow a `flag;` chain. 
 
 ### Memory Addressing 
 
@@ -430,7 +433,7 @@ An instruction that does nothing and wastes a clock cycle can be written as just
 These are pseudo-instructions for `r0 = 0;`. Note that adding extra semicolons at the end of an instruction also counts as adding extra null instructions.
 For example, `[r1] = r2;;` is actually 2 instructions. 
 
-## xyz.haroldgao.sugarisa.instructions.Instruction Encoding
+## Instruction Encoding
 
 Below is the full instruction set encoding of the Sugar ISA. Any other opcodes are undefined, or reserved for future updates. 
 
