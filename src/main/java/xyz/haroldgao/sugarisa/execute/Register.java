@@ -1,4 +1,4 @@
-package xyz.haroldgao.sugarisa;
+package xyz.haroldgao.sugarisa.execute;
 
 /**
  * Represents a register in the Sugar ISA.

@@ -1,7 +1,6 @@
 package xyz.haroldgao.sugarisa.execute;
 
 import org.jetbrains.annotations.NotNull;
-import xyz.haroldgao.sugarisa.Register;
 
 /**
  * Concrete implementation of {@link DuoDPInstruction} representing an AND instruction.

@@ -1,8 +1,6 @@
 package xyz.haroldgao.sugarisa.execute;
 
 import org.jetbrains.annotations.NotNull;
-import xyz.haroldgao.sugarisa.ArchitecturalState;
-import xyz.haroldgao.sugarisa.Register;
 
 /**
  * Represents a data processing instruction that accepts ONE argument, involving in rd, and ra/imm16.

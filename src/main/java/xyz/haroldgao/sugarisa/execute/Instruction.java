@@ -1,7 +1,5 @@
 package xyz.haroldgao.sugarisa.execute;
 
-import xyz.haroldgao.sugarisa.ArchitecturalState;
-
 /**
  * Represents an arbitrary instruction.
  * */

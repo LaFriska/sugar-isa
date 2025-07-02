@@ -2,7 +2,6 @@ package xyz.haroldgao.sugarisa.execute;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xyz.haroldgao.sugarisa.Register;
 
 /**
  * Represents a data-processing instruction.

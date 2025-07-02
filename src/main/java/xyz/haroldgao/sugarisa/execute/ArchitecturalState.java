@@ -1,4 +1,4 @@
-package xyz.haroldgao.sugarisa;
+package xyz.haroldgao.sugarisa.execute;
 
 /**
  * Represents the architectural state, along with getters and setters for various parameters.
