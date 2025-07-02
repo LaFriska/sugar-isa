@@ -1,4 +1,4 @@
-package xyz.haroldgao.sugarisa.instructions;
+package xyz.haroldgao.sugarisa.execute;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -8,38 +8,24 @@ import xyz.haroldgao.sugarisa.Register;
 /**
  * Represents a data processing instructions that accepts TWO arguments, involving in rd, ra and rb/imm16.
  * */
-abstract class DuoDPInstruction extends Instruction {
-
-    private final @NotNull Format format;
-
-    private final @Nullable Integer imm16;
+abstract class DuoDPInstruction extends DPInstruction {
 
     private final @Nullable Register rb;
-
-    private final @NotNull Register rd;
-
-    private final @NotNull Register ra;
 
     /**
      * R-format constructor.
      * */
     protected DuoDPInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Register rb){
-        format = Format.R;
-        this.imm16 = null;
+        super(Format.R, null, rd, ra);
         this.rb = rb;
-        this.rd = rd;
-        this.ra = ra;
     }
 
     /**
      * I-format constructor.
      * */
     protected DuoDPInstruction(@NotNull Register rd, @NotNull Register ra, int imm16){
-        format = Format.I;
-        this.imm16 = imm16;
+        super(Format.I, imm16, rd, ra);
         this.rb = null;
-        this.rd = rd;
-        this.ra = ra;
     }
 
 

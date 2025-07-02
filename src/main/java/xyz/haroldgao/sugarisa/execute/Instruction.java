@@ -1,4 +1,4 @@
-package xyz.haroldgao.sugarisa.instructions;
+package xyz.haroldgao.sugarisa.execute;
 
 import xyz.haroldgao.sugarisa.ArchitecturalState;
 

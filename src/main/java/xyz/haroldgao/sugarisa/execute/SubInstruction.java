@@ -1,4 +1,4 @@
-package xyz.haroldgao.sugarisa.instructions;
+package xyz.haroldgao.sugarisa.execute;
 
 import org.jetbrains.annotations.NotNull;
 import xyz.haroldgao.sugarisa.Register;
