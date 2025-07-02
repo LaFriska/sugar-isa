@@ -3,9 +3,9 @@ package xyz.haroldgao.sugarisa.execute;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Concrete implementation of {@link DuoDPInstruction} representing an ADD instruction.
+ * Concrete implementation of {@link DuoDataInstruction} representing an ADD instruction.
  * */
-public final class AddInstruction extends DuoDPInstruction {
+public final class AddInstruction extends DuoDataInstruction {
 
     public AddInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Register rb, boolean setFlag) {
         super(rd, ra, rb, setFlag);

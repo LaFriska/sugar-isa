@@ -3,9 +3,9 @@ package xyz.haroldgao.sugarisa.execute;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Concrete implementation of {@link DuoDPInstruction} representing an XOR instruction.
+ * Concrete implementation of {@link DuoDataInstruction} representing an XOR instruction.
  * */
-public final class XorInstruction extends DuoDPInstruction {
+public final class XorInstruction extends DuoDataInstruction {
 
     public XorInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Register rb, boolean setFlag) {
         super(rd, ra, rb, setFlag);

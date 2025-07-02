@@ -4,30 +4,30 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents a data processing instructions that accepts TWO arguments, involving in rd, ra and rb/imm16.
+ * Represents a data instructions that accepts TWO arguments, involving in rd, ra and rb/imm16.
  * */
-abstract class DuoDPInstruction extends DPInstruction {
+abstract class DuoDataInstruction extends DataInstruction {
 
     private final @Nullable Register rb;
 
     /**
      * R-format constructor which sets isArithmeticOperation to false.
      * */
-    protected DuoDPInstruction(@NotNull Register rd,
-                               @NotNull Register ra,
-                               @NotNull Register rb,
-                               boolean setFlag){
+    protected DuoDataInstruction(@NotNull Register rd,
+                                 @NotNull Register ra,
+                                 @NotNull Register rb,
+                                 boolean setFlag){
         this(rd, ra, rb, setFlag, false);
     }
 
     /**
      * R-format constructor.
      * */
-    protected DuoDPInstruction(@NotNull Register rd,
-                               @NotNull Register ra,
-                               @NotNull Register rb,
-                               boolean setFlag,
-                               boolean isArithmeticOperation){
+    protected DuoDataInstruction(@NotNull Register rd,
+                                 @NotNull Register ra,
+                                 @NotNull Register rb,
+                                 boolean setFlag,
+                                 boolean isArithmeticOperation){
         super(Format.R, null, rd, ra, setFlag, isArithmeticOperation);
         this.rb = rb;
     }
@@ -36,10 +36,10 @@ abstract class DuoDPInstruction extends DPInstruction {
     /**
      * I-format constructor which sets isArithmeticOperation to to false;
      * */
-    protected DuoDPInstruction(@NotNull Register rd,
-                               @NotNull Register ra,
-                               int imm16,
-                               boolean setFlag
+    protected DuoDataInstruction(@NotNull Register rd,
+                                 @NotNull Register ra,
+                                 int imm16,
+                                 boolean setFlag
     ){
         this(rd, ra, imm16, setFlag, false);
     }
@@ -48,11 +48,11 @@ abstract class DuoDPInstruction extends DPInstruction {
     /**
      * I-format constructor.
      * */
-    protected DuoDPInstruction(@NotNull Register rd,
-                               @NotNull Register ra,
-                               int imm16,
-                               boolean setFlag,
-                               boolean isArithmeticOperation
+    protected DuoDataInstruction(@NotNull Register rd,
+                                 @NotNull Register ra,
+                                 int imm16,
+                                 boolean setFlag,
+                                 boolean isArithmeticOperation
     ){
         super(Format.I, imm16, rd, ra, setFlag, isArithmeticOperation);
         this.rb = null;

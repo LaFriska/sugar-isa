@@ -3,9 +3,9 @@ package xyz.haroldgao.sugarisa.execute;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Concrete implementation of {@link SoloDPInstruction} representing a NOT instruction.
+ * Concrete implementation of {@link SoloDataInstruction} representing a NOT instruction.
  * */
-public final class NotInstruction extends SoloDPInstruction {
+public final class NotInstruction extends SoloDataInstruction {
 
     public NotInstruction(@NotNull Register rd, @NotNull Register ra) {
         super(rd, ra);

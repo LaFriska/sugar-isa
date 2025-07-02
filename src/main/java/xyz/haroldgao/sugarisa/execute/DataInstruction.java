@@ -4,9 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents a data-processing instruction.
+ * Represents a data instruction. Data instructions are defined as the union between memory instructions and
+ * data processing instructions.
  * */
-abstract class DPInstruction extends Instruction {
+abstract class DataInstruction extends Instruction {
 
     protected final @NotNull Format format;
 
@@ -22,23 +23,23 @@ abstract class DPInstruction extends Instruction {
     /**
      * Canonical constructor which sets isArithmeticOperation to the default false.
      * */
-    protected DPInstruction(@NotNull Format format,
-                            @Nullable Integer imm16,
-                            @NotNull Register rd,
-                            @Nullable Register ra,
-                            boolean setFlag){
+    protected DataInstruction(@NotNull Format format,
+                              @Nullable Integer imm16,
+                              @NotNull Register rd,
+                              @Nullable Register ra,
+                              boolean setFlag){
         this(format, imm16, rd, ra, setFlag, false);
     }
 
     /**
      * Canonical constructor, children of this class should delegate their respective constructors to this method.
      * */
-    protected DPInstruction(@NotNull Format format,
-                            @Nullable Integer imm16,
-                            @NotNull Register rd,
-                            @Nullable Register ra,
-                            boolean setFlag,
-                            boolean isArithmeticOperation){
+    protected DataInstruction(@NotNull Format format,
+                              @Nullable Integer imm16,
+                              @NotNull Register rd,
+                              @Nullable Register ra,
+                              boolean setFlag,
+                              boolean isArithmeticOperation){
         super(setFlag);
         this.format = format;
         this.imm16 = imm16;

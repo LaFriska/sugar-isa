@@ -3,22 +3,22 @@ package xyz.haroldgao.sugarisa.execute;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents a data processing instruction that accepts ONE argument, involving in rd, and ra/imm16.
+ * Represents a data instruction that accepts ONE argument, involving in rd, and ra/imm16.
  * */
-public abstract class SoloDPInstruction extends DPInstruction {
+public abstract class SoloDataInstruction extends DataInstruction {
 
 
     /**
      * R-format constructor.
      * */
-    protected SoloDPInstruction(@NotNull Register rd, @NotNull Register ra){
+    protected SoloDataInstruction(@NotNull Register rd, @NotNull Register ra){
         super(Format.R, null, rd, ra, false);
     }
 
     /**
      * I-format constructor.
      * */
-    protected SoloDPInstruction(@NotNull Register rd, int imm16){
+    protected SoloDataInstruction(@NotNull Register rd, int imm16){
         super(Format.I, imm16, rd, null, false);
     }
 

@@ -3,9 +3,9 @@ package xyz.haroldgao.sugarisa.execute;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Concrete implementation of {@link SoloDPInstruction} representing a SET instruction.
+ * Concrete implementation of {@link SoloDataInstruction} representing a SET instruction.
  * */
-public final class SetInstruction extends SoloDPInstruction {
+public final class SetInstruction extends SoloDataInstruction {
 
     public SetInstruction(@NotNull Register rd, @NotNull Register ra) {
         super(rd, ra);

@@ -3,9 +3,9 @@ package xyz.haroldgao.sugarisa.execute;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Concrete implementation of {@link DuoDPInstruction} representing a right shift instruction.
+ * Concrete implementation of {@link DuoDataInstruction} representing a right shift instruction.
  * */
-public final class RightShiftInstruction extends DuoDPInstruction {
+public final class RightShiftInstruction extends DuoDataInstruction {
 
     public RightShiftInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Register rb, boolean setFlag) {
         super(rd, ra, rb, setFlag);
