@@ -11,18 +11,50 @@ abstract class DuoDPInstruction extends DPInstruction {
     private final @Nullable Register rb;
 
     /**
+     * R-format constructor which sets isArithmeticOperation to false.
+     * */
+    protected DuoDPInstruction(@NotNull Register rd,
+                               @NotNull Register ra,
+                               @NotNull Register rb,
+                               boolean setFlag){
+        this(rd, ra, rb, setFlag, false);
+    }
+
+    /**
      * R-format constructor.
      * */
-    protected DuoDPInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Register rb){
-        super(Format.R, null, rd, ra);
+    protected DuoDPInstruction(@NotNull Register rd,
+                               @NotNull Register ra,
+                               @NotNull Register rb,
+                               boolean setFlag,
+                               boolean isArithmeticOperation){
+        super(Format.R, null, rd, ra, setFlag, isArithmeticOperation);
         this.rb = rb;
     }
+
+
+    /**
+     * I-format constructor which sets isArithmeticOperation to to false;
+     * */
+    protected DuoDPInstruction(@NotNull Register rd,
+                               @NotNull Register ra,
+                               int imm16,
+                               boolean setFlag
+    ){
+        this(rd, ra, imm16, setFlag, false);
+    }
+
 
     /**
      * I-format constructor.
      * */
-    protected DuoDPInstruction(@NotNull Register rd, @NotNull Register ra, int imm16){
-        super(Format.I, imm16, rd, ra);
+    protected DuoDPInstruction(@NotNull Register rd,
+                               @NotNull Register ra,
+                               int imm16,
+                               boolean setFlag,
+                               boolean isArithmeticOperation
+    ){
+        super(Format.I, imm16, rd, ra, setFlag, isArithmeticOperation);
         this.rb = null;
     }
 
@@ -42,6 +74,10 @@ abstract class DuoDPInstruction extends DPInstruction {
      * */
     @Override
     final public void execute(ArchitecturalState state) {
-         state.write(rd, operate(state.read(ra), format == Format.I ? imm16 : state.read(rb)));
+        int input1 = state.read(ra);
+        int input2 = format == Format.I ? imm16 : state.read(rb);
+        int result = operate(input1, input2);
+        state.write(rd, result);
+        if(setFlag) state.flag(input1, input2, result, isArithmeticOperation);
     }
 }

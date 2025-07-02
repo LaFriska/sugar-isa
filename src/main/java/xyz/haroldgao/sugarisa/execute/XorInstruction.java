@@ -7,12 +7,12 @@ import org.jetbrains.annotations.NotNull;
  * */
 public final class XorInstruction extends DuoDPInstruction {
 
-    public XorInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Register rb) {
-        super(rd, ra, rb);
+    public XorInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Register rb, boolean setFlag) {
+        super(rd, ra, rb, setFlag);
     }
 
-    public XorInstruction(@NotNull Register rd, @NotNull Register ra, int imm16) {
-        super(rd, ra, imm16);
+    public XorInstruction(@NotNull Register rd, @NotNull Register ra, int imm16, boolean setFlag) {
+        super(rd, ra, imm16, setFlag);
     }
 
     @Override

@@ -12,14 +12,14 @@ public abstract class SoloDPInstruction extends DPInstruction {
      * R-format constructor.
      * */
     protected SoloDPInstruction(@NotNull Register rd, @NotNull Register ra){
-        super(Format.R, null, rd, ra);
+        super(Format.R, null, rd, ra, false);
     }
 
     /**
      * I-format constructor.
      * */
     protected SoloDPInstruction(@NotNull Register rd, int imm16){
-        super(Format.I, imm16, rd, null);
+        super(Format.I, imm16, rd, null, false);
     }
 
     /**

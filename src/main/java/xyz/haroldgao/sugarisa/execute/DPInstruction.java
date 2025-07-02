@@ -16,17 +16,35 @@ abstract class DPInstruction extends Instruction {
 
     protected final @Nullable Register ra;
 
+    protected final boolean isArithmeticOperation; //Whether the operation is arithmetic, false if logical.
+
+
+    /**
+     * Canonical constructor which sets isArithmeticOperation to the default false.
+     * */
+    protected DPInstruction(@NotNull Format format,
+                            @Nullable Integer imm16,
+                            @NotNull Register rd,
+                            @Nullable Register ra,
+                            boolean setFlag){
+        this(format, imm16, rd, ra, setFlag, false);
+    }
+
     /**
      * Canonical constructor, children of this class should delegate their respective constructors to this method.
      * */
     protected DPInstruction(@NotNull Format format,
                             @Nullable Integer imm16,
                             @NotNull Register rd,
-                            @Nullable Register ra){
+                            @Nullable Register ra,
+                            boolean setFlag,
+                            boolean isArithmeticOperation){
+        super(setFlag);
         this.format = format;
         this.imm16 = imm16;
         this.rd = rd;
         this.ra = ra;
+        this.isArithmeticOperation = isArithmeticOperation;
     }
 
 }

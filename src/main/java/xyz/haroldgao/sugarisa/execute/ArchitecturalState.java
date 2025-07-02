@@ -26,4 +26,13 @@ public interface ArchitecturalState {
      * Writes to a memory address.
      * */
     int write(int address, int value);
+
+    /**
+     * Updates flag register given the inputs and results of a data processing operation.
+     *
+     * @param isArithmeticOperation whether flags overflow (V) and carry (C) should be updated depends on the type of
+     *                              operation. If the instruction executing this method is an arithmetic operation, then
+     *                              these flags should be updated.
+     * */
+    int flag(int input1, int input2, int result, boolean isArithmeticOperation);
 }
