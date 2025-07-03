@@ -2,7 +2,7 @@ package xyz.haroldgao.sugarisa.execute;
 
 import org.jetbrains.annotations.Nullable;
 
-public class PushInstruction extends SimpleInstruction{
+public final class PushInstruction extends SimpleInstruction{
 
     public PushInstruction(int imm26) {
         super(imm26);
@@ -14,6 +14,12 @@ public class PushInstruction extends SimpleInstruction{
 
     @Override
     public void execute(ArchitecturalState state) {
-        //TODO
+
+        //update stack pointer
+        int newSp = state.read(Register.SP) - 4;
+        state.write(Register.SP, newSp);
+
+        //writes value into memory
+        state.write(state.read(newSp), format == Format.I ? imm26 : state.read(rd));
     }
 }
