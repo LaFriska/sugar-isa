@@ -3,6 +3,8 @@ package xyz.haroldgao.sugarisa.execute;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.sql.PreparedStatement;
+
 /**
  * Represents a data instructions that accepts TWO arguments, involving in rd, ra and rb/imm16.
  * */
@@ -66,18 +68,21 @@ abstract class DuoDataInstruction extends DataInstruction {
      * */
     protected abstract int operate(int raValue, int rbValueOrImm16);
 
-
     /**
-     * Execution simply defers to operation between ra and rb/imm16. This method is
-     * marked as final since the specific ALU instruction depends on the execution only through
-     * the operate method.
+     * Conducts the operation on the architectural state and sets the flag if necessary.
+     * @return result of the operation.
      * */
-    @Override
-    final public void execute(ArchitecturalState state) {
+    protected int operateAndSetFlag(ArchitecturalState state){
         int input1 = state.read(ra);
         int input2 = format == Format.I ? imm16 : state.read(rb);
         int result = operate(input1, input2);
-        state.write(rd, result);
         if(setFlag) state.flag(input1, input2, result, isArithmeticOperation);
+        return result;
+    }
+
+
+    @Override
+    public void execute(ArchitecturalState state) {
+        state.write(rd, operateAndSetFlag(state));
     }
 }

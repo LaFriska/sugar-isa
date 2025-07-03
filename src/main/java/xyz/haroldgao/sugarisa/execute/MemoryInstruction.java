@@ -1,0 +1,39 @@
+package xyz.haroldgao.sugarisa.execute;
+
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * Represents any memory instruction.
+ * */
+abstract class MemoryInstruction extends DuoDataInstruction{
+
+    protected @NotNull OffsetType offsetType;
+
+    //isArithmeticOperation always set to true, since offsets are computed using ALU addition.
+    protected MemoryInstruction(@NotNull Register rd,
+                                @NotNull Register ra,
+                                @NotNull Register rb,
+                                boolean setFlag,
+                                @NotNull OffsetType offsetType
+    ) {
+        super(rd, ra, rb, setFlag, true);
+        this.offsetType = offsetType;
+    }
+
+
+    protected MemoryInstruction(@NotNull Register rd,
+                                @NotNull Register ra,
+                                int imm16,
+                                boolean setFlag,
+                                @NotNull OffsetType offsetType
+    ) {
+        super(rd, ra, imm16, setFlag, true);
+        this.offsetType = offsetType;
+    }
+
+    @Override
+    protected int operate(int raValue, int rbValueOrImm16) {
+        return raValue + rbValueOrImm16;
+    }
+
+}
