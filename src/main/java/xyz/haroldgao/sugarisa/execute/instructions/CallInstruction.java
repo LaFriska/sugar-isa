@@ -31,7 +31,7 @@ public class CallInstruction extends SimpleInstruction {
     }
 
     @Override
-    protected void execute(ArchitecturalState state) {
+    public void execute(ArchitecturalState state) {
         if(flag == null || state.readFlag(flag)) { //conditional
             //Saves pc+4 to the link register.
             state.write(Register.LR, state.read(Register.PC) + 4);
