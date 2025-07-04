@@ -5,7 +5,7 @@ import xyz.haroldgao.sugarisa.execute.ArchitecturalState;
 /**
  * Represents an arbitrary instruction.
  * */
-abstract class Instruction {
+public abstract class Instruction {
 
     /**
      * Represents whether the instruction updates flag register.
