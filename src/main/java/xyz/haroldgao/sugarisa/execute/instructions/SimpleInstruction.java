@@ -1,6 +1,7 @@
-package xyz.haroldgao.sugarisa.execute;
+package xyz.haroldgao.sugarisa.execute.instructions;
 
 import org.jetbrains.annotations.Nullable;
+import xyz.haroldgao.sugarisa.execute.Register;
 
 /**
  * An instruction is considered simple if it accepts a single rd/imm26 argument, along with a boolean value denoting

@@ -1,6 +1,7 @@
-package xyz.haroldgao.sugarisa.execute;
+package xyz.haroldgao.sugarisa.execute.instructions;
 
 import org.jetbrains.annotations.NotNull;
+import xyz.haroldgao.sugarisa.execute.Register;
 
 /**
  * Concrete implementation of {@link DuoDataInstruction} representing an OR instruction.

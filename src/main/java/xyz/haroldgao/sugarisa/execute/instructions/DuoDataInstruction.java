@@ -1,9 +1,9 @@
-package xyz.haroldgao.sugarisa.execute;
+package xyz.haroldgao.sugarisa.execute.instructions;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.sql.PreparedStatement;
+import xyz.haroldgao.sugarisa.execute.ArchitecturalState;
+import xyz.haroldgao.sugarisa.execute.Register;
 
 /**
  * Represents a data instructions that accepts TWO arguments, involving in rd, ra and rb/imm16.

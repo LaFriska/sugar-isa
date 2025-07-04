@@ -1,4 +1,4 @@
-package xyz.haroldgao.sugarisa.execute;
+package xyz.haroldgao.sugarisa.execute.instructions;
 
 /**
  * Represents an instruction format.

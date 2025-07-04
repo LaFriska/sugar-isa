@@ -1,7 +1,8 @@
-package xyz.haroldgao.sugarisa.execute;
+package xyz.haroldgao.sugarisa.execute.instructions;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xyz.haroldgao.sugarisa.execute.Register;
 
 /**
  * Represents a data instruction. Data instructions are defined as the union between memory instructions and

@@ -1,6 +1,9 @@
-package xyz.haroldgao.sugarisa.execute;
+package xyz.haroldgao.sugarisa.execute.instructions;
 
 import org.jetbrains.annotations.NotNull;
+import xyz.haroldgao.sugarisa.execute.ArchitecturalState;
+import xyz.haroldgao.sugarisa.execute.OffsetType;
+import xyz.haroldgao.sugarisa.execute.Register;
 
 /**
  * Represents any memory read instruction possibly with pre/post-offsets.
