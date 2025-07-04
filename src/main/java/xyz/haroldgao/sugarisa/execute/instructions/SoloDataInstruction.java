@@ -38,5 +38,7 @@ public abstract class SoloDataInstruction extends DataInstruction {
     @Override
     final public void execute(ArchitecturalState state) {
         state.write(rd, operate(format == Format.R ? state.read(ra) : imm16));
+        //Increments pc
+        ArchitecturalState.incrementPC(state);
     }
 }

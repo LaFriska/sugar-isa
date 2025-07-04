@@ -23,6 +23,9 @@ public final class PopInstruction extends SimpleInstruction{
         //update stack pointer
         int newSp = state.read(Register.SP) + 4;
         state.write(Register.SP, newSp);
+
+        //Increments pc
+        ArchitecturalState.incrementPC(state);
     }
 
 }

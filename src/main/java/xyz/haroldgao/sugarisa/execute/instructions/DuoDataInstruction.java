@@ -84,5 +84,6 @@ abstract class DuoDataInstruction extends DataInstruction {
     @Override
     public void execute(ArchitecturalState state) {
         state.write(rd, operateAndSetFlag(state));
+        ArchitecturalState.incrementPC(state);
     }
 }

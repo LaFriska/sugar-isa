@@ -24,8 +24,8 @@ public interface ArchitecturalState {
 
     /**
      * Writes to a memory address.
-     * */
-    int write(int address, int value);
+     */
+    void write(int address, int value);
 
     /**
      * Updates flag register given the inputs and results of a data processing operation.
@@ -33,6 +33,16 @@ public interface ArchitecturalState {
      * @param isArithmeticOperation whether flags overflow (V) and carry (C) should be updated depends on the type of
      *                              operation. If the instruction executing this method is an arithmetic operation, then
      *                              these flags should be updated.
+     */
+    void flag(int input1, int input2, int result, boolean isArithmeticOperation);
+
+    boolean readFlag(ALUFlag flag);
+
+    /**
+     * Increments program counter.
      * */
-    int flag(int input1, int input2, int result, boolean isArithmeticOperation);
+    static void incrementPC(ArchitecturalState state){
+        state.write(Register.PC, state.read(Register.PC) + 4);
+    }
+
 }

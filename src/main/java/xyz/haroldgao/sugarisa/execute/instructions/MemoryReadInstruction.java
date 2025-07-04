@@ -31,5 +31,6 @@ public final class MemoryReadInstruction extends MemoryInstruction{
                 state.write(ra, operateAndSetFlag(state));
             }
         }
+        ArchitecturalState.incrementPC(state);
     }
 }

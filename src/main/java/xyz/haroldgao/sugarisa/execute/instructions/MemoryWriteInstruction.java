@@ -30,5 +30,6 @@ public final class MemoryWriteInstruction extends MemoryInstruction{
                 state.write(ra, operateAndSetFlag(state)); //compute offset
             }
         }
+        ArchitecturalState.incrementPC(state);
     }
 }
