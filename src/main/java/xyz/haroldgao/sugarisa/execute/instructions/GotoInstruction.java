@@ -37,4 +37,5 @@ public final class GotoInstruction extends SimpleInstruction{
             state.write(Register.PC, newpc);
         }
     }
+
 }
