@@ -441,5 +441,6 @@ Below is the full instruction set encoding of the Sugar ISA.
 - `f` denotes the instruction format, `0` for R-format and `1` for I-format.
 - `sf` is the set-flag bit, denoting whether the operation should set the flag register.
 - `p` determines whether a pre/post offset memory operation should use pre-offset or post-offset.
+- Note also that the very last possible opcode: `11111` is reserved to represent a program end instruction. Executing this instruction will cause the program to stop.
 
 ![instructions.png](items/instructions.png)
