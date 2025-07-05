@@ -1,4 +1,7 @@
 package xyz.haroldgao.sugarisa.parser;
-//TODO
-public class ParseError extends RuntimeException{
+
+abstract class ParseError extends RuntimeException{
+    protected ParseError(Parser p, String message){
+        super("An error occurred parsing Sugar assembly code. " + message + "\n\n" + "Assembly Code:" + "\n" + p.assembly);
+    }
 }
