@@ -258,7 +258,7 @@ Post-offset Memory Write:
 [rd] = ra -> ra -= imm16;
 ```
 
-Note that the notation `[rd] = ra -> ra = ra + rb;` is also acceptable. Since computing offsets also require an ALU 
+Since computing offsets also require an ALU 
 operation, Sugar ISA allows setting the flag register during a memory operation by chaining the `flag;` instruction.
 
 > Example

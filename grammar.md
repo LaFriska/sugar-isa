@@ -65,11 +65,32 @@ Duo-Instructions are those that use `rd, ra, rb/imm16`.
 ### Memory Duo-Instructions
 
 ``` 
-<duo_mem> := <write> | <read>
+<duo_mem> := <write> 
+           | <read> 
+           | <pre_write> 
+           | <pre_read> 
+           | <post_write> 
+           | <post_read>
+
 <write> := <mem_value> EQ <reg_or_imm>
 <read> := REG EQ <mem_value>
+
+<pre_write> := <pre_offset> CHAIN <write>
+<pre_read> := <pre_offset> CHAIN <read>
+<post_write> := <write> CHAIN <post_offset>
+<post_read> := <read> CHAIN <post_offset>
+
+<pre_offset> := REG ADD_EQ REG 
+              | REG ADD_EQ <imm>
+              | REG SUB_EQ <imm>
+
+<post_offset> := REG ADD_EQ REG 
+               | REG ADD_EQ <imm>
+               | REG SUB_EQ <imm>
+
 <mem_value> := LBRAC <address> RBRAC
-<address> := REG ADD <reg_or_imm> | <reg_or_imm>
+<address> := REG ADD <reg_or_imm> 
+           | <reg_or_imm>
 ```
 
 ### Solo-Instructions
