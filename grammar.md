@@ -31,7 +31,7 @@ We will also split the `KEYWORD` token into multiple sub-tokens.
 ``` 
 <start> := <part> TERM <start> | ε
 <part> := LABEL COLON <instruction> | <instruction>
-<instruction> := <duo> | <solo> | <simple>
+<instruction> := <duo> | <solo> | <simple> | ε
 ```
 
 ### Arithmetic Duo-Instructions
@@ -59,7 +59,7 @@ Duo-Instructions are those that use `rd, ra, rb/imm16`.
              | AND_EQ 
              | OR_EQ 
              | XOR_EQ
-<flag> := CHAIN FLAG
+<flag> := CHAIN FLAG | ε
 ```
 
 ### Memory Duo-Instructions
@@ -106,9 +106,11 @@ These are instructions that use `rd, ra/imm22`.
 
 ``` 
 <simple> := <branch> | <stack>
-<branch> := <branch_mnemonic> <reg_imm> | LABEL
+<branch> := <branch_mnemonic> <reg_or_imm> 
+          | <branch_mnemonic> LABEL
+          | RETURN
 <stack> := <stack_mnemonic> <multiple_values>
-<multiple_values> := <reg_or_imm> | <reg_or_imm> COMMA <multiple_registers>
+<multiple_values> := <reg_or_imm> | <reg_or_imm> COMMA <multiple_values>
 <branch_mnemonic> := GOTO 
                    | GOTON
                    | GOTOZ 
