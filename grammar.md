@@ -15,6 +15,7 @@ in terms of the tokens defined [here](tokens.md).
 
 We will also split the `KEYWORD` token into multiple sub-tokens.
 1. `REG` denotes all the registers: `r1`, `sp`, etc. 
+2. `GOTO`, `GOTON` etc... denotes specific `KEYWORD` values. 
 
 ## Production Rules
 
@@ -38,12 +39,38 @@ We will also split the `KEYWORD` token into multiple sub-tokens.
 Duo-Instructions are those that use `rd, ra, rb/imm16`.
 
 ``` 
-<duo> := REG EQ REG <duo_op> <reg_or_imm> | REG <duo_op_eq> <reg_or_imm>
-<duo_op> := ADD | SUB | MUL | DIV | MOD | OR | AND | XOR | LEFT_SHIFT | RIGHT_SHIFT  
-<duo_op_eq> := ADD_EQ | SUB_EQ | MUL_EQ | DIV_EQ | MOD_EQ | AND_EQ | OR_EQ | XOR_EQ
+<duo> := <duo_alu> <flag> | <duo_mem> <flag>
+<duo_alu> := REG EQ REG <duo_op> <reg_or_imm> | REG <duo_op_eq> <reg_or_imm>
+<duo_op> := ADD 
+          | SUB 
+          | MUL 
+          | DIV 
+          | MOD 
+          | OR
+          | AND 
+          | XOR 
+          | LEFT_SHIFT 
+          | RIGHT_SHIFT  
+<duo_op_eq> := ADD_EQ 
+             | SUB_EQ 
+             | MUL_EQ 
+             | DIV_EQ 
+             | MOD_EQ 
+             | AND_EQ 
+             | OR_EQ 
+             | XOR_EQ
+<flag> := CHAIN FLAG
 ```
 
 ### Memory Duo-Instructions
+
+``` 
+<duo_mem> := <write> | <read>
+<write> := <mem_value> EQ <reg_or_imm>
+<read> := REG EQ <mem_value>
+<mem_value> := LBRAC <address> RBRAC
+<address> := REG ADD <reg_or_imm> | <reg_or_imm>
+```
 
 ### Solo-Instructions
 
@@ -56,8 +83,21 @@ These are instructions that use `rd, ra/imm22`.
 
 ### Simple Instructions
 
-These are instructions that takes a single `rd/imm26` as input. 
-
 ``` 
-<simple>
+<simple> := <branch> | <stack>
+<branch> := <branch_mnemonic> <reg_imm> | LABEL
+<stack> := <stack_mnemonic> <multiple_values>
+<multiple_values> := <reg_or_imm> | <reg_or_imm> COMMA <multiple_registers>
+<branch_mnemonic> := GOTO 
+                   | GOTON
+                   | GOTOZ 
+                   | GOTOC 
+                   | GOTOV 
+                   | CALL 
+                   | CALLN 
+                   | CALLZ 
+                   | CALLC 
+                   | CALLV
+<stack_mnemonic> := PUSH | POP
 ```
+
