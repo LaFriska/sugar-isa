@@ -1,14 +1,17 @@
 package xyz.haroldgao.sugarisa.parser;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xyz.haroldgao.sugarisa.execute.instructions.Instruction;
 import xyz.haroldgao.sugarisa.tokeniser.Token;
-import xyz.haroldgao.sugarisa.tokeniser.TokenType;
 import xyz.haroldgao.sugarisa.tokeniser.Tokeniser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import static xyz.haroldgao.sugarisa.tokeniser.TokenType.*;
 
 /**
  * Parser for sugar assembly. Takes a {@link Tokeniser} as input and returns a series of
@@ -16,13 +19,25 @@ import java.util.List;
  * */
 public class Parser implements Iterator<Instruction> {
 
-    private final Tokeniser tokeniser;
+    private @NotNull final Tokeniser tokeniser;
 
-    protected final String assembly;
+    protected @NotNull final String assembly;
 
-    private Parser(Tokeniser tokeniser, String assembly){
+    private @Nullable Token buffer;
+
+    private int nextInstructionAddress = 0;
+
+    /**
+     * A map from labels to memory addresses for the program counter.
+     * */
+    private @NotNull final HashMap<String, Integer> linker;
+
+    private Parser(@NotNull Tokeniser tokeniser, @NotNull String assembly){
         this.tokeniser = tokeniser;
         this.assembly = assembly;
+        this.linker = new HashMap<>();
+        nextToken();
+        processComments();
     }
 
     /**
@@ -30,7 +45,7 @@ public class Parser implements Iterator<Instruction> {
      *
      * @throws ParseError if the assembly is semantically incorrect.
      * */
-    public static List<Instruction> parse(String assembly){
+    public static List<Instruction> parse(@NotNull String assembly){
        ArrayList<Instruction> instructions = new ArrayList<>();
        Parser p = new Parser(new Tokeniser(assembly), assembly);
        while(p.hasNext()){
@@ -40,41 +55,75 @@ public class Parser implements Iterator<Instruction> {
     }
 
 
+    /**
+     * Checks whether there are more tokens to be parsed.
+     * */
+    /*
+    * requires this.buffer == null || this.buffer.type != TokenType.COMMENT
+    * */
     @Override
     public boolean hasNext() {
-        return tokeniser.hasNext();
+        return this.buffer != null;
     }
 
     /**
      * Gets the next instruction.
      * */
+    /*
+     * requires: this.buffer == null || this.buffer.type != TokenType.COMMENT
+     * requires: the current buffer to hold the first token of the next instruction.
+     * ensures: this.buffer == null || this.buffer.type != TokenType.COMMENT
+     * */
     @Override
     public Instruction next() {
         if(!hasNext()) throw new NoMoreInstructionsError(this, "The given assembly code is either fully " +
                                                                            "parsed, or does not contain any instructions.");
-        ArrayList<Token> tokens = new ArrayList<>();
+        Token t = nextToken();
+        if(t.type() == LABEL) processLabel(t.value());
 
-        //Gets the next series of tokens until a terminator.
-        while(tokeniser.hasNext()){
-            Token t = tokeniser.next();
-            tokens.add(t);
-            if(t.type() == TokenType.TERM) break;
-        }
-        return tokensToInstruction(tokens.toArray(new Token[0]));
+        return null;
     }
 
     /**
-     * Parses an array of tokens into an instruction.
-     *
-     * @throws ParseError if the token array does not properly represent an instruction.
+     * Processes a label by registering the next instruction as the value of the label.
+     * @throws DuplicateLabelException if the label already exists.
+     * @throws UnclosedLabelException if the label does not end in a colon.
      * */
-    private Instruction tokensToInstruction(@NotNull Token[] tokens){
+    private void processLabel(String label){
+        if(linker.containsKey(label)) throw new DuplicateLabelException(this, label);
+        Token t = nextToken();
+        if(t.type() != COLON) throw new UnclosedLabelException(this, label);
+        linker.put(label, nextInstructionAddress);
+    }
 
-        if(tokens.length == 0) throw new NoMoreInstructionsError(this, "The given assembly code is either fully " +
-                "parsed, or does not contain any instructions.");
+    /**
+     * Stores the next token in the tokeniser in a buffer. If the tokeniser
+     * has no more tokens, sets the buffer to null.
+     * @return the previous token held in the buffer.
+     * */
+    private Token nextToken(){
+        var oldBuffer = buffer;
+        if(tokeniser.hasNext()){
+            buffer = tokeniser.next();
+        }else{
+            buffer = null;
+        }
+        return oldBuffer;
+    }
 
-        return null; //todo
+    /**
+     * Recursively move the buffer to the next token that is not a comment.
+     * */
+    private void processComments(){
+        if(buffer != null && buffer.type() == COMMENT){
+            nextToken();
+            processComments();
+        }
+    }
 
+    private Instruction returnInstruction(Instruction in){
+        nextInstructionAddress += 4;
+        return in;
     }
 
 }
