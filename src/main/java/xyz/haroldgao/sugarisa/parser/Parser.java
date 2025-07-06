@@ -71,7 +71,7 @@ public class Parser implements Iterator<Instruction> {
      * */
     /*
      * requires: this.buffer == null || this.buffer.type != TokenType.COMMENT
-     * requires: the current buffer to hold the first token of the next instruction.
+     * requires: the current buffer to hold the first token of the next <part> token.
      * ensures: this.buffer == null || this.buffer.type != TokenType.COMMENT
      * */
     @Override
@@ -83,6 +83,18 @@ public class Parser implements Iterator<Instruction> {
 
         return null;
     }
+
+    /**
+     * Given that the parser currently points toward the first token of the next instruction,
+     * parses the next instruction via the following CFG.
+     * */
+    /*
+    * <instruction> := <duo> | <solo> | <simple> | ε
+    * */
+    private Instruction parseInstruction(){
+        return null; //TODO
+    }
+
 
     /**
      * Processes a label by registering the next instruction as the value of the label.
@@ -98,7 +110,8 @@ public class Parser implements Iterator<Instruction> {
 
     /**
      * Stores the next token in the tokeniser in a buffer. If the tokeniser
-     * has no more tokens, sets the buffer to null.
+     * has no more tokens, sets the buffer to null. This method also skips comments by
+     * calling {@link Parser#processComments()}.
      * @return the previous token held in the buffer.
      * */
     private Token nextToken(){
@@ -108,6 +121,7 @@ public class Parser implements Iterator<Instruction> {
         }else{
             buffer = null;
         }
+        processComments();
         return oldBuffer;
     }
 
@@ -116,7 +130,7 @@ public class Parser implements Iterator<Instruction> {
      * */
     private void processComments(){
         if(buffer != null && buffer.type() == COMMENT){
-            nextToken();
+            buffer = tokeniser.hasNext() ? tokeniser.next() : null;
             processComments();
         }
     }
