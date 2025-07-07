@@ -3,7 +3,10 @@ package xyz.haroldgao.sugarisa.parser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.haroldgao.sugarisa.execute.instructions.Instruction;
+import xyz.haroldgao.sugarisa.execute.instructions.Instructions;
+import xyz.haroldgao.sugarisa.execute.instructions.MemoryWriteInstruction;
 import xyz.haroldgao.sugarisa.tokeniser.Token;
+import xyz.haroldgao.sugarisa.tokeniser.TokenType;
 import xyz.haroldgao.sugarisa.tokeniser.Tokeniser;
 
 import java.util.ArrayList;
@@ -86,13 +89,32 @@ public class Parser implements Iterator<Instruction> {
 
     /**
      * Given that the parser currently points toward the first token of the next instruction,
-     * parses the next instruction via the following CFG.
+     * parses the next instruction via the following CFG. This method also processes the terminator token.
      * */
-    /*
-    * <instruction> := <duo> | <solo> | <simple> | ε
-    * */
-    private Instruction parseInstruction(){
+    private Instruction parseInstruction(){ //<instruction> := <duo> | <solo> | <simple> | ε
 
+        if(!hasNext()) return returnInstruction(Instructions.NULL);
+
+        assert buffer != null;
+        if(buffer.type() == TERM)
+            return returnInstruction(Instructions.NULL);
+
+        if(buffer.type() == KEYWORD){
+            if(buffer.value() == null) throw new UnknownKeywordException(this, null); //TODO
+
+
+        }else if(buffer.type() == LBRAC){
+            return parseMemoryWriteInstruction();
+        }
+        throw new UnexpectedTokenError(this, buffer);
+    }
+
+    /**
+     * Given that the buffer points at the first token of an instruction, attempts to parse the
+     * next part as a memory write instruction.
+     * @throws ParseError if the next part does not correctly represent a memory write instruction.
+     * */
+    private MemoryWriteInstruction parseMemoryWriteInstruction(){
         return null; //TODO
     }
 
@@ -105,8 +127,16 @@ public class Parser implements Iterator<Instruction> {
     private void processLabel(String label){
         if(linker.containsKey(label)) throw new DuplicateLabelException(this, label);
         Token t = nextToken();
-        if(t.type() != COLON) throw new UnclosedLabelException(this, label);
+        if(!testType(t, COLON)) throw new UnclosedLabelException(this, label);
         linker.put(label, nextInstructionAddress);
+    }
+
+    /**
+     * Null-safe check of the type of an arbitrary token.
+     * */
+    private static boolean testType(Token t, @NotNull TokenType type){
+        if(t == null) return false;
+        return t.type() == type;
     }
 
     /**
