@@ -92,6 +92,7 @@ public class Parser implements Iterator<Instruction> {
     * <instruction> := <duo> | <solo> | <simple> | ε
     * */
     private Instruction parseInstruction(){
+
         return null; //TODO
     }
 
