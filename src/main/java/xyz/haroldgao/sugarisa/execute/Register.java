@@ -1,5 +1,10 @@
 package xyz.haroldgao.sugarisa.execute;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
  * Represents a register in the Sugar ISA.
  * */
@@ -24,8 +29,25 @@ public enum Register {
 
     public final int id;
 
+    public final String token;
+
+    private static Map<String, Register> registerTokenMap = Arrays.stream(Register.values())
+            .collect(Collectors.toMap(
+                    (reg) -> reg.token,
+                    (reg) -> reg
+            ));
+
     Register(int id){
         this.id = id;
+        this.token = this.toString().toLowerCase();
+    }
+
+    public static boolean containsToken(String token){
+        return registerTokenMap.containsKey(token);
+    }
+
+    public static Register getFromToken(String token){
+        return registerTokenMap.get(token);
     }
 
 }

@@ -63,17 +63,26 @@ enum Keywords {
             .map(k -> k.value)
             .collect(Collectors.toSet());
 
+    private final static Set<String> REGISTER_SET =
+            Arrays.stream(new Keywords[]{R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,SP,PC,FL,LR})
+                    .map(k -> k.value)
+                    .collect(Collectors.toSet());
+
 
     Keywords(){
         this.value = toString().toLowerCase();
     }
 
-    private static boolean contains(String keyword){
+    public static boolean contains(String keyword){
         return VALUE_SET.contains(keyword);
     }
 
-    private static boolean isBranching(String keyword){
+    public static boolean isBranching(String keyword){
         return BRANCHING_SET.contains(keyword);
+    }
+
+    public static boolean isRegister(String keyword){
+        return REGISTER_SET.contains(keyword);
     }
 
 }
