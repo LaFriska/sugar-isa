@@ -276,34 +276,11 @@ push rd; //Pushes rd onto the stack
 pop rd;  //Pops stack into rd.
 ```
 
-A notational sugar for pushing and popping multiple registers is as follows.
-
-``` 
-push r1, r2, r3;
-pop r1, r2, r3;
-```
-This is equivalent to 
-``` 
-push r1;
-push r2;
-push r3;
-pop r1;
-pop r2;
-pop r3;
-```
-
 Similarly, stack operations support immediate values,
 
 ``` 
 push imm16;
 pop imm16; 
-```
-
-with similar notational sugar for pushing and popping multiple values from the stack.
-
-``` 
-push imm16, imm16, imm16, ...;
-pop imm16, imm16, imm16, ...;
 ```
 
 
@@ -432,6 +409,77 @@ An instruction that does nothing and wastes a clock cycle can be written as just
 
 These are pseudo-instructions for `r0 = 0;`. Note that adding extra semicolons at the end of an instruction also counts as adding extra null instructions.
 For example, `[r1] = r2;;` is actually 2 instructions. 
+
+## Instruction Semantic List
+
+Below is a compact list of instruction semantics. Let `<regOrImm16>` be defined 
+as either an arbitrary register or `imm16`, and let curly braces denote the insides are optional. 
+Let `<branchDest>` be defined as either a label, imm26, or register.
+
+``` 
+rd = <raOrImm22>;
+
+rd = ra + <regOrImm16> {-> flag};
+rd = ra - <regOrImm16> {-> flag};
+rd = ra * <regOrImm16> {-> flag};
+rd = ra / <regOrImm16> {-> flag};
+rd = ra % <regOrImm16> {-> flag};
+rd = ra & <regOrImm16> {-> flag};
+rd = ra | <regOrImm16> {-> flag};
+rd = ra ^ <regOrImm16> {-> flag};
+rd = ra << <regOrImm16> {-> flag};
+rd = ra >> <regOrImm16> {-> flag};
+
+rd += <regOrImm16> {-> rd = [ra]} {-> flag};
+rd -= imm16 {-> rd = [ra]} {-> flag};
+rd += <regOrImm16> {-> [rd] = ra} {-> flag};
+rd -= imm16 {-> [rd] = ra} {-> flag};
+rd -= rb {-> flag};
+rd *= <regOrImm16> {-> flag};
+rd /= <regOrImm16> {-> flag};
+rd %= <regOrImm16> {-> flag};
+rd &= <regOrImm16> {-> flag};
+rd |= <regOrImm16> {-> flag};
+rd ^= <regOrImm16> {-> flag};
+rd << <regOrImm16> {-> flag};
+rd >> <regOrImm16> {-> flag};
+
+rd = !ra;
+rd = !imm22;
+!rd;
+
+rd = [ra] {-> ra += <regOrImm116>} {-> flag};
+rd = [ra] {-> ra -= imm16} {-> flag};
+rd = [imm16] {-> flag};
+rd = [ra + <regOrImm16>] {-> flag};
+rd = [ra - imm16] {-> flag};
+
+[rd] = ra {-> rd += <regOrImm16>} {-> flag};
+[rd] = ra {-> rd -= imm16} {-> flag};
+[imm16] = ra {-> flag};
+[rd + <regOrImm16>] = ra {-> flag};
+[rd - imm16] = ra {-> flag};
+
+push <regOrImm26>;
+pop <regOrImm26>;
+
+goto <branchDest>;
+goton <branchDest>;
+gotoz <branchDest>;
+gotoc <branchDest>;
+gotov <branchDest>;
+
+call <branchDest>;
+calln <branchDest>;
+callz <branchDest>;
+callc <branchDest>;
+callv <branchDest>;
+return;
+
+compare ra, rb; 
+
+; //Null instruction
+```
 
 ## Instruction Encoding
 
