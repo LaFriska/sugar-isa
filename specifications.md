@@ -444,8 +444,7 @@ rd ^= <regOrImm16> {-> flag};
 rd << <regOrImm16> {-> flag};
 rd >> <regOrImm16> {-> flag};
 
-rd = !ra;
-rd = !imm22;
+rd = !<regOrImm22>;
 !rd;
 
 rd = [ra] {-> ra += <regOrImm116>} {-> flag};
