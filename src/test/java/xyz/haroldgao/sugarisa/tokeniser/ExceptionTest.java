@@ -15,8 +15,8 @@ import static org.junit.Assert.*;
 @RunWith(Parameterized.class)
 public class ExceptionTest {
 
-    @Parameterized.Parameter(0)
-    public Class<? extends TokenException> exceptionClass;
+    @Parameterized.Parameter()
+    public Class<? extends TokenError> exceptionClass;
 
     @Parameterized.Parameter(1)
     public String assembly;
@@ -29,122 +29,122 @@ public class ExceptionTest {
         ArrayList<Object[]> data = new ArrayList<>();
 
         data.add(new Object[]{
-           TokenException.NoMoreTokensException.class,
+           TokenError.NoMoreTokensError.class,
            "", 1
         });
 
         data.add(new Object[]{
-                TokenException.NoMoreTokensException.class,
+                TokenError.NoMoreTokensError.class,
                 " ", 1
         });
 
         data.add(new Object[]{
-                TokenException.NoMoreTokensException.class,
+                TokenError.NoMoreTokensError.class,
                 "->", 2
         });
 
         data.add(new Object[]{
-                TokenException.NoMoreTokensException.class,
+                TokenError.NoMoreTokensError.class,
                 "[r5]", 4
         });
 
         data.add(new Object[]{
-                TokenException.NoMoreTokensException.class,
+                TokenError.NoMoreTokensError.class,
                 "+=+=/=-", 5
         });
 
         data.add(new Object[]{
-                TokenException.UnexpectedSymbolException.class,
+                TokenError.UnexpectedSymbolError.class,
                 "+=+=/=-\"", 5
         });
 
         data.add(new Object[]{
-                TokenException.UnexpectedSymbolException.class,
+                TokenError.UnexpectedSymbolError.class,
                 "hello worl$d", 3
         });
 
         data.add(new Object[]{
-                TokenException.UnexpectedSymbolException.class,
+                TokenError.UnexpectedSymbolError.class,
                 "~", 1
         });
 
         data.add(new Object[]{
-                TokenException.UnexpectedSymbolException.class,
+                TokenError.UnexpectedSymbolError.class,
                 "<", 1
         });
 
         data.add(new Object[]{
-                TokenException.UnexpectedSymbolException.class,
+                TokenError.UnexpectedSymbolError.class,
                 "hello -> <", 3
         });
 
         data.add(new Object[]{
-                TokenException.UnexpectedSymbolException.class,
+                TokenError.UnexpectedSymbolError.class,
                 ">", 1
         });
 
         data.add(new Object[]{
-                TokenException.UnexpectedWordException.class,
+                TokenError.UnexpectedWordError.class,
                 "Unexpected", 1
         });
 
         data.add(new Object[]{
-                TokenException.UnexpectedWordException.class,
+                TokenError.UnexpectedWordError.class,
                 "unexpected_2", 1
         });
 
         data.add(new Object[]{
-                TokenException.UnexpectedWordException.class,
+                TokenError.UnexpectedWordError.class,
                 "r2 = r1 + r_4 + +", 5
         });
 
         data.add(new Object[]{
-                TokenException.UnexpectedWordException.class,
+                TokenError.UnexpectedWordError.class,
                 "r2 = r1 + Rr4", 5
         });
 
         data.add(new Object[]{
-                TokenException.InvalidImmediateException.class,
+                TokenError.InvalidImmediateError.class,
                 "0xx", 1
         });
 
         data.add(new Object[]{
-                TokenException.InvalidImmediateException.class,
+                TokenError.InvalidImmediateError.class,
                 "0b10102", 1
         });
 
         data.add(new Object[]{
-                TokenException.InvalidImmediateException.class,
+                TokenError.InvalidImmediateError.class,
                 "0b10a01", 1
         });
 
         data.add(new Object[]{
-                TokenException.InvalidImmediateException.class,
+                TokenError.InvalidImmediateError.class,
                 "0b10A01;", 1
         });
 
         data.add(new Object[]{
-                TokenException.InvalidImmediateException.class,
+                TokenError.InvalidImmediateError.class,
                 "0b", 1
         });
 
         data.add(new Object[]{
-                TokenException.InvalidImmediateException.class,
+                TokenError.InvalidImmediateError.class,
                 "0x", 1
         });
 
         data.add(new Object[]{
-                TokenException.InvalidImmediateException.class,
+                TokenError.InvalidImmediateError.class,
                 "hello 0xx", 2
         });
 
         data.add(new Object[]{
-                TokenException.InvalidImmediateException.class,
+                TokenError.InvalidImmediateError.class,
                 "r1 = r2 + 0x123er ;", 5
         });
 
         data.add(new Object[]{
-                TokenException.InvalidImmediateException.class,
+                TokenError.InvalidImmediateError.class,
                 "r1 = r2 + 0b;", 5
         });
 

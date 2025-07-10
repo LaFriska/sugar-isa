@@ -93,70 +93,9 @@ public class Parser implements Iterator<Instruction> {
      * parses the next instruction via the following CFG. This method also processes the terminator token.
      * */
     private Instruction parseInstruction(){ //<instruction> := <duo> | <solo> | <simple> | ε
-
-        if(!hasNext()) return returnInstruction(Instructions.NULL);
-
-        assert buffer != null;
-        if(buffer.type() == TERM)
-            return returnInstruction(Instructions.NULL);
-
-        if(buffer.type() == KEYWORD){
-            if(buffer.value() == null) throw new UnknownKeywordException(this, null); //TODO
-            String keyword = buffer.value();
-
-            //Instruction starts with register.
-            if(Keywords.isRegister(keyword))
-                return parseRegisterChangeInstruction();
-
-        }else if(buffer.type() == LBRAC){
-            return parseMemoryWriteInstruction();
-        }
-        throw new UnexpectedTokenError(this, buffer);
+        //TODO
+        return null;
     }
-
-
-    /**
-     * A register change instruction is an instruction that starts with a register as its token.
-     * */
-    private Instruction parseRegisterChangeInstruction(){
-        Token reg = nextToken();
-
-        assert reg.type() == KEYWORD;
-
-        if(!Register.containsToken(reg.value()))
-            throw new RuntimeException("The tokeniser/parser is not implemented correctly. " +
-                "This token: " + reg + " " +
-                "should not be tokenised as a register keyword.");
-
-        Register rd = Register.getFromToken(reg.value());
-
-        //There are now two possible scenarios, the next token is an equal sign, or ALU shorthand like +=.
-
-        if(buffer == null) throw new UnfinishedInstructionException(this);
-
-        switch (buffer.type()){
-            case EQ -> {return null;} //TODO
-            case ADD_EQ -> {return null;} //TODO
-            case SUB_EQ -> {return null;} //TODO
-            case XOR_EQ -> {return null;} //TODO
-            case OR_EQ -> {return null;} //TODO
-            case MOD_EQ -> {return null;} //TODO
-            case MUL_EQ -> {return null;} //TODO
-            case DIV_EQ -> {return null;} //TODO
-            case AND_EQ -> {return null;} //TODO
-        }
-        return null; //TODO
-    }
-
-    /**
-     * Given that the buffer points at the first token of an instruction, attempts to parse the
-     * next part as a memory write instruction.
-     * @throws ParseError if the next part does not correctly represent a memory write instruction.
-     * */
-    private MemoryWriteInstruction parseMemoryWriteInstruction(){
-        return null; //TODO
-    }
-
 
     /**
      * Processes a label by registering the next instruction as the value of the label.

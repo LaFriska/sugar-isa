@@ -38,15 +38,15 @@ public class Tokeniser implements Iterator<Token> {
     /**
      * Returns the next token. We can assume that p is pointing at a non-whitespace character.
      *
-     * @throws TokenException.InvalidImmediateException if an immediate value is incorrectly formatted.
-     * @throws TokenException.UnexpectedSymbolException if an unexpected (untokenisable) symbol has been found in the buffer.
-     * @throws TokenException.UnexpectedWordException if an unexpected word has been found (a word that is not an immediate, keyword, or label).
-     * @throws TokenException.NoMoreTokensException if no further tokens may be extracted from the buffer.
+     * @throws TokenError.InvalidImmediateError if an immediate value is incorrectly formatted.
+     * @throws TokenError.UnexpectedSymbolError if an unexpected (untokenisable) symbol has been found in the buffer.
+     * @throws TokenError.UnexpectedWordError if an unexpected word has been found (a word that is not an immediate, keyword, or label).
+     * @throws TokenError.NoMoreTokensError if no further tokens may be extracted from the buffer.
      */
     @Override
     public @NotNull Token next() {
 
-        if (!hasNext()) throw new TokenException.NoMoreTokensException(this);
+        if (!hasNext()) throw new TokenError.NoMoreTokensError(this);
 
         //Tokenise comments
         if (nextTwoChars("//")) {
@@ -76,7 +76,7 @@ public class Tokeniser implements Iterator<Token> {
         }
 
         if(TokeniserUtils.breaksAlphanumericalToken(buffer.charAt(p))){
-            throw new TokenException.UnexpectedSymbolException(this, buffer.charAt(p));
+            throw new TokenError.UnexpectedSymbolError(this, buffer.charAt(p));
         }
 
         //Here we assume the token is alphanumerical possibly with underscores.
@@ -121,7 +121,7 @@ public class Tokeniser implements Iterator<Token> {
             return new Token(TokenType.KEYWORD, word);
         }
 
-        throw new TokenException.UnexpectedWordException(this, word);
+        throw new TokenError.UnexpectedWordError(this, word);
     }
 
     /**
@@ -174,16 +174,16 @@ public class Tokeniser implements Iterator<Token> {
      *
      * @param pred a predicate where each character in the string must satisfy for validity to hold.
      * @param type the {@link TokenType} of the resulting tokenisation.
-     * @throws TokenException.InvalidImmediateException if the word contains invalid (non-hexadecimal) characters
+     * @throws TokenError.InvalidImmediateError if the word contains invalid (non-hexadecimal) characters
      *                                                  according to the predicate.
      */
     private @NotNull Token tokeniseImmediate(String word, TokenType type, Predicate<Character> pred) {
         if (word.length() == 2)
-            throw new TokenException.InvalidImmediateException(this, "");
+            throw new TokenError.InvalidImmediateError(this, "");
 
         String hex = word.substring(2);
         if (!TokeniserUtils.isValid(hex, pred))
-            throw new TokenException.InvalidImmediateException(this, hex);
+            throw new TokenError.InvalidImmediateError(this, hex);
 
         return new Token(type, hex);
     }
