@@ -434,7 +434,6 @@ rd = ra >> <regOrImm16> {-> flag};
 
 rd = [ra] {-> ra += <regOrImm116>} {-> flag};
 rd = [ra] {-> ra -= imm16} {-> flag};
-rd = [imm16] {-> flag};
 rd = [ra + <regOrImm16>] {-> flag};
 rd = [ra - imm16] {-> flag};
 
