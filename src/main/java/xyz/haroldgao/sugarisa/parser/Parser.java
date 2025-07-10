@@ -149,4 +149,22 @@ public class Parser implements Iterator<Instruction> {
         return in;
     }
 
+
+    protected int parseHexImmediate(@NotNull String imm, int maxbits) {
+
+        int value;
+        try {
+            value = Integer.parseUnsignedInt(imm, 16);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid hex number: " + imm);
+        }
+
+        int maxValue = (1 << maxbits) - 1;
+        if (value > maxValue)
+            throw new OversizedImmediateError(null, imm, maxbits);
+
+        return value;
+    }
+
+
 }
