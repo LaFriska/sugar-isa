@@ -417,6 +417,8 @@ as either an arbitrary register or `imm16`, and let curly braces denote the insi
 Let `<branchDest>` be defined as either a label, imm26, or register.
 
 ``` 
+!rd;
+
 rd = <raOrImm22>;
 
 rd = ra + <regOrImm16> {-> flag};
@@ -430,9 +432,17 @@ rd = ra ^ <regOrImm16> {-> flag};
 rd = ra << <regOrImm16> {-> flag};
 rd = ra >> <regOrImm16> {-> flag};
 
+rd = [ra] {-> ra += <regOrImm116>} {-> flag};
+rd = [ra] {-> ra -= imm16} {-> flag};
+rd = [imm16] {-> flag};
+rd = [ra + <regOrImm16>] {-> flag};
+rd = [ra - imm16] {-> flag};
+
+rd = !<regOrImm22>;
+
 rd += <regOrImm16> {-> rd = [ra]} {-> flag};
-rd -= imm16 {-> rd = [ra]} {-> flag};
 rd += <regOrImm16> {-> [rd] = ra} {-> flag};
+rd -= imm16 {-> rd = [ra]} {-> flag};
 rd -= imm16 {-> [rd] = ra} {-> flag};
 rd -= rb {-> flag};
 rd *= <regOrImm16> {-> flag};
@@ -444,18 +454,8 @@ rd ^= <regOrImm16> {-> flag};
 rd << <regOrImm16> {-> flag};
 rd >> <regOrImm16> {-> flag};
 
-rd = !<regOrImm22>;
-!rd;
-
-rd = [ra] {-> ra += <regOrImm116>} {-> flag};
-rd = [ra] {-> ra -= imm16} {-> flag};
-rd = [imm16] {-> flag};
-rd = [ra + <regOrImm16>] {-> flag};
-rd = [ra - imm16] {-> flag};
-
 [rd] = ra {-> rd += <regOrImm16>} {-> flag};
 [rd] = ra {-> rd -= imm16} {-> flag};
-[imm16] = ra {-> flag};
 [rd + <regOrImm16>] = ra {-> flag};
 [rd - imm16] = ra {-> flag};
 
@@ -467,12 +467,12 @@ goton <branchDest>;
 gotoz <branchDest>;
 gotoc <branchDest>;
 gotov <branchDest>;
-
 call <branchDest>;
 calln <branchDest>;
 callz <branchDest>;
 callc <branchDest>;
 callv <branchDest>;
+
 return;
 
 compare ra, rb; 
