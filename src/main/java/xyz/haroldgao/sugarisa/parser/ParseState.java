@@ -3,14 +3,14 @@ package xyz.haroldgao.sugarisa.parser;
 import java.util.HashMap;
 
 /**
- * A map between {@link ParseVariable} to String values. Represents the intermediate state
+ * A map between {@link ParseVariable} to Objects. Represents the intermediate state
  * while a parser runs through the decision tree.
  * */
 class ParseState {
 
     private ParseState SINGLETON = null;
 
-    private final HashMap<ParseVariable, String> map = new HashMap<>();
+    private final HashMap<ParseVariable, Object> map = new HashMap<>();
 
     private ParseState(){}
 
@@ -18,7 +18,7 @@ class ParseState {
         map.put(variable, value);
     }
 
-    protected String get(ParseVariable variable){
+    protected Object get(ParseVariable variable){
         return map.get(variable);
     }
 

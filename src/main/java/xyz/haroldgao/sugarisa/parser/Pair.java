@@ -1,5 +1,6 @@
 package xyz.haroldgao.sugarisa.parser;
 
-public record Pair<U, V>(U fst, V snd) {
-
-}
+/**
+ * Simple pair of arbitrary types.
+ * */
+public record Pair<U, V>(U fst, V snd) {}

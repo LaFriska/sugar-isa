@@ -16,11 +16,34 @@ import java.util.function.Predicate;
  * of {@link ParseState}, to simulate variable saving which can be accessed in resulting instructions.
  * */
 record ParseTree(
-        @NotNull    Predicate<Token> value,
+        @NotNull    Predicate<Pair<Token, ParseState>> value,
         @NotNull    Consumer<ParseState> onAccept,
-        @Nullable   Function<ParseState, Instruction> returnInstruction,
+        @Nullable   Function<ParseState, Instruction> returnInstruction, //Returns null if not a leaf node.
         @NotNull    ParseTree[] subtrees
 ) {
+
+    private static Function<ParseState, Instruction> NULL_FUNCTION = (a) -> null;
+
+    private static Consumer<ParseState> DOES_NOTHING = (a) -> {};
+
+    /**
+     * Constructor for tree without any returned instruction.
+     * */
+    ParseTree(@NotNull    Predicate<Pair<Token, ParseState>> value,
+              @NotNull    Consumer<ParseState> onAccept,
+              @NotNull    ParseTree[] subtrees)
+    {
+        this(value, onAccept, NULL_FUNCTION, subtrees);
+    }
+
+    /**
+     * Constructor for tree without any returned instruction.
+     * */
+    ParseTree(@NotNull    Predicate<Pair<Token, ParseState>> value,
+              @NotNull    ParseTree[] subtrees)
+    {
+        this(value, DOES_NOTHING, (a) -> null, subtrees);
+    }
 
     /**
      * Returns whether the current node is a leaf node.
@@ -32,17 +55,17 @@ record ParseTree(
     /**
      * Tests a token using the predicate.
      * */
-    boolean test(Token token){
-        return value.test(token);
+    boolean test(Token token, ParseState parseState){
+        return value.test(new Pair<>(token, parseState));
     }
 
     /**
      * Find and return the first subtree where a given token is accepted by the predicate.
      * @return the first accepted child, or null if none are accepted.
      * */
-    ParseTree findAcceptableChild(Token token){
+    ParseTree findAcceptableChild(Token token, ParseState parseState){
         for (@NotNull ParseTree subtree : subtrees) {
-            if(subtree.test(token)) return subtree;
+            if(subtree.test(token, parseState)) return subtree;
         }
         return null;
     }
