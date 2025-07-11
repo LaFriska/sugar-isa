@@ -16,34 +16,21 @@ import java.util.function.Predicate;
  * of {@link ParseState}, to simulate variable saving which can be accessed in resulting instructions.
  * */
 record ParseTree(
-        @NotNull    Predicate<Pair<Token, ParseState>> value,
-        @NotNull    Consumer<ParseState> onAccept,
-        @Nullable   Function<ParseState, Instruction> returnInstruction, //Returns null if not a leaf node.
+        //Represents the node value, a predicate to test a token given a ParseState.
+        @NotNull    Predicate<Pair<Token, ParseState>>              value,
+
+        // A callback executed when the subtree is selected.
+        @NotNull    Consumer<ParseState>                            onAccept,
+
+        //Returns null if not a leaf node.
+        @Nullable   Function<ParseState, Instruction>               returnInstruction,
+
+        //A function which produces an error given a token and parseState. The resulting error is null if no error should be thrown.
+        @NotNull    Function<Pair<Token, ParseState>, @Nullable ParseError>   errorFunction,
+
+        //Children
         @NotNull    ParseTree[] subtrees
 ) {
-
-    private static Function<ParseState, Instruction> NULL_FUNCTION = (a) -> null;
-
-    private static Consumer<ParseState> DOES_NOTHING = (a) -> {};
-
-    /**
-     * Constructor for tree without any returned instruction.
-     * */
-    ParseTree(@NotNull    Predicate<Pair<Token, ParseState>> value,
-              @NotNull    Consumer<ParseState> onAccept,
-              @NotNull    ParseTree[] subtrees)
-    {
-        this(value, onAccept, NULL_FUNCTION, subtrees);
-    }
-
-    /**
-     * Constructor for tree without any returned instruction.
-     * */
-    ParseTree(@NotNull    Predicate<Pair<Token, ParseState>> value,
-              @NotNull    ParseTree[] subtrees)
-    {
-        this(value, DOES_NOTHING, (a) -> null, subtrees);
-    }
 
     /**
      * Returns whether the current node is a leaf node.
@@ -60,13 +47,16 @@ record ParseTree(
     }
 
     /**
-     * Find and return the first subtree where a given token is accepted by the predicate.
-     * @return the first accepted child, or null if none are accepted.
+     * Find and return the first subtree where a token given the parse state is accepted by the predicate.
+     * @throws ParseError if no subtrees accept the token and the error function returns a nonnull value.
+     * @return the first accepted child, or null if none are accepted and no errors are thrown.
      * */
-    ParseTree findAcceptableChild(Token token, ParseState parseState){
+    ParseTree run(Token token, ParseState parseState){
         for (@NotNull ParseTree subtree : subtrees) {
             if(subtree.test(token, parseState)) return subtree;
         }
+        ParseError err =  errorFunction.apply(new Pair<>(token, parseState));
+        if(err != null) throw err;
         return null;
     }
 

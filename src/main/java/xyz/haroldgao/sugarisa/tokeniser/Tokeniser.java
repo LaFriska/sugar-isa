@@ -233,4 +233,8 @@ public class Tokeniser implements Iterator<Token> {
         }
         p++;
     }
+
+    public String getBuffer() {
+        return buffer;
+    }
 }

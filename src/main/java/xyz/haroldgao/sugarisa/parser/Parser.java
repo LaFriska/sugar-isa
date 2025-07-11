@@ -2,10 +2,7 @@ package xyz.haroldgao.sugarisa.parser;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xyz.haroldgao.sugarisa.execute.Register;
 import xyz.haroldgao.sugarisa.execute.instructions.Instruction;
-import xyz.haroldgao.sugarisa.execute.instructions.Instructions;
-import xyz.haroldgao.sugarisa.execute.instructions.MemoryWriteInstruction;
 import xyz.haroldgao.sugarisa.tokeniser.Token;
 import xyz.haroldgao.sugarisa.tokeniser.TokenType;
 import xyz.haroldgao.sugarisa.tokeniser.Tokeniser;
@@ -31,15 +28,12 @@ public class Parser implements Iterator<Instruction> {
 
     private int nextInstructionAddress = 0;
 
-    /**
-     * A map from labels to memory addresses for the program counter.
-     * */
-    private @NotNull final HashMap<String, Integer> linker;
+    private final ParseState parseState = new ParseState();
 
-    private Parser(@NotNull Tokeniser tokeniser, @NotNull String assembly){
+
+    protected Parser(@NotNull Tokeniser tokeniser){
         this.tokeniser = tokeniser;
-        this.assembly = assembly;
-        this.linker = new HashMap<>();
+        this.assembly = tokeniser.getBuffer();
         nextToken();
         processComments();
     }
@@ -51,7 +45,7 @@ public class Parser implements Iterator<Instruction> {
      * */
     public static List<Instruction> parse(@NotNull String assembly){
        ArrayList<Instruction> instructions = new ArrayList<>();
-       Parser p = new Parser(new Tokeniser(assembly), assembly);
+       Parser p = new Parser(new Tokeniser(assembly));
        while(p.hasNext()){
            instructions.add(p.next());
        }
@@ -103,10 +97,10 @@ public class Parser implements Iterator<Instruction> {
      * @throws UnclosedLabelException if the label does not end in a colon.
      * */
     private void processLabel(String label){
-        if(linker.containsKey(label)) throw new DuplicateLabelException(this, label);
+        if(parseState.hasLabel(label)) throw new DuplicateLabelException(this, label);
         Token t = nextToken();
         if(!testType(t, COLON)) throw new UnclosedLabelException(this, label);
-        linker.put(label, nextInstructionAddress);
+        parseState.addLink(label, nextInstructionAddress);
     }
 
     /**
@@ -149,22 +143,34 @@ public class Parser implements Iterator<Instruction> {
         return in;
     }
 
-
-    protected int parseHexImmediate(@NotNull String imm, int maxbits) {
+    /**
+     * Parses an immediate value.
+     * @param imm String representation of the immediate.
+     * @param maxbits maximum number of bits allowed.
+     * @param radix the power base of the string representation of the immediate.
+     * @throws OversizedImmediateError if the resulting immediate is too large.
+     * */
+    protected int parseImmediate(@NotNull String imm, int maxbits, int radix) {
 
         int value;
         try {
-            value = Integer.parseUnsignedInt(imm, 16);
+            value = Integer.parseUnsignedInt(imm, radix);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid hex number: " + imm);
+            throw new IllegalArgumentException("The input string does not represent an immediate value. ");
         }
 
-        int maxValue = (1 << maxbits) - 1;
-        if (value > maxValue)
-            throw new OversizedImmediateError(null, imm, maxbits);
+        if (value >> maxbits != 0)
+            throw new OversizedImmediateError(this, imm, maxbits);
 
         return value;
     }
 
+    protected int signExtend(int imm, int immSize) {
+        int signBit = immSize - 1;
+        if (signBit == 31) return imm;
+
+        int shift = 31 - signBit;
+        return (imm << shift) >> shift;
+    }
 
 }
