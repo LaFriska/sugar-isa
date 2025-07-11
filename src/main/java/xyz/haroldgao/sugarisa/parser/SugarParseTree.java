@@ -5,7 +5,11 @@ package xyz.haroldgao.sugarisa.parser;
  * */
 class SugarParseTree {
 
-
-
+    /**
+     * Gets the parse tree.
+     * */
+    static ParseTree get(){
+        return null; //TODO
+    }
 
 }

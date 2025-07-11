@@ -28,7 +28,9 @@ public class Parser implements Iterator<Instruction> {
 
     private int nextInstructionAddress = 0;
 
-    private final ParseState parseState = new ParseState();
+    private ParseState parseState;
+
+    private static final ParseTree PARSE_TREE = SugarParseTree.get();
 
 
     protected Parser(@NotNull Tokeniser tokeniser){
@@ -78,8 +80,7 @@ public class Parser implements Iterator<Instruction> {
                                                                            "parsed, or does not contain any instructions.");
         Token t = nextToken();
         if(t.type() == LABEL) processLabel(t.value());
-
-        return null;
+        return parseInstruction();
     }
 
     /**
@@ -87,8 +88,17 @@ public class Parser implements Iterator<Instruction> {
      * parses the next instruction via the following CFG. This method also processes the terminator token.
      * */
     private Instruction parseInstruction(){ //<instruction> := <duo> | <solo> | <simple> | ε
-        //TODO
-        return null;
+        parseState = new ParseState();
+        ParseTree current = PARSE_TREE;
+        while(!current.isLeaf()){
+            current = current.run(buffer, parseState);
+            if(buffer == null) throw new UnfinishedInstructionException(this);
+            if(current == null) throw new UnexpectedTokenError(this, buffer);
+            nextToken();
+        }
+        //current.isLeaf() is true. All leafs should have equivalence predicate on the terminator.
+        //Here, the buffer being at the start of the next instruction is ensured.
+        return current.getInstruction(parseState);
     }
 
     /**
