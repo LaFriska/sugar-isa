@@ -17,20 +17,46 @@ import java.util.function.Predicate;
  * */
 record ParseTree(
         //Represents the node value, a predicate to test a token given a ParseState.
-        @NotNull    Predicate<Pair<Token, ParseState>>              value,
+        @NotNull    Predicate<Pair<@NotNull Token, @NotNull ParseState>>              value,
 
         // A callback executed when the subtree is selected.
-        @NotNull    Consumer<ParseState>                            onAccept,
+        @NotNull    Consumer<ParseState>                                              onAccept,
 
         //Returns null if not a leaf node.
-        @Nullable   Function<ParseState, Instruction>               returnInstruction,
+        @NotNull    Function<ParseState, Instruction>                                 returnInstruction,
 
         //A function which produces an error given a token and parseState. The resulting error is null if no error should be thrown.
-        @NotNull    Function<Pair<Token, ParseState>, @Nullable ParseError>   errorFunction,
+        @NotNull    Function<Pair<Token, ParseState>, @Nullable ParseError>           errorFunction,
 
         //Children
-        @NotNull    ParseTree[] subtrees
+        @NotNull    ParseTree... subtrees
 ) {
+
+    ParseTree(
+            @NotNull Predicate<Pair<@NotNull Token, @NotNull ParseState>> value,
+            @NotNull Consumer<ParseState> onAccept,
+            @NotNull Function<ParseState, Instruction> returnInstruction,
+            @NotNull ParseTree... subtrees
+    ) {
+        this(value, onAccept, returnInstruction, ParseTreeUtils.TRIVIAL_ERROR, subtrees);
+    }
+
+    ParseTree(
+            @NotNull Predicate<Pair<@NotNull Token, @NotNull ParseState>> value,
+            @NotNull Consumer<ParseState> onAccept,
+            @NotNull ParseTree... subtrees
+    ) {
+        this(value, onAccept, ParseTreeUtils.TRIVIAL_RETURN_INST, ParseTreeUtils.TRIVIAL_ERROR, subtrees);
+    }
+
+
+    ParseTree(
+            @NotNull Predicate<Pair<@NotNull Token, @NotNull ParseState>> value,
+            @NotNull ParseTree... subtrees
+    ) {
+        this(value, ParseTreeUtils.TRIVIAL_ON_ACCEPT, ParseTreeUtils.TRIVIAL_RETURN_INST, ParseTreeUtils.TRIVIAL_ERROR, subtrees);
+    }
+
 
     /**
      * Returns whether the current node is a leaf node.
@@ -58,6 +84,10 @@ record ParseTree(
         ParseError err =  errorFunction.apply(new Pair<>(token, parseState));
         if(err != null) throw err;
         return null;
+    }
+
+    @Nullable Instruction getInstruction(ParseState state){
+        return returnInstruction.apply(state);
     }
 
 }
