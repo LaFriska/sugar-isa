@@ -20,7 +20,7 @@ record ParseTree(
         @NotNull    Predicate<Pair<@NotNull Token, @NotNull ParseState>>              value,
 
         // A callback executed when the subtree is selected.
-        @NotNull    Consumer<ParseState>                                              onAccept,
+        @NotNull    Consumer<Pair<Token, ParseState>>                                 onAccept,
 
         //Returns null if not a leaf node.
         @NotNull    Function<ParseState, Instruction>                                 returnInstruction,
@@ -34,7 +34,7 @@ record ParseTree(
 
     ParseTree(
             @NotNull Predicate<Pair<@NotNull Token, @NotNull ParseState>> value,
-            @NotNull Consumer<ParseState> onAccept,
+            @NotNull Consumer<Pair<Token, ParseState>> onAccept,
             @NotNull Function<ParseState, Instruction> returnInstruction,
             @NotNull ParseTree... subtrees
     ) {
@@ -43,7 +43,7 @@ record ParseTree(
 
     ParseTree(
             @NotNull Predicate<Pair<@NotNull Token, @NotNull ParseState>> value,
-            @NotNull Consumer<ParseState> onAccept,
+            @NotNull Consumer<Pair<Token, ParseState>> onAccept,
             @NotNull ParseTree... subtrees
     ) {
         this(value, onAccept, ParseTreeUtils.TRIVIAL_RETURN_INST, ParseTreeUtils.TRIVIAL_ERROR, subtrees);

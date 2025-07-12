@@ -18,7 +18,7 @@ class ParseState {
 
     private final HashMap<ParseVariable, Object> map = new HashMap<>();
 
-    protected void put(ParseVariable variable, String value){
+    protected void put(ParseVariable variable, Object value){
         map.put(variable, value);
     }
 
