@@ -20,7 +20,7 @@ record ParseTree(
         @NotNull    Predicate<Pair<@NotNull Token, @NotNull ParseState>>              value,
 
         // A callback executed when the subtree is selected.
-        @NotNull    Consumer<ParseState>                                              onAccept,
+        @NotNull    Consumer<Pair<Token, ParseState>>                                 onAccept,
 
         //Returns null if not a leaf node.
         @NotNull    Function<ParseState, Instruction>                                 returnInstruction,
@@ -34,7 +34,7 @@ record ParseTree(
 
     ParseTree(
             @NotNull Predicate<Pair<@NotNull Token, @NotNull ParseState>> value,
-            @NotNull Consumer<ParseState> onAccept,
+            @NotNull Consumer<Pair<Token, ParseState>> onAccept,
             @NotNull Function<ParseState, Instruction> returnInstruction,
             @NotNull ParseTree... subtrees
     ) {
@@ -43,7 +43,7 @@ record ParseTree(
 
     ParseTree(
             @NotNull Predicate<Pair<@NotNull Token, @NotNull ParseState>> value,
-            @NotNull Consumer<ParseState> onAccept,
+            @NotNull Consumer<Pair<Token, ParseState>> onAccept,
             @NotNull ParseTree... subtrees
     ) {
         this(value, onAccept, ParseTreeUtils.TRIVIAL_RETURN_INST, ParseTreeUtils.TRIVIAL_ERROR, subtrees);
@@ -77,9 +77,12 @@ record ParseTree(
      * @throws ParseError if no subtrees accept the token and the error function returns a nonnull value.
      * @return the first accepted child, or null if none are accepted and no errors are thrown.
      * */
-    ParseTree run(Token token, ParseState parseState){
+    @Nullable ParseTree run(Token token, ParseState parseState){
         for (@NotNull ParseTree subtree : subtrees) {
-            if(subtree.test(token, parseState)) return subtree;
+            if(subtree.test(token, parseState)){
+                subtree.onAccept.accept(new Pair<>(token, parseState));
+                return subtree;
+            }
         }
         ParseError err =  errorFunction.apply(new Pair<>(token, parseState));
         if(err != null) throw err;
