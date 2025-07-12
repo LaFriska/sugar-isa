@@ -38,7 +38,15 @@ class SugarParseTree {
      * Gets the parse tree.
      * */
     static ParseTree get(){
-        return null; //TODO
+
+        ParseTree[] sugarSubtrees = new ParseTree[]{
+                START_NOT
+        };
+
+        return new ParseTree(
+                TRUE,
+                sugarSubtrees
+        );
     }
 
 }

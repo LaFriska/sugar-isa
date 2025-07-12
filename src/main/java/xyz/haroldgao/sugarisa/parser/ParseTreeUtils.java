@@ -31,6 +31,8 @@ public class ParseTreeUtils {
             (p) -> p.fst().type()
                     == TokenType.KEYWORD && Register.containsToken(p.fst().value());
 
+    static Predicate<Pair<Token, ParseState>> TRUE = (p) -> true;
+
     static Predicate<Pair<Token, ParseState>> eq(@NotNull TokenType equivToken){
         return (p) -> p.fst().type() == equivToken;
     }

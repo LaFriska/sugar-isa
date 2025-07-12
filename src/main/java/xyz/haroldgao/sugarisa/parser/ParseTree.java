@@ -77,9 +77,12 @@ record ParseTree(
      * @throws ParseError if no subtrees accept the token and the error function returns a nonnull value.
      * @return the first accepted child, or null if none are accepted and no errors are thrown.
      * */
-    ParseTree run(Token token, ParseState parseState){
+    @Nullable ParseTree run(Token token, ParseState parseState){
         for (@NotNull ParseTree subtree : subtrees) {
-            if(subtree.test(token, parseState)) return subtree;
+            if(subtree.test(token, parseState)){
+                subtree.onAccept.accept(new Pair<>(token, parseState));
+                return subtree;
+            }
         }
         ParseError err =  errorFunction.apply(new Pair<>(token, parseState));
         if(err != null) throw err;
