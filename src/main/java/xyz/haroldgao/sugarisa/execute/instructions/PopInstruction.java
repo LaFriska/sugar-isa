@@ -28,4 +28,9 @@ public final class PopInstruction extends SimpleInstruction{
         ArchitecturalState.incrementPC(state);
     }
 
+    @Override
+    public int opcode() {
+        return 0b10001000000000000000000000000000;
+    }
+
 }

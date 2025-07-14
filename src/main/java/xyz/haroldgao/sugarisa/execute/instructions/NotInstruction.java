@@ -21,4 +21,9 @@ public final class NotInstruction extends SoloDataInstruction {
         return ~raValueOrImm16; //Set does not modify the data.
     }
 
+    @Override
+    public int opcode() {
+        return 0b01001000000000000000000000000000;
+    }
+
 }

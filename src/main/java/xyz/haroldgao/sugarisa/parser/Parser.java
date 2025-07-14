@@ -8,7 +8,6 @@ import xyz.haroldgao.sugarisa.tokeniser.TokenType;
 import xyz.haroldgao.sugarisa.tokeniser.Tokeniser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -98,7 +97,7 @@ public class Parser implements Iterator<Instruction> {
         }
         //current.isLeaf() is true. All leafs should have equivalence predicate on the terminator.
         //Here, the buffer being at the start of the next instruction is ensured.
-        return current.getInstruction(parseState);
+        return returnInstruction(current.getInstruction(parseState));
     }
 
     /**

@@ -21,4 +21,9 @@ public final class OrInstruction extends DuoDataInstruction {
         return raValue | rbValueOrImm16;
     }
 
+    @Override
+    public int opcode() {
+        return 0b00111000000000000000000000000000;
+    }
+
 }

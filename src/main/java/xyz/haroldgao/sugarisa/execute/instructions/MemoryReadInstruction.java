@@ -33,4 +33,10 @@ public final class MemoryReadInstruction extends MemoryInstruction{
         }
         ArchitecturalState.incrementPC(state);
     }
+
+    @Override
+    public int opcode() {
+        if(offsetType == OffsetType.STANDARD) return 0b01100000000000000000000000000000;
+        return 0b01110000000000000000000000000000;
+    }
 }

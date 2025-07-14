@@ -38,4 +38,25 @@ public final class GotoInstruction extends SimpleInstruction{
         }
     }
 
+    @Override
+    protected int opcode() {
+        switch (flag){
+            case N -> {
+                return 0b10011000000000000000000000000000;
+            }
+            case Z -> {
+                return 0b10100000000000000000000000000000;
+            }
+            case C -> {
+                return 0b10101000000000000000000000000000;
+            }
+            case V -> {
+                return 0b10110000000000000000000000000000;
+            }
+            default -> {
+                return 0b10010000000000000000000000000000;
+            }
+        }
+    }
+
 }

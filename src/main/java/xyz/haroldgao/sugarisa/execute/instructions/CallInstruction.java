@@ -41,4 +41,26 @@ public class CallInstruction extends SimpleInstruction {
             state.write(Register.PC, newpc);
         }
     }
+
+    @Override
+    protected int opcode() {
+        switch (flag){
+            case N -> {
+                return 0b10111000000000000000000000000000;
+            }
+            case Z -> {
+                return 0b11000000000000000000000000000000;
+            }
+            case C -> {
+                return 0b11001000000000000000000000000000;
+            }
+            case V -> {
+                return 0b11010000000000000000000000000000;
+            }
+            default -> {
+                return 0b11011000000000000000000000000000;
+            }
+        }
+    }
+
 }

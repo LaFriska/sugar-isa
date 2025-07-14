@@ -21,4 +21,9 @@ public final class LeftShiftInstruction extends DuoDataInstruction {
         return raValue << rbValueOrImm16;
     }
 
+    @Override
+    public int opcode() {
+        return 0b01010000000000000000000000000000;
+    }
+
 }

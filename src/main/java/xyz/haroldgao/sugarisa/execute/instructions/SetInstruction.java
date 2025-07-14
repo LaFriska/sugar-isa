@@ -20,4 +20,9 @@ public final class SetInstruction extends SoloDataInstruction {
     protected int operate(int raValueOrImm16) {
         return raValueOrImm16; //Set does not modify the data.
     }
+
+    @Override
+    public int opcode() {
+        return 0b00000000000000000000000000000000;
+    }
 }

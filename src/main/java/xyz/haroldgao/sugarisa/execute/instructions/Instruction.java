@@ -24,4 +24,11 @@ public abstract class Instruction {
      * */
     protected abstract void execute(ArchitecturalState state);
 
+    /**
+     * An opcode is the instruction-type identifier in the binary encoding of the instruction, for Sugar, it is
+     * represented in the five most significant bits. This method returns an integer where the five most significant
+     * bit is set to the correct opcode, while the other bits are set to 0.
+     * */
+    protected abstract int opcode();
+
 }

@@ -21,4 +21,10 @@ public final class DivInstruction extends DuoDataInstruction {
         return raValue / rbValueOrImm16;
     }
 
+
+    @Override
+    public int opcode() {
+        return 0b00100000000000000000000000000000;
+    }
+
 }

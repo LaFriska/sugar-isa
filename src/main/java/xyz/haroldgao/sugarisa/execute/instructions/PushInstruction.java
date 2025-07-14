@@ -2,6 +2,7 @@ package xyz.haroldgao.sugarisa.execute.instructions;
 
 import org.jetbrains.annotations.Nullable;
 import xyz.haroldgao.sugarisa.execute.ArchitecturalState;
+import xyz.haroldgao.sugarisa.execute.OffsetType;
 import xyz.haroldgao.sugarisa.execute.Register;
 
 public final class PushInstruction extends SimpleInstruction{
@@ -27,4 +28,10 @@ public final class PushInstruction extends SimpleInstruction{
         //Increments pc
         ArchitecturalState.incrementPC(state);
     }
+
+    @Override
+    public int opcode() {
+        return 0b10000000000000000000000000000000;
+    }
+
 }

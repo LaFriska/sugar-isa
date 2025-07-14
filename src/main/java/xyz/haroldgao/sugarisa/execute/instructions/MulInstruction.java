@@ -21,4 +21,9 @@ public final class MulInstruction extends DuoDataInstruction {
         return raValue * rbValueOrImm16;
     }
 
+    @Override
+    public int opcode() {
+        return 0b00011000000000000000000000000000;
+    }
+
 }
