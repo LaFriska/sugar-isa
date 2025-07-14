@@ -43,7 +43,7 @@ public abstract class SoloDataInstruction extends DataInstruction { //TODO chang
     }
 
     @Override
-    protected int getBinary() {
+    public int getBinary() {
         int f = ra == null ? 0b1 : 0b0;
         return opcode() | f << 26 | rd.id << 22 | (ra == null ? imm : ra.id);
     }

@@ -24,19 +24,19 @@ public abstract class Instruction {
      * Execution of the instruction given an architectural state. The execute method should be overridden to
      * modify the state accordingly.
      * */
-    protected abstract void execute(ArchitecturalState state);
+    public abstract void execute(ArchitecturalState state);
 
     /**
      * An opcode is the instruction-type identifier in the binary encoding of the instruction, for Sugar, it is
      * represented in the five most significant bits. This method returns an integer where the five most significant
      * bit is set to the correct opcode, while the other bits are set to 0.
      * */
-    protected abstract int opcode();
+    public abstract int opcode();
 
     /**
      * Returns the binary encoding of the instruction.
      * */
-    protected abstract int getBinary();
+    public abstract int getBinary();
 
     @Override
     public boolean equals(Object obj) {

@@ -39,7 +39,7 @@ public final class GotoInstruction extends SimpleInstruction{
     }
 
     @Override
-    protected int opcode() {
+    public int opcode() {
         switch (flag){
             case N -> {
                 return 0b10011000000000000000000000000000;

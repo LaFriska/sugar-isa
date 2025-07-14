@@ -39,7 +39,7 @@ abstract class MemoryInstruction extends DuoDataInstruction{
     }
 
     @Override
-    protected int getBinary() {
+    public int getBinary() {
         if(offsetType == OffsetType.POST){
             return super.getBinary() | 0b1 << 16;
         }

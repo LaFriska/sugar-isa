@@ -34,7 +34,7 @@ abstract class SimpleInstruction extends Instruction{
     }
 
     @Override
-    protected int getBinary() {
+    public int getBinary() {
         int f = rd == null ? 0b1 : 0b0;
         return opcode() | f << 26 | (rd == null ? imm26 : rd.id);
     }

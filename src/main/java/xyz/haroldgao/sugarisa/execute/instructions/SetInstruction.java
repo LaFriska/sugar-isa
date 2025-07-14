@@ -12,8 +12,8 @@ public final class SetInstruction extends SoloDataInstruction {
         super(rd, ra);
     }
 
-    public SetInstruction(@NotNull Register rd, int imm16) {
-        super(rd, imm16);
+    public SetInstruction(@NotNull Register rd, int imm22) {
+        super(rd, imm22);
     }
 
     @Override
