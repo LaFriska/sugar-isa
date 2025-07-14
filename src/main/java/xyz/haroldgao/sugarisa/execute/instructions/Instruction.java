@@ -4,7 +4,9 @@ import xyz.haroldgao.sugarisa.execute.ArchitecturalState;
 import xyz.haroldgao.sugarisa.execute.Register;
 
 /**
- * Represents an arbitrary instruction.
+ * Represents an arbitrary instruction. Many field methods each instruction should have are defined as abstract methods
+ * in this class. These include {@link Instruction#execute(ArchitecturalState)}, {@link Instruction#opcode()} and
+ * {@link Instruction#getBinary()}. Equivalence is delegated to binary encodings.
  * */
 public abstract class Instruction {
 
@@ -36,4 +38,14 @@ public abstract class Instruction {
      * */
     protected abstract int getBinary();
 
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof Instruction i)) return false;
+        return getBinary() == i.getBinary();
+    }
+
+    @Override
+    public int hashCode() {
+        return getBinary();
+    }
 }
