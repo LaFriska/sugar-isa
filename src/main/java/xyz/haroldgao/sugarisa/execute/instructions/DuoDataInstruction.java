@@ -74,7 +74,7 @@ abstract class DuoDataInstruction extends DataInstruction {
      * */
     protected int operateAndSetFlag(ArchitecturalState state){
         int input1 = state.read(ra);
-        int input2 = format == Format.I ? imm16 : state.read(rb);
+        int input2 = format == Format.I ? imm : state.read(rb);
         int result = operate(input1, input2);
         if(setFlag) state.flag(input1, input2, result, isArithmeticOperation);
         return result;
@@ -85,5 +85,12 @@ abstract class DuoDataInstruction extends DataInstruction {
     public void execute(ArchitecturalState state) {
         state.write(rd, operateAndSetFlag(state));
         ArchitecturalState.incrementPC(state);
+    }
+
+    @Override
+    protected int getBinary() {
+        int f = ra == null ? 0b1 : 0b0;
+        int sf = setFlag ? 0b1 : 0b0;
+        return opcode() | f << 26 | rd.id << 22 | sf << 21 | ra.id << 17 | (rb == null ? imm : ra.id);
     }
 }

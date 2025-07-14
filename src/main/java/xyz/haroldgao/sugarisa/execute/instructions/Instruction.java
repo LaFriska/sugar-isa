@@ -31,4 +31,9 @@ public abstract class Instruction {
      * */
     protected abstract int opcode();
 
+    /**
+     * Returns the binary encoding of the instruction.
+     * */
+    protected abstract int getBinary();
+
 }

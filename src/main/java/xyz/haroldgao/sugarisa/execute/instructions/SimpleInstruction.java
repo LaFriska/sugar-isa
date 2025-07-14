@@ -1,6 +1,7 @@
 package xyz.haroldgao.sugarisa.execute.instructions;
 
 import org.jetbrains.annotations.Nullable;
+import xyz.haroldgao.sugarisa.execute.OffsetType;
 import xyz.haroldgao.sugarisa.execute.Register;
 
 /**
@@ -30,6 +31,12 @@ abstract class SimpleInstruction extends Instruction{
         this.rd = rd;
         this.imm26 = 0;
         this.format = Format.R;
+    }
+
+    @Override
+    protected int getBinary() {
+        int f = rd == null ? 0b1 : 0b0;
+        return opcode() | f << 26 | (rd == null ? imm26 : rd.id);
     }
 
 }

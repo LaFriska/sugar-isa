@@ -38,4 +38,12 @@ abstract class MemoryInstruction extends DuoDataInstruction{
         return raValue + rbValueOrImm16;
     }
 
+    @Override
+    protected int getBinary() {
+        if(offsetType == OffsetType.POST){
+            return super.getBinary() | 0b1 << 16;
+        }
+        return super.getBinary();
+    }
+
 }

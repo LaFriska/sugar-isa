@@ -7,7 +7,7 @@ import xyz.haroldgao.sugarisa.execute.Register;
 /**
  * Represents a data instruction that accepts ONE argument, involving in rd, and ra/imm16.
  * */
-public abstract class SoloDataInstruction extends DataInstruction {
+public abstract class SoloDataInstruction extends DataInstruction { //TODO change imm16 to imm22
 
 
     /**
@@ -20,8 +20,8 @@ public abstract class SoloDataInstruction extends DataInstruction {
     /**
      * I-format constructor.
      * */
-    protected SoloDataInstruction(@NotNull Register rd, int imm16){
-        super(Format.I, imm16, rd, null, false);
+    protected SoloDataInstruction(@NotNull Register rd, int imm22){
+        super(Format.I, imm22, rd, null, false);
     }
 
     /**
@@ -29,7 +29,7 @@ public abstract class SoloDataInstruction extends DataInstruction {
      *
      * @return the resulting destination register value.
      * */
-    protected abstract int operate(int raValueOrImm16);
+    protected abstract int operate(int raValueOrImm22);
 
     /**
      * Execution delegates to the operate method, as specific instructions depends on concrete implementations only
@@ -37,8 +37,15 @@ public abstract class SoloDataInstruction extends DataInstruction {
      * */
     @Override
     final public void execute(ArchitecturalState state) {
-        state.write(rd, operate(format == Format.R ? state.read(ra) : imm16));
+        state.write(rd, operate(format == Format.R ? state.read(ra) : imm));
         //Increments pc
         ArchitecturalState.incrementPC(state);
     }
+
+    @Override
+    protected int getBinary() {
+        int f = ra == null ? 0b1 : 0b0;
+        return opcode() | f << 26 | rd.id << 22 | (ra == null ? imm : ra.id);
+    }
+
 }

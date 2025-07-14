@@ -39,4 +39,5 @@ public final class MemoryReadInstruction extends MemoryInstruction{
         if(offsetType == OffsetType.STANDARD) return 0b01100000000000000000000000000000;
         return 0b01110000000000000000000000000000;
     }
+
 }
