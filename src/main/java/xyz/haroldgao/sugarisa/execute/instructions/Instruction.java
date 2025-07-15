@@ -51,10 +51,12 @@ public abstract class Instruction {
     /**
      * A string representation in the form of "{mnemonic arg1, arg2, arg3}". For example,
      * {+ r1, r1, r3} is a valid string representation of the instruction "r1 += r3;".
+     * Instructions which sets the flag register will have the character "f" prepended
+     * to its string representation. For example, "f{| sp, lr, r11}" represents "sp = lr | r11 -> flag;".
      * */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("{");
+        StringBuilder sb = new StringBuilder(setFlag ? "f{" : "{");
         sb.append(getMnemonic().toLowerCase()).append(" ");
         String[] args = getArgs();
         for (int i = 0; i < args.length; i++) {
