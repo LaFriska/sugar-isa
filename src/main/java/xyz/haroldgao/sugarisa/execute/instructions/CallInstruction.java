@@ -44,22 +44,21 @@ public class CallInstruction extends SimpleInstruction {
 
     @Override
     public int opcode() {
+        if(flag == null) return 0b10111000000000000000000000000000;
         switch (flag){
             case N -> {
-                return 0b10111000000000000000000000000000;
-            }
-            case Z -> {
                 return 0b11000000000000000000000000000000;
             }
-            case C -> {
+            case Z -> {
                 return 0b11001000000000000000000000000000;
             }
-            case V -> {
+            case C -> {
                 return 0b11010000000000000000000000000000;
             }
             default -> {
                 return 0b11011000000000000000000000000000;
             }
+
         }
     }
 

@@ -40,6 +40,7 @@ public final class GotoInstruction extends SimpleInstruction{
 
     @Override
     public int opcode() {
+        if(flag == null) return 0b10010000000000000000000000000000;
         switch (flag){
             case N -> {
                 return 0b10011000000000000000000000000000;
@@ -50,11 +51,8 @@ public final class GotoInstruction extends SimpleInstruction{
             case C -> {
                 return 0b10101000000000000000000000000000;
             }
-            case V -> {
-                return 0b10110000000000000000000000000000;
-            }
             default -> {
-                return 0b10010000000000000000000000000000;
+                return 0b10110000000000000000000000000000;
             }
         }
     }
