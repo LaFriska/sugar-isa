@@ -89,8 +89,8 @@ abstract class DuoDataInstruction extends DataInstruction {
 
     @Override
     public int getBinary() {
-        int f = ra == null ? 0b1 : 0b0;
+        int f = rb == null ? 0b1 : 0b0;
         int sf = setFlag ? 0b1 : 0b0;
-        return opcode() | f << 26 | rd.id << 22 | sf << 21 | ra.id << 17 | (rb == null ? imm : ra.id);
+        return opcode() | f << 26 | rd.id << 22 | sf << 21 | ra.id << 17 | (rb == null ? imm : rb.id);
     }
 }
