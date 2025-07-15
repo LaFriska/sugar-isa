@@ -38,6 +38,34 @@ public abstract class Instruction {
      * */
     public abstract int getBinary();
 
+    /**
+     * Each instruction has a mnemonic, for the use of {@link Object#toString()}.
+     * */
+    protected abstract String getMnemonic();
+
+    /**
+     * Each instruction has a set of arguments, for the use of {@link Object#toString()}.
+     * */
+    protected abstract String[] getArgs();
+
+    /**
+     * A string representation in the form of "{mnemonic arg1, arg2, arg3}". For example,
+     * {+ r1, r1, r3} is a valid string representation of the instruction "r1 += r3;".
+     * */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("{");
+        sb.append(getMnemonic().toLowerCase()).append(" ");
+        String[] args = getArgs();
+        for (int i = 0; i < args.length; i++) {
+            sb.append(args[i]);
+            if(i != args.length - 1)
+                sb.append(", ");
+        }
+        sb.append("}");
+        return sb.toString();
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(!(obj instanceof Instruction i)) return false;

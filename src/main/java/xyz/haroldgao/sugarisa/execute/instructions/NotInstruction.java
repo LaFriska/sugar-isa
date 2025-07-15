@@ -26,4 +26,9 @@ public final class NotInstruction extends SoloDataInstruction {
         return 0b01001000000000000000000000000000;
     }
 
+    @Override
+    protected String getMnemonic() {
+        return "!";
+    }
+
 }

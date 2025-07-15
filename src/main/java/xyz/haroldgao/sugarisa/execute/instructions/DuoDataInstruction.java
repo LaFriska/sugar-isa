@@ -93,4 +93,11 @@ abstract class DuoDataInstruction extends DataInstruction {
         int sf = setFlag ? 0b1 : 0b0;
         return opcode() | f << 26 | rd.id << 22 | sf << 21 | ra.id << 17 | (rb == null ? imm : rb.id);
     }
+
+    @Override
+    protected String[] getArgs() {
+        return new String[]{
+          rd.token, ra.token, (rb == null ? String.valueOf(imm) : rb.token)
+        };
+    }
 }

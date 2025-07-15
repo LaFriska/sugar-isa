@@ -33,4 +33,9 @@ public final class PopInstruction extends SimpleInstruction{
         return 0b10001000000000000000000000000000;
     }
 
+    @Override
+    protected String getMnemonic() {
+        return "pop";
+    }
+
 }

@@ -34,4 +34,9 @@ public final class PushInstruction extends SimpleInstruction{
         return 0b10000000000000000000000000000000;
     }
 
+    @Override
+    protected String getMnemonic() {
+        return "push";
+    }
+
 }

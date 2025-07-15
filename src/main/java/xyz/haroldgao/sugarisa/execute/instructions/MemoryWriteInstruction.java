@@ -38,4 +38,10 @@ public final class MemoryWriteInstruction extends MemoryInstruction{
         if(offsetType == OffsetType.STANDARD) return 0b01101000000000000000000000000000;
         return 0b01111000000000000000000000000000;
     }
+
+    @Override
+    protected String getMnemonic() {
+        if(offsetType == OffsetType.STANDARD) return "write";
+        return offsetType.toString().toLowerCase() + "write";
+    }
 }

@@ -40,4 +40,10 @@ public final class MemoryReadInstruction extends MemoryInstruction{
         return 0b01110000000000000000000000000000;
     }
 
+    @Override
+    protected String getMnemonic() {
+        if(offsetType == OffsetType.STANDARD) return "read";
+        return offsetType.toString().toLowerCase() + "_read";
+    }
+
 }

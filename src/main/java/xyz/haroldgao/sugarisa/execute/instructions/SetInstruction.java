@@ -25,4 +25,9 @@ public final class SetInstruction extends SoloDataInstruction {
     public int opcode() {
         return 0b00000000000000000000000000000000;
     }
+
+    @Override
+    protected String getMnemonic() {
+        return "set";
+    }
 }

@@ -26,4 +26,9 @@ public final class AndInstruction extends DuoDataInstruction {
         return 0b00110000000000000000000000000000;
     }
 
+    @Override
+    protected String getMnemonic() {
+        return "&";
+    }
+
 }

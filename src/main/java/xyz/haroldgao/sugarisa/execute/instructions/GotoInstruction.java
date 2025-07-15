@@ -57,4 +57,10 @@ public final class GotoInstruction extends SimpleInstruction{
         }
     }
 
+    @Override
+    protected String getMnemonic() {
+        if(flag == null) return "goto";
+        return "goto" + flag.toString().toLowerCase();
+    }
+
 }

@@ -26,4 +26,9 @@ public final class RightShiftInstruction extends DuoDataInstruction {
         return 0b01011000000000000000000000000000;
     }
 
+    @Override
+    protected String getMnemonic() {
+        return ">>";
+    }
+
 }

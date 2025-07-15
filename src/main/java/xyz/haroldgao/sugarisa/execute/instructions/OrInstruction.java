@@ -26,4 +26,9 @@ public final class OrInstruction extends DuoDataInstruction {
         return 0b00111000000000000000000000000000;
     }
 
+    @Override
+    protected String getMnemonic() {
+        return "|";
+    }
+
 }

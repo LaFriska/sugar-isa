@@ -26,4 +26,9 @@ public final class XorInstruction extends DuoDataInstruction {
         return 0b01000000000000000000000000000000;
     }
 
+    @Override
+    protected String getMnemonic() {
+        return "^";
+    }
+
 }

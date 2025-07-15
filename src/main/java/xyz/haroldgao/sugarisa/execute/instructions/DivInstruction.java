@@ -27,4 +27,9 @@ public final class DivInstruction extends DuoDataInstruction {
         return 0b00100000000000000000000000000000;
     }
 
+    @Override
+    protected String getMnemonic() {
+        return "/";
+    }
+
 }

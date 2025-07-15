@@ -39,4 +39,10 @@ abstract class SimpleInstruction extends Instruction{
         return opcode() | f << 26 | (rd == null ? imm26 : rd.id);
     }
 
+    @Override
+    protected String[] getArgs() {
+        return new String[]{
+                (rd == null ? String.valueOf(imm26) : rd.token)
+        };
+    }
 }

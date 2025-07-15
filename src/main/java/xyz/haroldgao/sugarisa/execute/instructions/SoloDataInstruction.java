@@ -48,4 +48,10 @@ public abstract class SoloDataInstruction extends DataInstruction { //TODO chang
         return opcode() | f << 26 | rd.id << 22 | (ra == null ? imm : ra.id);
     }
 
+    @Override
+    protected String[] getArgs() {
+        return new String[]{
+                rd.token, (ra == null ? String.valueOf(imm) : ra.token)
+        };
+    }
 }

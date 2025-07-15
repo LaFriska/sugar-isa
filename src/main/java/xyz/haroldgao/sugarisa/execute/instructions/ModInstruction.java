@@ -27,4 +27,9 @@ public final class ModInstruction extends DuoDataInstruction {
         return 0b00101000000000000000000000000000;
     }
 
+    @Override
+    protected String getMnemonic() {
+        return "%";
+    }
+
 }

@@ -62,4 +62,10 @@ public class CallInstruction extends SimpleInstruction {
         }
     }
 
+    @Override
+    protected String getMnemonic() {
+        if(flag == null) return "call";
+        return "call" + flag.toString().toLowerCase();
+    }
+
 }
