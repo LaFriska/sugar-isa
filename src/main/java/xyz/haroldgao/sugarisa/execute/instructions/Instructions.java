@@ -12,4 +12,6 @@ public class Instructions {
      * */
     public static final Instruction NULL = new SetInstruction(Register.R0, Register.R0);
 
+    public static final Instruction RETURN = new GotoInstruction(Register.LR);
+
 }

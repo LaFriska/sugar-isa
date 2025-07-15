@@ -37,4 +37,8 @@ public class ParseTreeUtils {
         return (p) -> p.fst().type() == equivToken;
     }
 
+    static Predicate<Pair<Token, ParseState>> isSpecificKeyword(@NotNull String word){
+        return (p) -> p.fst().type() == TokenType.KEYWORD && word.equals(p.fst().value());
+    }
+
 }

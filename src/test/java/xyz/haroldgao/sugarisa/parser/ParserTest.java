@@ -11,6 +11,26 @@ import xyz.haroldgao.sugarisa.execute.instructions.Instruction;
 public class ParserTest {
 
     /**
+     * Tests the "return;" semantic.
+     * */
+    @Test
+    public void testReturn(){
+        testInstructions("return;", "{goto lr}");
+        testInstructions("return; return;return ;", "{goto lr}","{goto lr}","{goto lr}");
+    }
+
+
+    /**
+     * Tests null instruction
+     * */
+    @Test
+    public void testNull(){
+        testInstructions(";", "{set r0, r0}");
+        testInstructions("; ;;", "{set r0, r0}","{set r0, r0}","{set r0, r0}");
+    }
+
+
+    /**
      * Tests notational sugar for the not instruction.
      * */
     @Test
@@ -28,6 +48,22 @@ public class ParserTest {
                 "{! sp, sp}",
                 "{! lr, lr}",
                 "{! r4, r4}"
+        );
+    }
+
+    /**
+     * Integration of simple subtrees.
+     * */
+    @Test
+    public void integrateSimpleSubtrees(){
+        testInstructions("!fl;;;",
+                "{! fl, fl}","{set r0, r0}","{set r0, r0}"
+        );
+        testInstructions("!sp;;!r0;;;;",
+                "{! sp, sp}","{set r0, r0}","{! r0, r0}","{set r0, r0}","{set r0, r0}","{set r0, r0}"
+        );
+        testInstructions("!r3;;return;return;;!       lr ;",
+                "{! r3, r3}","{set r0, r0}","{goto lr}","{goto lr}","{set r0, r0}","{! lr, lr}"
         );
     }
 
