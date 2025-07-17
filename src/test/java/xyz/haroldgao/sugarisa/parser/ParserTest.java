@@ -11,6 +11,18 @@ import xyz.haroldgao.sugarisa.execute.instructions.Instruction;
 public class ParserTest {
 
     /**
+     * Tests the "compare ra, rb;" semantic.
+     * */
+    @Test
+    public void testCompare(){
+        testInstructions("compare r1, sp;", "f{- r0, r1, sp}");
+        testInstructions("compare r1, sp;compare r2,r2;  compare  lr, r11;",
+                "f{- r0, r1, sp}",
+                "f{- r0, r2, r2}",
+                "f{- r0, lr, r11}");
+    }
+
+    /**
      * Tests the "return;" semantic.
      * */
     @Test
@@ -62,8 +74,16 @@ public class ParserTest {
         testInstructions("!sp;;!r0;;;;",
                 "{! sp, sp}","{set r0, r0}","{! r0, r0}","{set r0, r0}","{set r0, r0}","{set r0, r0}"
         );
-        testInstructions("!r3;;return;return;;!       lr ;",
-                "{! r3, r3}","{set r0, r0}","{goto lr}","{goto lr}","{set r0, r0}","{! lr, lr}"
+        testInstructions("!r3;;return;return;;!       lr ;compare r1, r2;; return;",
+                "{! r3, r3}",
+                "{set r0, r0}",
+                "{goto lr}",
+                "{goto lr}",
+                "{set r0, r0}",
+                "{! lr, lr}",
+                "f{- r0, r1, r2}",
+                "{set r0, r0}",
+                "{goto lr}"
         );
     }
 

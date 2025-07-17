@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static xyz.haroldgao.sugarisa.execute.Register.*;
 import static xyz.haroldgao.sugarisa.parser.ParseVariable.*;
 
 public class ParseTreeUtils {
@@ -23,6 +24,14 @@ public class ParseTreeUtils {
 
     static Consumer<Pair<Token, ParseState>> SAVE_RD = (p) -> {
         p.snd().put(RD, Register.getFromToken(p.fst().value()));
+    };
+
+    static Consumer<Pair<Token, ParseState>> SAVE_RA = (p) -> {
+        p.snd().put(RA, Register.getFromToken(p.fst().value()));
+    };
+
+    static Consumer<Pair<Token, ParseState>> SAVE_RB = (p) -> {
+        p.snd().put(RB, Register.getFromToken(p.fst().value()));
     };
 
     //-----------------------------------PREDICATES----------------------------------
