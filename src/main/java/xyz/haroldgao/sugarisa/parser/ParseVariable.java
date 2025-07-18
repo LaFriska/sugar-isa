@@ -9,5 +9,6 @@ enum ParseVariable {
     RD,
     RB,
     SF,
+    IMM
 
 }

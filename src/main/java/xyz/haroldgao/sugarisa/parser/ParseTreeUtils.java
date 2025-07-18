@@ -34,6 +34,18 @@ public class ParseTreeUtils {
         p.snd().put(RB, Register.getFromToken(p.fst().value()));
     };
 
+    /**
+     * Assumes that the token value can be safely parsed into an immediate format.
+     * */
+    static Consumer<Pair<Token, ParseState>> SAVE_IMMEDIATE = p -> {
+        assert p.fst().value() != null;
+        p.snd().put(IMM, Integer.parseUnsignedInt(p.fst().value(), switch (p.fst().type()){
+            case IMM_BIN -> 10;
+            case IMM_HEX -> 6;
+            default -> 2;
+        }));
+    };
+
     //-----------------------------------PREDICATES----------------------------------
 
     static Predicate<Pair<Token, ParseState>> IS_REGISTER =
@@ -48,6 +60,31 @@ public class ParseTreeUtils {
 
     static Predicate<Pair<Token, ParseState>> isSpecificKeyword(@NotNull String word){
         return (p) -> p.fst().type() == TokenType.KEYWORD && word.equals(p.fst().value());
+    }
+
+    /**
+     * Checks if the input token is an unsigned immediate.
+     * */
+    static Predicate<Pair<Token, ParseState>> isUnsignedImmediate(int bitsize){
+        return p -> {
+
+            //Must be an immediate type.
+            if(p.fst().type() != TokenType.IMM_BIN && p.fst().type() != TokenType.IMM_DEC && p.fst().type() != TokenType.IMM_HEX) return false;
+
+            try {
+                int immediate = switch (p.fst().type()) {
+                    case IMM_BIN -> Integer.parseUnsignedInt(p.fst().value(), 2);
+                    case IMM_HEX -> Integer.parseUnsignedInt(p.fst().value(), 6);
+                    default -> Integer.parseUnsignedInt(p.fst().value(), 10);
+                };
+                //Must be capped by bitsize.
+                if(immediate >> bitsize != 0) return false;
+
+                return true;
+            } catch (NullPointerException e){
+                throw new RuntimeException("This should not happen. A value of an immediate token is null.");
+            }
+        };
     }
 
 }

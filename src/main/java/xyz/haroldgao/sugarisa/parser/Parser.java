@@ -153,6 +153,7 @@ public class Parser implements Iterator<Instruction> {
         return in;
     }
 
+
     /**
      * Parses an immediate value.
      * @param imm String representation of the immediate.
@@ -160,6 +161,7 @@ public class Parser implements Iterator<Instruction> {
      * @param radix the power base of the string representation of the immediate.
      * @throws OversizedImmediateError if the resulting immediate is too large.
      * */
+    @Deprecated
     protected int parseImmediate(@NotNull String imm, int maxbits, int radix) {
 
         int value;
