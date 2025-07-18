@@ -11,10 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Parser for sugar assembly. Takes a {@link Tokeniser} as input and returns a series of
- * {@link Instruction}s.
+ * Parser for a single instruction. However, a static method is provided to parse an assembly code in general.
  * */
-public class Parser {
+public record Parser(@NotNull String assembly, List<Token> tokens, @NotNull HashMap<String, Integer> linker, int instructionIndex) {
+
 
     /**
      * Parses assembly code into a series of instructions.
@@ -35,16 +35,28 @@ public class Parser {
            }
            partition.add(current);
        }
-       HashMap<String, Integer> linker = Linker.link(partition);
+       HashMap<String, Integer> linker = Linker.link(assembly, partition);
        ArrayList<Instruction> result = new ArrayList<>();
-        for (List<Token> tokens : partition) {
-            result.add(parseSingleInstruction(tokens, linker));
+        for (int i = 0; i < partition.size(); i++) {
+            Parser p = new Parser(assembly, partition.get(i), linker, i);
+            result.add(p.parseInstruction());
         }
+
         return result;
     }
 
-    private static Instruction parseSingleInstruction(@NotNull List<Token> tokens, @NotNull HashMap<String, Integer> linker){
-        return null; //TODO
+    private Instruction parseInstruction(){
+        ParseState parseState = new ParseState(linker);
+        ParseTree current = SugarParseTree.get();
+        int counter = 0;
+        while(!current.isLeaf()){
+            if(counter >= tokens.size()) throw new UnfinishedInstructionException(assembly, instructionIndex); //Expect tokens but there are none left.
+            Token t = tokens.get(counter);
+            current = current.run(t, parseState);
+            if(current == null) throw new UnexpectedTokenError(assembly, instructionIndex, t);
+            counter++;
+        }
+        return current.getInstruction(parseState);
     }
 
 }

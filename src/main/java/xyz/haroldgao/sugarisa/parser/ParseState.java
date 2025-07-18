@@ -14,9 +14,15 @@ class ParseState {
     /**
      * A map from labels to memory addresses for the program counter.
      * */
-    private @NotNull final HashMap<String, Integer> linker = new HashMap<>();
+    private @NotNull final HashMap<String, Integer> linker;
 
     private final HashMap<ParseVariable, Object> map = new HashMap<>();
+
+
+    ParseState(@NotNull HashMap<String, Integer> linker){
+        this.linker = linker;
+    }
+
 
     protected void put(ParseVariable variable, Object value){
         map.put(variable, value);
