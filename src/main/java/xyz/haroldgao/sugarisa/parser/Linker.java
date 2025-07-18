@@ -18,10 +18,10 @@ class Linker {
 
             //Label case
             String label = tok.value();
-            if(result.keySet().contains(label)) throw new DuplicateLabelException(assembly, i, label);
+            if(result.keySet().contains(label)) throw new DuplicateLabelError(assembly, i, label);
             if(current.size() <= 1) throw new RuntimeException("This should not happen.");
             tok = current.get(1);
-            if(tok.type() != TokenType.COLON) throw new UnclosedLabelException(assembly, i, label);
+            if(tok.type() != TokenType.COLON) throw new UnclosedLabelError(assembly, i, label);
             //Label then colon
             current.remove(0);
             current.remove(1);

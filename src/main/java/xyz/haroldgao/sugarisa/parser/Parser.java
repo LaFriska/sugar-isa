@@ -50,7 +50,7 @@ public record Parser(@NotNull String assembly, List<Token> tokens, @NotNull Hash
         ParseTree current = SugarParseTree.get();
         int counter = 0;
         while(!current.isLeaf()){
-            if(counter >= tokens.size()) throw new UnfinishedInstructionException(assembly, instructionIndex); //Expect tokens but there are none left.
+            if(counter >= tokens.size()) throw new UnfinishedInstructionError(assembly, instructionIndex); //Expect tokens but there are none left.
             Token t = tokens.get(counter);
             current = current.run(t, parseState);
             if(current == null) throw new UnexpectedTokenError(assembly, instructionIndex, t);

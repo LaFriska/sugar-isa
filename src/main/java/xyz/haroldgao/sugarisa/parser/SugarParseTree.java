@@ -16,8 +16,6 @@ import static xyz.haroldgao.sugarisa.tokeniser.TokenType.*;
  * */
 class SugarParseTree {
 
-
-
     static ParseTree COMPARE = new ParseTree(isSpecificKeyword("compare"),
             ra(comma(rb(term(
                     p -> new SubInstruction(R0, (Register) p.get(RA), (Register)  p.get(RB), true)
@@ -46,6 +44,7 @@ class SugarParseTree {
         Register rd = (Register) p.get(RD);
         return new NotInstruction(rd, rd);
     })));
+
 
     /**
      * Gets the parse tree.
@@ -113,6 +112,14 @@ class SugarParseTree {
                 TRIVIAL_ON_ACCEPT,
                 returnInstruction,
                 TRIVIAL_ERROR
+        );
+    }
+
+    static ParseTree label(ParseTree... children){
+        return new ParseTree( IS_LABEL, SAVE_LABEL, TRIVIAL_RETURN_INST, p -> {
+            if(p.fst().type() == LABEL) return new UnexpectedLabelError("", 0, p.fst().value()); //TODO pass down assembyl and line num.
+            return null;
+        }, children
         );
     }
 

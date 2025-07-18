@@ -1,8 +1,8 @@
 package xyz.haroldgao.sugarisa.parser;
 
-public class UnclosedLabelException extends ParseError {
+public class UnclosedLabelError extends ParseError {
 
-  protected UnclosedLabelException(String assembly, int line, String label) {
+  protected UnclosedLabelError(String assembly, int line, String label) {
     super(assembly, line, "The label " + "\"" + label + "\" does not end in a colon.");
   }
 }
