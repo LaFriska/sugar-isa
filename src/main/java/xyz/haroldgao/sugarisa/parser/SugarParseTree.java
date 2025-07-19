@@ -2,7 +2,6 @@ package xyz.haroldgao.sugarisa.parser;
 
 import xyz.haroldgao.sugarisa.execute.Register;
 import xyz.haroldgao.sugarisa.execute.instructions.*;
-import xyz.haroldgao.sugarisa.tokeniser.TokenType;
 
 import java.util.function.Function;
 
