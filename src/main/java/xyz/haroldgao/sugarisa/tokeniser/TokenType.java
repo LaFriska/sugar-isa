@@ -70,4 +70,11 @@ public enum TokenType {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Returns whether the given type is an immediate.
+     * */
+    public static boolean isImmediate(TokenType type){
+        return type == IMM_BIN || type == IMM_HEX || type == IMM_DEC;
+    }
+
 }

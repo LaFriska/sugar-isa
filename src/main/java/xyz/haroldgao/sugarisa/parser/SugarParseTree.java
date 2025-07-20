@@ -16,8 +16,6 @@ import static xyz.haroldgao.sugarisa.tokeniser.TokenType.*;
  * */
 class SugarParseTree {
 
-
-
     static ParseTree COMPARE = new ParseTree(isSpecificKeyword("compare"),
             ra(comma(rb(term(
                     p -> new SubInstruction(R0, (Register) p.get(RA), (Register)  p.get(RB), true)
@@ -47,6 +45,22 @@ class SugarParseTree {
         return new NotInstruction(rd, rd);
     })));
 
+
+    static ParseTree PUSH = keyword( //TODO add exception handling for when labels point to oversized PC address.
+            "push",
+            label(term(p -> new PushInstruction((Integer) p.get(IMM)))),
+            rd(term(p -> new PushInstruction((Register) p.get(RD)))),
+            imm26(term(p -> new PushInstruction((Integer) p.get(IMM))))
+    );
+
+    static ParseTree POP = keyword( //TODO add exception handling for when labels point to oversized PC address.
+            "pop",
+            label(term(p -> new PopInstruction((Integer) p.get(IMM)))),
+            rd(term(p -> new PopInstruction((Register) p.get(RD)))),
+            imm26(term(p -> new PopInstruction((Integer) p.get(IMM))))
+    );
+
+
     /**
      * Gets the parse tree.
      * */
@@ -56,7 +70,9 @@ class SugarParseTree {
                 START_NOT,
                 NULL_INSTRUCTION,
                 RETURN_INSTRUCTION,
-                COMPARE
+                COMPARE,
+                PUSH,
+                POP
         };
 
         return new ParseTree(
@@ -113,6 +129,26 @@ class SugarParseTree {
                 TRIVIAL_ON_ACCEPT,
                 returnInstruction,
                 TRIVIAL_ERROR
+        );
+    }
+
+    static ParseTree label(ParseTree... children){
+        return new ParseTree(IS_LABEL, SAVE_LABEL, TRIVIAL_RETURN_INST, p -> {
+            if(p.fst().type() == LABEL) return new UnexpectedLabelError(p.fst().errorInfo(), p.fst().value());
+            return null;
+        }, children
+        );
+    }
+
+    static ParseTree imm26(ParseTree... children){
+        return imm(26, children);
+    }
+
+    private static ParseTree imm(int size, ParseTree... children){
+        return new ParseTree(isUnsignedImmediate(size), SAVE_IMMEDIATE, TRIVIAL_RETURN_INST, p -> {
+            if(TokenType.isImmediate(p.fst().type())) return new OversizedImmediateError(p.fst().errorInfo(), p.fst().value(), 26);
+            return null;
+        }, children
         );
     }
 

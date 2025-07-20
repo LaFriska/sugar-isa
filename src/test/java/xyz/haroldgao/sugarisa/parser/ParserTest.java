@@ -11,6 +11,23 @@ import xyz.haroldgao.sugarisa.execute.instructions.Instruction;
 public class ParserTest {
 
     /**
+     * Tests stack operations.
+     * */
+    @Test
+    public void testPushPop(){
+        testInstructions("push r3;", "{push r3}");
+        testInstructions("push 0xabcdef;", "{push 11259375}");
+        testInstructions("push 0b1111000010100111;", "{push 61607}");
+        testInstructions("push 12345;", "{push 12345}");
+
+        testInstructions("pop lr;", "{pop lr}");
+        testInstructions("pop 0xabcdef;", "{pop 11259375}");
+        testInstructions("pop 0b1111000010100111;", "{pop 61607}");
+        testInstructions("pop 12345;", "{pop 12345}");
+    }
+
+
+    /**
      * Tests the "compare ra, rb;" semantic.
      * */
     @Test
@@ -85,6 +102,34 @@ public class ParserTest {
                 "{set r0, r0}",
                 "{goto lr}"
         );
+    }
+
+    /**
+     * Tests that linker and branches are correctly allocated.
+     * */
+    @Test
+    public void testLinker(){
+        testInstructions("""
+                MAIN:
+                    !r3;
+                    !r4;
+                BRANCH_1:
+                    push 1;
+                    push r1;
+                BRANCH_2:
+                    ;
+                """, "{! r3, r3}", "{! r4, r4}", "{push 1}", "{push r1}", "{set r0, r0}");
+
+        testInstructions("""
+                MAIN:
+                    !r3;
+                    push BRANCH;
+                    ;
+                BRANCH:
+                    ;
+                    ;
+                    pop MAIN;
+                """, "{! r3, r3}", "{push 12}", "{set r0, r0}", "{set r0, r0}", "{set r0, r0}", "{pop 0}");
     }
 
     private void testInstructions(String assembly, String... expectedStrings){

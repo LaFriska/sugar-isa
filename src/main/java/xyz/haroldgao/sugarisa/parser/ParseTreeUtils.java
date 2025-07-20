@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 
 import static xyz.haroldgao.sugarisa.execute.Register.*;
 import static xyz.haroldgao.sugarisa.parser.ParseVariable.*;
+import static xyz.haroldgao.sugarisa.tokeniser.TokenType.LABEL;
 
 public class ParseTreeUtils {
 
@@ -22,17 +23,13 @@ public class ParseTreeUtils {
 
     //-----------------------------------CONSUMERS-----------------------------------
 
-    static Consumer<Pair<Token, ParseState>> SAVE_RD = (p) -> {
-        p.snd().put(RD, Register.getFromToken(p.fst().value()));
-    };
+    static Consumer<Pair<Token, ParseState>> SAVE_RD = (p) -> p.snd().put(RD, Register.getFromToken(p.fst().value()));
 
-    static Consumer<Pair<Token, ParseState>> SAVE_RA = (p) -> {
-        p.snd().put(RA, Register.getFromToken(p.fst().value()));
-    };
+    static Consumer<Pair<Token, ParseState>> SAVE_LABEL = (p) -> p.snd().put(IMM, p.snd().getLink(p.fst().value()));
 
-    static Consumer<Pair<Token, ParseState>> SAVE_RB = (p) -> {
-        p.snd().put(RB, Register.getFromToken(p.fst().value()));
-    };
+    static Consumer<Pair<Token, ParseState>> SAVE_RA = (p) -> p.snd().put(RA, Register.getFromToken(p.fst().value()));
+
+    static Consumer<Pair<Token, ParseState>> SAVE_RB = (p) -> p.snd().put(RB, Register.getFromToken(p.fst().value()));
 
     /**
      * Assumes that the token value can be safely parsed into an immediate format.
@@ -40,9 +37,9 @@ public class ParseTreeUtils {
     static Consumer<Pair<Token, ParseState>> SAVE_IMMEDIATE = p -> {
         assert p.fst().value() != null;
         p.snd().put(IMM, Integer.parseUnsignedInt(p.fst().value(), switch (p.fst().type()){
-            case IMM_BIN -> 10;
-            case IMM_HEX -> 6;
-            default -> 2;
+            case IMM_BIN -> 2;
+            case IMM_HEX -> 16;
+            default -> 10;
         }));
     };
 
@@ -62,6 +59,8 @@ public class ParseTreeUtils {
         return (p) -> p.fst().type() == TokenType.KEYWORD && word.equals(p.fst().value());
     }
 
+    static Predicate<Pair<Token, ParseState>> IS_LABEL = p -> p.fst().type() == LABEL && p.snd().hasLabel(p.fst().value());
+
     /**
      * Checks if the input token is an unsigned immediate.
      * */
@@ -71,20 +70,20 @@ public class ParseTreeUtils {
             //Must be an immediate type.
             if(p.fst().type() != TokenType.IMM_BIN && p.fst().type() != TokenType.IMM_DEC && p.fst().type() != TokenType.IMM_HEX) return false;
 
-            try {
-                int immediate = switch (p.fst().type()) {
-                    case IMM_BIN -> Integer.parseUnsignedInt(p.fst().value(), 2);
-                    case IMM_HEX -> Integer.parseUnsignedInt(p.fst().value(), 6);
-                    default -> Integer.parseUnsignedInt(p.fst().value(), 10);
-                };
-                //Must be capped by bitsize.
-                if(immediate >> bitsize != 0) return false;
+            if(p.fst().value() == null) return false;
 
-                return true;
-            } catch (NullPointerException e){
-                throw new RuntimeException("This should not happen. A value of an immediate token is null.");
-            }
+            int immediate = switch (p.fst().type()) {
+                case IMM_BIN -> Integer.parseUnsignedInt(p.fst().value(), 2);
+                case IMM_HEX -> Integer.parseUnsignedInt(p.fst().value(), 16);
+                default -> Integer.parseUnsignedInt(p.fst().value(), 10);
+            };
+            //Must be capped by bitsize.
+            if(immediate >> bitsize != 0) return false;
+
+            return true;
         };
     }
+
+    private ParseTreeUtils(){}
 
 }
