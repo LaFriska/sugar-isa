@@ -23,7 +23,7 @@ public record Parser(@NotNull String assembly, List<Token> tokens, @NotNull Hash
      * */
     public static List<Instruction> parse(@NotNull String assembly){
         List<List<Token>> partition = getTokensPartition(assembly);
-        HashMap<String, Integer> linker = Linker.link(assembly, partition);
+        HashMap<String, Integer> linker = Linker.link(partition);
        ArrayList<Instruction> result = new ArrayList<>();
         for (List<Token> tokenList : partition) {
             Parser p = new Parser(assembly, tokenList, linker);
