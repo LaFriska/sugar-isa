@@ -1,7 +1,11 @@
 package xyz.haroldgao.sugarisa.parser;
 
-abstract class ParseError extends RuntimeException{
-    protected ParseError(String assembly, int line, String message){
-        super("An error occurred parsing Sugar assembly code. The error occurred in instruction number " + line + "." + message + "\n\n" + "Assembly Code:" + "\n" + assembly);
+import org.jetbrains.annotations.Nullable;
+import xyz.haroldgao.sugarisa.ErrorInfo;
+
+abstract class ParseError extends RuntimeException {
+    protected ParseError(@Nullable ErrorInfo errorInfo, String message) {
+        super(errorInfo != null ? "An error occurred while parsing Sugar assembly code in " + errorInfo.pline() + ":" + errorInfo.pchar() + "." + message + "\n\n" + "Assembly Code:" + "\n" + errorInfo.assembly()
+                                : "An error occurred while parsing Sugar assembly code. " + message);
     }
 }

@@ -116,7 +116,7 @@ class SugarParseTree {
 
     static ParseTree label(ParseTree... children){
         return new ParseTree( IS_LABEL, SAVE_LABEL, TRIVIAL_RETURN_INST, p -> {
-            if(p.fst().type() == LABEL) return new UnexpectedLabelError("", 0, p.fst().value()); //TODO pass down assembyl and line num.
+            if(p.fst().type() == LABEL) return new UnexpectedLabelError(p.fst().errorInfo(), p.fst().value()); //TODO pass down assembyl and line num.
             return null;
         }, children
         );
