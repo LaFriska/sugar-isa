@@ -59,6 +59,8 @@ public class ParseTreeUtils {
         return (p) -> p.fst().type() == TokenType.KEYWORD && word.equals(p.fst().value());
     }
 
+
+
     static Predicate<Pair<Token, ParseState>> IS_LABEL = p -> p.fst().type() == LABEL && p.snd().hasLabel(p.fst().value());
 
     /**

@@ -1,5 +1,6 @@
 package xyz.haroldgao.sugarisa.parser;
 
+import xyz.haroldgao.sugarisa.execute.OffsetType;
 import xyz.haroldgao.sugarisa.execute.Register;
 import xyz.haroldgao.sugarisa.execute.instructions.*;
 import xyz.haroldgao.sugarisa.tokeniser.TokenType;
@@ -11,10 +12,13 @@ import static xyz.haroldgao.sugarisa.parser.ParseTreeUtils.*;
 import static xyz.haroldgao.sugarisa.parser.ParseVariable.*;
 import static xyz.haroldgao.sugarisa.tokeniser.TokenType.*;
 
+
 /**
  * Here we place the messy construction of the parse tree in this class.
  * */
 class SugarParseTree {
+
+    //SIMPLE SUBTREES
 
     static ParseTree COMPARE = new ParseTree(isSpecificKeyword("compare"),
             ra(comma(rb(term(
@@ -60,6 +64,47 @@ class SugarParseTree {
             imm26(term(p -> new PopInstruction((Integer) p.get(IMM))))
     );
 
+    //SUBTREE STARTING WITH "["
+
+    static ParseTree OFFSET_READ_SECOND_HALF = rbrac(
+    equal(
+        ra(
+            term(p -> {
+                if (p.get(RB) == null)
+                    return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Integer) p.get(IMM), false, OffsetType.STANDARD);
+                return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) p.get(RB), false, OffsetType.STANDARD);
+            }),
+            chain(
+                keyword("flag",
+                    term(p -> {
+                        if (p.get(RB) == null)
+                            return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Integer) p.get(IMM), true, OffsetType.STANDARD);
+                        return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) p.get(RB), true, OffsetType.STANDARD);
+                        })
+                    )
+                )
+            )
+        )
+    );
+
+
+    static ParseTree OFFSET_READ = lbrac(
+    rd(
+        add(
+            value(true, 15,
+                OFFSET_READ_SECOND_HALF
+            )
+        ),
+        sub(
+            imm15(
+                OFFSET_READ_SECOND_HALF
+            )
+        )
+    ));
+
+
+
+
 
     /**
      * Gets the parse tree.
@@ -72,7 +117,8 @@ class SugarParseTree {
                 RETURN_INSTRUCTION,
                 COMPARE,
                 PUSH,
-                POP
+                POP,
+                OFFSET_READ
         };
 
         return new ParseTree(
@@ -105,14 +151,66 @@ class SugarParseTree {
         );
     }
 
-    static ParseTree comma(ParseTree... children){
-        return new ParseTree(eq(COMMA),
+    /**
+     * @param rb true then save to rb otherwise save to ra.
+     * */
+    static ParseTree value(boolean rb, int immediateSize, ParseTree... children){
+        return new ParseTree(
+                p -> (TokenType.isImmediate(p.fst().type()) && isUnsignedImmediate(immediateSize).test(p) ) || IS_REGISTER.test(p),
+                p -> {
+                    if(TokenType.isImmediate(p.fst().type())){
+                        //assume correct size
+                        SAVE_IMMEDIATE.accept(p);
+                    }else if(rb){
+                        SAVE_RB.accept(p);
+                    }else{
+                        SAVE_RA.accept(p);
+                    }
+                },
+                TRIVIAL_RETURN_INST,
+                p -> {
+                    if(!isUnsignedImmediate(immediateSize).test(p))
+                        return new OversizedImmediateError(p.fst().errorInfo(), p.fst().value(), immediateSize);
+                    return null;
+                },
                 children
         );
     }
 
+    static ParseTree comma(ParseTree... children){
+        return specific(COMMA, children);
+    }
+
     static ParseTree not(ParseTree... children){
-        return new ParseTree(eq(NOT),
+        return specific(NOT, children);
+    }
+
+    static ParseTree lbrac(ParseTree... children){
+        return specific(LBRAC, children);
+    }
+
+    static ParseTree rbrac(ParseTree... children){
+        return specific(RBRAC, children);
+    }
+
+    static ParseTree add(ParseTree... children){
+        return specific(ADD, children);
+    }
+
+    static ParseTree sub(ParseTree... children){
+        return specific(SUB, children);
+    }
+
+    static ParseTree equal(ParseTree... children){
+        return specific(EQ, children);
+    }
+
+    static ParseTree chain(ParseTree... children){
+        return specific(CHAIN, children);
+    }
+
+    private static ParseTree specific(TokenType type, ParseTree... children){
+        return new ParseTree(eq(type),
                 children
         );
     }
@@ -143,6 +241,12 @@ class SugarParseTree {
     static ParseTree imm26(ParseTree... children){
         return imm(26, children);
     }
+
+    static ParseTree imm15(ParseTree... children){
+        return imm(15, children);
+    }
+
+
 
     private static ParseTree imm(int size, ParseTree... children){
         return new ParseTree(isUnsignedImmediate(size), SAVE_IMMEDIATE, TRIVIAL_RETURN_INST, p -> {
