@@ -1,9 +1,11 @@
 package xyz.haroldgao.sugarisa.parser;
 
+import xyz.haroldgao.sugarisa.ErrorInfo;
+
 public class OversizedImmediateError extends ParseError {
 
-    protected OversizedImmediateError(Parser p, String imm, int bits) {
-        super(p, "The following immediate value is too large: \"" + imm + "\". " +
+    protected OversizedImmediateError(ErrorInfo errorInfo, String imm, int bits) {
+        super(errorInfo, "The following immediate value is too large: \"" + imm + "\". " +
                 "This immediate should be a " + bits + "-bit value.");
     }
 }

@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 
 import static xyz.haroldgao.sugarisa.execute.Register.*;
 import static xyz.haroldgao.sugarisa.parser.ParseVariable.*;
+import static xyz.haroldgao.sugarisa.tokeniser.TokenType.LABEL;
 
 public class ParseTreeUtils {
 
@@ -22,17 +23,13 @@ public class ParseTreeUtils {
 
     //-----------------------------------CONSUMERS-----------------------------------
 
-    static Consumer<Pair<Token, ParseState>> SAVE_RD = (p) -> {
-        p.snd().put(RD, Register.getFromToken(p.fst().value()));
-    };
+    static Consumer<Pair<Token, ParseState>> SAVE_RD = (p) -> p.snd().put(RD, Register.getFromToken(p.fst().value()));
 
-    static Consumer<Pair<Token, ParseState>> SAVE_RA = (p) -> {
-        p.snd().put(RA, Register.getFromToken(p.fst().value()));
-    };
+    static Consumer<Pair<Token, ParseState>> SAVE_LABEL = (p) -> p.snd().put(IMM, p.snd().getLink(p.fst().value()));
 
-    static Consumer<Pair<Token, ParseState>> SAVE_RB = (p) -> {
-        p.snd().put(RB, Register.getFromToken(p.fst().value()));
-    };
+    static Consumer<Pair<Token, ParseState>> SAVE_RA = (p) -> p.snd().put(RA, Register.getFromToken(p.fst().value()));
+
+    static Consumer<Pair<Token, ParseState>> SAVE_RB = (p) -> p.snd().put(RB, Register.getFromToken(p.fst().value()));
 
     /**
      * Assumes that the token value can be safely parsed into an immediate format.
@@ -61,6 +58,8 @@ public class ParseTreeUtils {
     static Predicate<Pair<Token, ParseState>> isSpecificKeyword(@NotNull String word){
         return (p) -> p.fst().type() == TokenType.KEYWORD && word.equals(p.fst().value());
     }
+
+    static Predicate<Pair<Token, ParseState>> IS_LABEL = p -> p.fst().type() == LABEL && p.snd().hasLabel(p.fst().value());
 
     /**
      * Checks if the input token is an unsigned immediate.

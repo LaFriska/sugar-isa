@@ -2,7 +2,6 @@ package xyz.haroldgao.sugarisa.parser;
 
 import xyz.haroldgao.sugarisa.execute.Register;
 import xyz.haroldgao.sugarisa.execute.instructions.*;
-import xyz.haroldgao.sugarisa.tokeniser.TokenType;
 
 import java.util.function.Function;
 
@@ -15,8 +14,6 @@ import static xyz.haroldgao.sugarisa.tokeniser.TokenType.*;
  * Here we place the messy construction of the parse tree in this class.
  * */
 class SugarParseTree {
-
-
 
     static ParseTree COMPARE = new ParseTree(isSpecificKeyword("compare"),
             ra(comma(rb(term(
@@ -46,6 +43,7 @@ class SugarParseTree {
         Register rd = (Register) p.get(RD);
         return new NotInstruction(rd, rd);
     })));
+
 
     /**
      * Gets the parse tree.
@@ -113,6 +111,14 @@ class SugarParseTree {
                 TRIVIAL_ON_ACCEPT,
                 returnInstruction,
                 TRIVIAL_ERROR
+        );
+    }
+
+    static ParseTree label(ParseTree... children){
+        return new ParseTree( IS_LABEL, SAVE_LABEL, TRIVIAL_RETURN_INST, p -> {
+            if(p.fst().type() == LABEL) return new UnexpectedLabelError(p.fst().errorInfo(), p.fst().value()); //TODO pass down assembyl and line num.
+            return null;
+        }, children
         );
     }
 

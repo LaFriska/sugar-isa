@@ -1,6 +1,7 @@
 package xyz.haroldgao.sugarisa.tokeniser;
 
 import org.jetbrains.annotations.NotNull;
+import xyz.haroldgao.sugarisa.ErrorInfo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,7 +15,7 @@ import java.util.function.Predicate;
  */
 public class Tokeniser implements Iterator<Token> {
 
-    protected final String buffer;
+    protected @NotNull final String buffer;
 
     protected int pchar = 1; //pointer to the character in a given line of code
 
@@ -22,7 +23,7 @@ public class Tokeniser implements Iterator<Token> {
 
     protected int p = 0; //pointer to the char within the buffer.
 
-    public Tokeniser(String buffer) {
+    public Tokeniser(@NotNull String buffer) {
         this.buffer = buffer;
         processWhitespace();
     }
@@ -46,11 +47,12 @@ public class Tokeniser implements Iterator<Token> {
     @Override
     public @NotNull Token next() {
 
-        if (!hasNext()) throw new TokenError.NoMoreTokensError(this);
+        ErrorInfo errorInfo = getErrorInfo();
+        if (!hasNext()) throw new TokenError.NoMoreTokensError(getErrorInfo());
 
         //Tokenise comments
         if (nextTwoChars("//")) {
-            return tokeniseComment();
+            return tokeniseComment(errorInfo);
         }
 
         //Tokens with exactly two characters.
@@ -60,7 +62,7 @@ public class Tokeniser implements Iterator<Token> {
 
             if (nextTwoChars(tokType.value)) {
                 updatePointer(2);
-                return new Token(tokType);
+                return new Token(tokType, errorInfo);
             }
         }
 
@@ -71,17 +73,16 @@ public class Tokeniser implements Iterator<Token> {
 
             if (String.valueOf(buffer.charAt(p)).equals(tokType.value)) {
                 updatePointer(1);
-                return new Token(tokType);
+                return new Token(tokType, errorInfo);
             }
         }
 
         if(TokeniserUtils.breaksAlphanumericalToken(buffer.charAt(p))){
-            throw new TokenError.UnexpectedSymbolError(this, buffer.charAt(p));
+            throw new TokenError.UnexpectedSymbolError(getErrorInfo(), buffer.charAt(p));
         }
 
         //Here we assume the token is alphanumerical possibly with underscores.
         //Under our whitespace rules, we tokenise whatever we can until we hit a whitespace.
-
         StringBuilder sb = new StringBuilder();
 
         while (p < buffer.length() && !TokeniserUtils.breaksAlphanumericalToken(buffer.charAt(p))) {
@@ -94,34 +95,34 @@ public class Tokeniser implements Iterator<Token> {
         //Hex immediates
         if (word.startsWith("0x")) {
             processWhitespace();
-            return tokeniseImmediate(word, TokenType.IMM_HEX, TokeniserUtils.IS_HEX_DIGIT);
+            return tokeniseImmediate(word, TokenType.IMM_HEX, TokeniserUtils.IS_HEX_DIGIT, errorInfo);
         }
 
         //Binary immediates
         if (word.startsWith("0b")) {
             processWhitespace();
-            return tokeniseImmediate(word, TokenType.IMM_BIN, TokeniserUtils.IS_BINARY_DIGIT);
+            return tokeniseImmediate(word, TokenType.IMM_BIN, TokeniserUtils.IS_BINARY_DIGIT, errorInfo);
         }
 
         //Decimals
         if (isDecimal(word)) {
             processWhitespace();
-            return new Token(TokenType.IMM_DEC, word);
+            return new Token(TokenType.IMM_DEC, word, errorInfo);
         }
 
         //Labels
         if (isLabel(word)) {
             processWhitespace();
-            return new Token(TokenType.LABEL, word);
+            return new Token(TokenType.LABEL, word, errorInfo);
         }
 
         //Keywords
         if (isKeyword(word)) {
             processWhitespace();
-            return new Token(TokenType.KEYWORD, word);
+            return new Token(TokenType.KEYWORD, word, errorInfo);
         }
 
-        throw new TokenError.UnexpectedWordError(this, word);
+        throw new TokenError.UnexpectedWordError(errorInfo, word);
     }
 
     /**
@@ -177,15 +178,15 @@ public class Tokeniser implements Iterator<Token> {
      * @throws TokenError.InvalidImmediateError if the word contains invalid (non-hexadecimal) characters
      *                                                  according to the predicate.
      */
-    private @NotNull Token tokeniseImmediate(String word, TokenType type, Predicate<Character> pred) {
+    private @NotNull Token tokeniseImmediate(String word, TokenType type, Predicate<Character> pred, ErrorInfo errorInfo) {
         if (word.length() == 2)
-            throw new TokenError.InvalidImmediateError(this, "");
+            throw new TokenError.InvalidImmediateError(errorInfo, "");
 
         String hex = word.substring(2);
         if (!TokeniserUtils.isValid(hex, pred))
-            throw new TokenError.InvalidImmediateError(this, hex);
+            throw new TokenError.InvalidImmediateError(errorInfo, hex);
 
-        return new Token(type, hex);
+        return new Token(type, hex, errorInfo);
     }
 
     /**
@@ -193,7 +194,7 @@ public class Tokeniser implements Iterator<Token> {
      * tokenises the comment and returns the token, while updating all three
      * pointers appropriately.
      */
-    private Token tokeniseComment() {
+    private Token tokeniseComment(ErrorInfo errorInfo) {
 
         p += 2;
         pchar += 2;
@@ -205,7 +206,7 @@ public class Tokeniser implements Iterator<Token> {
             pchar++;
         }
         processWhitespace();
-        return new Token(TokenType.COMMENT, sb.toString());
+        return new Token(TokenType.COMMENT, sb.toString(), errorInfo);
     }
 
 
@@ -227,14 +228,15 @@ public class Tokeniser implements Iterator<Token> {
     private void incrementPointers() {
         if (buffer.charAt(p) == '\n') {
             pline++;
-            pchar = 0;
+            pchar = 1;
         } else {
             pchar++;
         }
         p++;
     }
 
-    public String getBuffer() {
-        return buffer;
+    private ErrorInfo getErrorInfo(){
+        return new ErrorInfo(buffer, pline, pchar);
     }
+
 }
