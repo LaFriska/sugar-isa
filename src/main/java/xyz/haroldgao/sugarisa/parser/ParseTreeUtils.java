@@ -62,6 +62,14 @@ public class ParseTreeUtils {
             (p) -> p.fst().type()
                     == TokenType.KEYWORD && Register.containsToken(p.fst().value());
 
+    /**
+     * Checks if a token is a register AND the same as the register ra stored in the parse state.
+     */
+    static Predicate<Pair<Token, ParseState>> IS_RA =
+            p -> IS_REGISTER.test(p)
+                    && p.snd().get(RA) != null //Ra not null, then assume ra is register type.
+                    && p.snd().get(RA) == Register.getFromToken(p.fst().value());
+
     static Predicate<Pair<Token, ParseState>> TRUE = (p) -> true;
 
     static Predicate<Pair<Token, ParseState>> eq(@NotNull TokenType equivToken){
@@ -104,5 +112,19 @@ public class ParseTreeUtils {
     }
 
     private ParseTreeUtils(){}
+
+    //---------------------------------------------ERRORS----------------------------------------------------
+
+    static Function<Pair<Token, ParseState>, @Nullable ParseError> oversizedImmediate(int imm){
+        return p -> {
+            if(TokenType.isImmediate(p.fst().type())) return new OversizedImmediateError(p.fst().errorInfo(), p.fst().value(), imm);
+            return null;
+        };
+    }
+
+    static Function<Pair<Token, ParseState>, @Nullable ParseError> BAD_RA = p -> {
+        if(IS_REGISTER.test(p)) return new BadRegisterOffsetError(p.fst().errorInfo());
+        return null;
+    };
 
 }

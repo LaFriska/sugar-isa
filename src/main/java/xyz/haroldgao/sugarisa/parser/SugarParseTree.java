@@ -88,24 +88,36 @@ class SugarParseTree {
     );
 
 
-
-    static ParseTree OFFSET_WRITE = lbrac(
+    static ParseTree MEMORY_WRITE = lbrac(
     rd(
         add( //TODO add error here
             value(true, 15,
                     OFFSET_WRITE_SECOND_HALF
             )
         ).setErrorFunction(
-                p -> { //TODO generalise this into own method
-                    if(TokenType.isImmediate(p.fst().type())) return new OversizedImmediateError(p.fst().errorInfo(), p.fst().value(), 15);
-                    return null;
-                }
+                oversizedImmediate(15)
         )
             ,
         sub(
             imm15(
                     OFFSET_WRITE_SECOND_HALF
             ).setConsumer(SAVE_NEG_IMMEDIATE)
+        ).setErrorFunction(
+                oversizedImmediate(15)
+        ),
+        rbrac(
+             equal(
+                     ra(
+                     term(
+                          p -> new MemoryWriteInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) R0, false, OffsetType.STANDARD)
+                     ),
+                     chain(
+                        keyword("flag",
+                           term(p -> new MemoryWriteInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) R0, true, OffsetType.STANDARD))
+                        ) //TODO add post offset here.
+                     )
+                 )
+             )
         )
     ));
 
@@ -122,7 +134,7 @@ class SugarParseTree {
                 COMPARE,
                 PUSH,
                 POP,
-                OFFSET_WRITE
+                MEMORY_WRITE
         };
 
         return new ParseTree(
@@ -248,10 +260,7 @@ class SugarParseTree {
     }
 
     private static ParseTree imm(int size, ParseTree... children){
-        return new ParseTree(isUnsignedImmediate(size), SAVE_IMMEDIATE, TRIVIAL_RETURN_INST, p -> {
-            if(TokenType.isImmediate(p.fst().type())) return new OversizedImmediateError(p.fst().errorInfo(), p.fst().value(), size);
-            return null;
-        }, children
+        return new ParseTree(isUnsignedImmediate(size), SAVE_IMMEDIATE, TRIVIAL_RETURN_INST, TRIVIAL_ERROR, children
         );
     }
 
