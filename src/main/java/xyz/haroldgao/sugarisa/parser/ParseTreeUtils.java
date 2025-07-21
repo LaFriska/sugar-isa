@@ -69,20 +69,24 @@ public class ParseTreeUtils {
     static Predicate<Pair<Token, ParseState>> isUnsignedImmediate(int bitsize){
         return p -> {
 
-            //Must be an immediate type.
-            if(p.fst().type() != TokenType.IMM_BIN && p.fst().type() != TokenType.IMM_DEC && p.fst().type() != TokenType.IMM_HEX) return false;
+            try {
 
-            if(p.fst().value() == null) return false;
+                //Must be an immediate type.
+                if (p.fst().type() != TokenType.IMM_BIN && p.fst().type() != TokenType.IMM_DEC && p.fst().type() != TokenType.IMM_HEX)
+                    return false;
 
-            int immediate = switch (p.fst().type()) {
-                case IMM_BIN -> Integer.parseUnsignedInt(p.fst().value(), 2);
-                case IMM_HEX -> Integer.parseUnsignedInt(p.fst().value(), 16);
-                default -> Integer.parseUnsignedInt(p.fst().value(), 10);
-            };
-            //Must be capped by bitsize.
-            if(immediate >> bitsize != 0) return false;
+                if (p.fst().value() == null) return false;
 
-            return true;
+                int immediate = switch (p.fst().type()) {
+                    case IMM_BIN -> Integer.parseUnsignedInt(p.fst().value(), 2);
+                    case IMM_HEX -> Integer.parseUnsignedInt(p.fst().value(), 16);
+                    default -> Integer.parseUnsignedInt(p.fst().value(), 10);
+                };
+                //Must be capped by bitsize.
+                if (immediate >> bitsize != 0) return false;
+
+                return true;
+            }catch (NumberFormatException ignored){return false;}
         };
     }
 

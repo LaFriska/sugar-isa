@@ -195,12 +195,10 @@ Note that the not and set instruction does not allow a `flag;` chain.
 
 ### Memory Addressing 
 
-**IMPORTANT**: In this subsection, `ra - imm16` is a notational sugar for adding a negative 16-bit immediate. Hence,
-`r1 - -1` would be invalid, while `r1 - 3` would be valid, which is semantically equivalent to `r1 + -3`. Note that in reality,
-offsets only use ALU addition. 
+Immediate memory offsets use an unsigned 15 bit immediate, although the instruction binary encodes a signed `imm16`.
 
 To represent a value held in memory without offsets, use `[ra]` or `[imm16]`. To represent
-a value held in memory with an offset, use `[ra + rb]`, `[ra + imm16]`, or `[ra - imm16]`. 
+a value held in memory with an offset, use `[ra + rb]`, `[ra + imm15]`, or `[ra - imm15]`. 
 
 Then, the memory read and memory write instructions are as follows. 
 
@@ -208,54 +206,53 @@ Memory Read:
 
 ``` 
 rd = [ra];
-rd = [imm16];
 rd = [ra + rb];
-rd = [ra + imm16];
-rd = [ra - imm16];
+rd = [ra + imm15];
+rd = [ra - imm15];
 ```
 
 Memory Write:
 
 ``` 
 [rd] = ra; 
-[imm16] = ra;
 [rd + rb] = ra;
-[rd + imm16] = ra;
-[rd - imm16] = ra;
+[rd + imm15] = ra;
+[rd - imm15] = ra;
 ```
 
-Pre/Post-offset memory operations are also supported with the following syntax.
+Pre/Post-offset memory operations are also supported with the following syntax. Note that again, only an unsigned `imm15`
+is supported, but negative offsets can be achieved using `-=`. 
 
 Pre-offset Memory Read: 
 
 ``` 
 ra += rb -> rd = [ra];
-ra += imm16 -> rd = [ra];
-ra -= imm16 -> rd = [ra];
+ra += imm15 -> rd = [ra];
+ra -= imm15 -> rd = [ra];
 ```
 
 Pre-offset Memory Write:
 
 ``` 
 rd += rb -> [rd] = ra;
-rd += imm16 -> [rd] = ra;
-rd -= imm16 -> [rd] = ra;
+rd += imm15 -> [rd] = ra;
+rd -= imm15 -> [rd] = ra;
 ```
 
 Post-offset Memory Read:
 
 ``` 
 rd = [ra] -> ra += rb;
-rd = [ra] -> ra += imm16;
-rd = [ra] -> ra -= imm16;
+rd = [ra] -> ra += imm15;
+rd = [ra] -> ra -= imm15;
 ```
 
 Post-offset Memory Write:
 
 ``` 
 [rd] = ra -> ra += rb;
-[rd] = ra -> ra += imm16;
-[rd] = ra -> ra -= imm16;
+[rd] = ra -> ra += imm15;
+[rd] = ra -> ra -= imm15;
 ```
 
 Since computing offsets also require an ALU 
@@ -410,74 +407,128 @@ An instruction that does nothing and wastes a clock cycle can be written as just
 These are pseudo-instructions for `r0 = 0;`. Note that adding extra semicolons at the end of an instruction also counts as adding extra null instructions.
 For example, `[r1] = r2;;` is actually 2 instructions. 
 
-## Instruction Semantic List
+[//]: # (## Instruction Semantic List)
 
-Below is a compact list of instruction semantics. Let `<regOrImm16>` be defined 
-as either an arbitrary register or `imm16`, and let curly braces denote the insides are optional. 
-Let `<branchDest>` be defined as either a label, imm26, or register.
+[//]: # ()
+[//]: # (Below is a compact list of instruction semantics. Let `<regOrImm16>` be defined )
 
-``` 
-!rd;
+[//]: # (as either an arbitrary register or `imm16`, and let curly braces denote the insides are optional. )
 
-rd = <raOrImm22>;
+[//]: # (Let `<branchDest>` be defined as either a label, imm26, or register.)
 
-rd = ra + <regOrImm16> {-> flag};
-rd = ra - <regOrImm16> {-> flag};
-rd = ra * <regOrImm16> {-> flag};
-rd = ra / <regOrImm16> {-> flag};
-rd = ra % <regOrImm16> {-> flag};
-rd = ra & <regOrImm16> {-> flag};
-rd = ra | <regOrImm16> {-> flag};
-rd = ra ^ <regOrImm16> {-> flag};
-rd = ra << <regOrImm16> {-> flag};
-rd = ra >> <regOrImm16> {-> flag};
+[//]: # ()
+[//]: # (``` )
 
-rd = [ra] {-> ra += <regOrImm116>} {-> flag};
-rd = [ra] {-> ra -= imm16} {-> flag};
-rd = [ra + <regOrImm16>] {-> flag};
-rd = [ra - imm16] {-> flag};
+[//]: # (!rd;)
 
-rd = !<regOrImm22>;
+[//]: # ()
+[//]: # (rd = <raOrImm22>;)
 
-rd += <regOrImm16> {-> rd = [ra]} {-> flag};
-rd += <regOrImm16> {-> [rd] = ra} {-> flag};
-rd -= imm16 {-> rd = [ra]} {-> flag};
-rd -= imm16 {-> [rd] = ra} {-> flag};
-rd -= rb {-> flag};
-rd *= <regOrImm16> {-> flag};
-rd /= <regOrImm16> {-> flag};
-rd %= <regOrImm16> {-> flag};
-rd &= <regOrImm16> {-> flag};
-rd |= <regOrImm16> {-> flag};
-rd ^= <regOrImm16> {-> flag};
-rd << <regOrImm16> {-> flag};
-rd >> <regOrImm16> {-> flag};
+[//]: # ()
+[//]: # (rd = ra + <regOrImm16> {-> flag};)
 
-[rd] = ra {-> rd += <regOrImm16>} {-> flag};
-[rd] = ra {-> rd -= imm16} {-> flag};
-[rd + <regOrImm16>] = ra {-> flag};
-[rd - imm16] = ra {-> flag};
+[//]: # (rd = ra - <regOrImm16> {-> flag};)
 
-push <regOrImm26>;
-pop <regOrImm26>;
+[//]: # (rd = ra * <regOrImm16> {-> flag};)
 
-goto <branchDest>;
-goton <branchDest>;
-gotoz <branchDest>;
-gotoc <branchDest>;
-gotov <branchDest>;
-call <branchDest>;
-calln <branchDest>;
-callz <branchDest>;
-callc <branchDest>;
-callv <branchDest>;
+[//]: # (rd = ra / <regOrImm16> {-> flag};)
 
-return;
+[//]: # (rd = ra % <regOrImm16> {-> flag};)
 
-compare ra, rb; 
+[//]: # (rd = ra & <regOrImm16> {-> flag};)
 
-; //Null instruction
-```
+[//]: # (rd = ra | <regOrImm16> {-> flag};)
+
+[//]: # (rd = ra ^ <regOrImm16> {-> flag};)
+
+[//]: # (rd = ra << <regOrImm16> {-> flag};)
+
+[//]: # (rd = ra >> <regOrImm16> {-> flag};)
+
+[//]: # ()
+[//]: # (rd = [ra] {-> ra += <regOrImm15>} {-> flag};)
+
+[//]: # (rd = [ra] {-> ra -= imm15} {-> flag};)
+
+[//]: # (rd = [ra + <regOrImm15>] {-> flag};)
+
+[//]: # (rd = [ra - imm15] {-> flag};)
+
+[//]: # ()
+[//]: # (rd = !<regOrImm22>;)
+
+[//]: # ()
+[//]: # (rd += <regOrImm> {-> rd = [ra]} {-> flag};)
+
+[//]: # (rd += <regOrImm> {-> [rd] = ra} {-> flag};)
+
+[//]: # (rd -= imm16 {-> rd = [ra]} {-> flag};)
+
+[//]: # (rd -= imm16 {-> [rd] = ra} {-> flag};)
+
+[//]: # (rd -= rb {-> flag};)
+
+[//]: # (rd *= <regOrImm16> {-> flag};)
+
+[//]: # (rd /= <regOrImm16> {-> flag};)
+
+[//]: # (rd %= <regOrImm16> {-> flag};)
+
+[//]: # (rd &= <regOrImm16> {-> flag};)
+
+[//]: # (rd |= <regOrImm16> {-> flag};)
+
+[//]: # (rd ^= <regOrImm16> {-> flag};)
+
+[//]: # (rd << <regOrImm16> {-> flag};)
+
+[//]: # (rd >> <regOrImm16> {-> flag};)
+
+[//]: # ()
+[//]: # ([rd] = ra {-> rd += <regOrImm16>} {-> flag};)
+
+[//]: # ([rd] = ra {-> rd -= imm16} {-> flag};)
+
+[//]: # ([rd + <regOrImm16>] = ra {-> flag};)
+
+[//]: # ([rd - imm16] = ra {-> flag};)
+
+[//]: # ()
+[//]: # (push <regOrImm26>;)
+
+[//]: # (pop <regOrImm26>;)
+
+[//]: # ()
+[//]: # (goto <branchDest>;)
+
+[//]: # (goton <branchDest>;)
+
+[//]: # (gotoz <branchDest>;)
+
+[//]: # (gotoc <branchDest>;)
+
+[//]: # (gotov <branchDest>;)
+
+[//]: # (call <branchDest>;)
+
+[//]: # (calln <branchDest>;)
+
+[//]: # (callz <branchDest>;)
+
+[//]: # (callc <branchDest>;)
+
+[//]: # (callv <branchDest>;)
+
+[//]: # ()
+[//]: # (return;)
+
+[//]: # ()
+[//]: # (compare ra, rb; )
+
+[//]: # ()
+[//]: # (; //Null instruction)
+
+[//]: # (```)
 
 ## Instruction Encoding
 

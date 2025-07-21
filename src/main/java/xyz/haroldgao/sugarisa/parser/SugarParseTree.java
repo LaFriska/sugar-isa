@@ -66,20 +66,20 @@ class SugarParseTree {
 
     //SUBTREE STARTING WITH "["
 
-    static ParseTree OFFSET_READ_SECOND_HALF = rbrac(
+    static ParseTree OFFSET_WRITE_SECOND_HALF = rbrac(
     equal(
         ra(
             term(p -> {
                 if (p.get(RB) == null)
-                    return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Integer) p.get(IMM), false, OffsetType.STANDARD);
-                return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) p.get(RB), false, OffsetType.STANDARD);
+                    return new MemoryWriteInstruction((Register) p.get(RD), (Register) p.get(RA), (Integer) p.get(IMM), false, OffsetType.STANDARD);
+                return new MemoryWriteInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) p.get(RB), false, OffsetType.STANDARD);
             }),
             chain(
                 keyword("flag",
                     term(p -> {
                         if (p.get(RB) == null)
-                            return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Integer) p.get(IMM), true, OffsetType.STANDARD);
-                        return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) p.get(RB), true, OffsetType.STANDARD);
+                            return new MemoryWriteInstruction((Register) p.get(RD), (Register) p.get(RA), (Integer) p.get(IMM), true, OffsetType.STANDARD);
+                        return new MemoryWriteInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) p.get(RB), true, OffsetType.STANDARD);
                         })
                     )
                 )
@@ -87,17 +87,21 @@ class SugarParseTree {
         )
     );
 
+//    p -> {
+//        if(TokenType.isImmediate(p.fst().type())) return new OversizedImmediateError(p.fst().errorInfo(), p.fst().value(), immediateSize);
+//        return null;
+//    }
 
-    static ParseTree OFFSET_READ = lbrac(
+    static ParseTree OFFSET_WRITE = lbrac(
     rd(
-        add(
+        add( //TODO add error here
             value(true, 15,
-                OFFSET_READ_SECOND_HALF
+                    OFFSET_WRITE_SECOND_HALF
             )
         ),
         sub(
             imm15(
-                OFFSET_READ_SECOND_HALF
+                    OFFSET_WRITE_SECOND_HALF
             )
         )
     ));
@@ -118,7 +122,7 @@ class SugarParseTree {
                 COMPARE,
                 PUSH,
                 POP,
-                OFFSET_READ
+                OFFSET_WRITE
         };
 
         return new ParseTree(
@@ -151,31 +155,7 @@ class SugarParseTree {
         );
     }
 
-    /**
-     * @param rb true then save to rb otherwise save to ra.
-     * */
-    static ParseTree value(boolean rb, int immediateSize, ParseTree... children){
-        return new ParseTree(
-                p -> (TokenType.isImmediate(p.fst().type()) && isUnsignedImmediate(immediateSize).test(p) ) || IS_REGISTER.test(p),
-                p -> {
-                    if(TokenType.isImmediate(p.fst().type())){
-                        //assume correct size
-                        SAVE_IMMEDIATE.accept(p);
-                    }else if(rb){
-                        SAVE_RB.accept(p);
-                    }else{
-                        SAVE_RA.accept(p);
-                    }
-                },
-                TRIVIAL_RETURN_INST,
-                p -> {
-                    if(!isUnsignedImmediate(immediateSize).test(p))
-                        return new OversizedImmediateError(p.fst().errorInfo(), p.fst().value(), immediateSize);
-                    return null;
-                },
-                children
-        );
-    }
+
 
     static ParseTree comma(ParseTree... children){
         return specific(COMMA, children);
@@ -238,6 +218,27 @@ class SugarParseTree {
         );
     }
 
+    /**
+     * @param rb true then save to rb otherwise save to ra.
+     * */
+    static ParseTree value(boolean rb, int immediateSize, ParseTree... children){
+        return new ParseTree(
+                p -> (TokenType.isImmediate(p.fst().type()) && isUnsignedImmediate(immediateSize).test(p) ) || IS_REGISTER.test(p),
+                p -> {
+                    if(TokenType.isImmediate(p.fst().type())){
+                        //assume correct size
+                        SAVE_IMMEDIATE.accept(p);
+                    }else if(rb){
+                        SAVE_RB.accept(p);
+                    }else{
+                        SAVE_RA.accept(p);
+                    }
+                },
+                TRIVIAL_RETURN_INST,
+                children
+        );
+    }
+
     static ParseTree imm26(ParseTree... children){
         return imm(26, children);
     }
@@ -250,7 +251,7 @@ class SugarParseTree {
 
     private static ParseTree imm(int size, ParseTree... children){
         return new ParseTree(isUnsignedImmediate(size), SAVE_IMMEDIATE, TRIVIAL_RETURN_INST, p -> {
-            if(TokenType.isImmediate(p.fst().type())) return new OversizedImmediateError(p.fst().errorInfo(), p.fst().value(), 26);
+            if(TokenType.isImmediate(p.fst().type())) return new OversizedImmediateError(p.fst().errorInfo(), p.fst().value(), size);
             return null;
         }, children
         );

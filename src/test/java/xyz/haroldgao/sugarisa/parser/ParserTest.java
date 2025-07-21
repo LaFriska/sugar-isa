@@ -132,6 +132,18 @@ public class ParserTest {
                 """, "{! r3, r3}", "{push 12}", "{set r0, r0}", "{set r0, r0}", "{set r0, r0}", "{pop 0}");
     }
 
+
+    /**
+     * Tests memory write with offset.
+     */
+    @Test
+    public void testOffsetWrite(){
+        testInstructions("[sp + lr] =  r3;", "{write sp, r3, lr}");
+        testInstructions("[r5 + 0b101000101001011] =  r11;", "{write r5, r11, 20811}");
+        testInstructions("[r6 + 0xabc] =  r10;", "{write r6, r10, 2748}");
+        testInstructions("[r7 + 99909] =  pc;", "{write r7, pc, 99909}");
+    }
+
     private void testInstructions(String assembly, String... expectedStrings){
         var actual = Parser.parse(assembly);
         for (int i = 0; i < actual.size(); i++) {
