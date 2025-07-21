@@ -87,10 +87,7 @@ class SugarParseTree {
         )
     );
 
-//    p -> {
-//        if(TokenType.isImmediate(p.fst().type())) return new OversizedImmediateError(p.fst().errorInfo(), p.fst().value(), immediateSize);
-//        return null;
-//    }
+
 
     static ParseTree OFFSET_WRITE = lbrac(
     rd(
@@ -98,7 +95,13 @@ class SugarParseTree {
             value(true, 15,
                     OFFSET_WRITE_SECOND_HALF
             )
-        ),
+        ).setErrorFunction(
+                p -> { //TODO generalise this into own method
+                    if(TokenType.isImmediate(p.fst().type())) return new OversizedImmediateError(p.fst().errorInfo(), p.fst().value(), 15);
+                    return null;
+                }
+        )
+            ,
         sub(
             imm15(
                     OFFSET_WRITE_SECOND_HALF

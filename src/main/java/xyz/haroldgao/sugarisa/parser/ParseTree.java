@@ -93,4 +93,26 @@ record ParseTree(
         return returnInstruction.apply(state);
     }
 
+    //Chained methods to easily construct new parse tree instances.
+
+    ParseTree setPredicate(@NotNull Predicate<Pair<@NotNull Token, @NotNull ParseState>> value){
+        return new ParseTree(value, onAccept, returnInstruction, errorFunction, subtrees);
+    }
+
+    ParseTree setConsumer(@NotNull Consumer<Pair<Token, ParseState>>  onAccept){
+        return new ParseTree(value, onAccept, returnInstruction, errorFunction, subtrees);
+    }
+
+    ParseTree setReturnInstructions(@NotNull Function<ParseState, Instruction> returnInstruction){
+        return new ParseTree(value, onAccept, returnInstruction, errorFunction, subtrees);
+    }
+
+    ParseTree setErrorFunction(@NotNull Function<Pair<Token, ParseState>, @Nullable ParseError> errorFunction){
+        return new ParseTree(value, onAccept, returnInstruction, errorFunction, subtrees);
+    }
+
+    ParseTree setChildren(@NotNull ParseTree... subtrees){
+        return new ParseTree(value, onAccept, returnInstruction, errorFunction, subtrees);
+    }
+
 }
