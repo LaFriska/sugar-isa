@@ -43,6 +43,19 @@ public class ParseTreeUtils {
         }));
     };
 
+    /**
+     * Assumes that the token value can be safely parsed into an immediate format.
+     * Saves immediate but negates it first.
+     * */
+    static Consumer<Pair<Token, ParseState>> SAVE_NEG_IMMEDIATE = p -> {
+        assert p.fst().value() != null;
+        p.snd().put(IMM, -1 * Integer.parseUnsignedInt(p.fst().value(), switch (p.fst().type()){
+            case IMM_BIN -> 2;
+            case IMM_HEX -> 16;
+            default -> 10;
+        }));
+    };
+
     //-----------------------------------PREDICATES----------------------------------
 
     static Predicate<Pair<Token, ParseState>> IS_REGISTER =

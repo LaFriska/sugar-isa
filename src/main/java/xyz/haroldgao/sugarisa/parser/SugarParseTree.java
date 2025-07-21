@@ -105,12 +105,9 @@ class SugarParseTree {
         sub(
             imm15(
                     OFFSET_WRITE_SECOND_HALF
-            )
+            ).setConsumer(SAVE_NEG_IMMEDIATE)
         )
     ));
-
-
-
 
 
     /**
@@ -249,8 +246,6 @@ class SugarParseTree {
     static ParseTree imm15(ParseTree... children){
         return imm(15, children);
     }
-
-
 
     private static ParseTree imm(int size, ParseTree... children){
         return new ParseTree(isUnsignedImmediate(size), SAVE_IMMEDIATE, TRIVIAL_RETURN_INST, p -> {

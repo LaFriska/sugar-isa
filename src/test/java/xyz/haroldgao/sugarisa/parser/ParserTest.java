@@ -142,6 +142,9 @@ public class ParserTest {
         testInstructions("[r5 + 0b101000101001011] =  r11;", "{write r5, r11, 20811}");
         testInstructions("[r6 + 0xabc] =  r10;", "{write r6, r10, 2748}");
         testInstructions("[r7 + 999] =  pc;", "{write r7, pc, 999}");
+        testInstructions("[r0 - 123] =  lr;", "{write r0, lr, -123}");
+        testInstructions("[r3 - 0xabc] =  sp;", "{write r3, sp, -2748}");
+        testInstructions("[r5 - 0b101000101001011] =  r11;", "{write r5, r11, -20811}");
     }
 
     private void testInstructions(String assembly, String... expectedStrings){
