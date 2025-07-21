@@ -87,6 +87,7 @@ class SugarParseTree {
         )
     );
 
+    static ParseTree POST_OFFSET_WRITEN_CHAIN = new ParseTree(IS_RA); //TODO
 
     static ParseTree MEMORY_WRITE = lbrac(
     rd(
