@@ -160,16 +160,16 @@ final class SugarParseTree {
 
     /**
      * Pre-offset read, syntax after first chain. Example: .... ra = [rd];
-     * */
+     */
     static ParseTree PRE_READ_SECOND_HALF = ra(equal(lbrac(isRd(rbrac(
             term(p -> {
-                if(p.get(IMM) != null)
+                if (p.get(IMM) != null)
                     return new MemoryReadInstruction((Register) p.get(RA), (Register) p.get(RD), (Integer) p.get(IMM), false, OffsetType.PRE);
                 return new MemoryReadInstruction((Register) p.get(RA), (Register) p.get(RD), (Register) p.get(RB), false, OffsetType.PRE);
             }),
             chainflag(
                     p -> {
-                        if(p.get(IMM) != null)
+                        if (p.get(IMM) != null)
                             return new MemoryReadInstruction((Register) p.get(RA), (Register) p.get(RD), (Integer) p.get(IMM), true, OffsetType.PRE);
                         return new MemoryReadInstruction((Register) p.get(RA), (Register) p.get(RD), (Register) p.get(RB), true, OffsetType.PRE);
                     }
@@ -178,13 +178,13 @@ final class SugarParseTree {
 
     static ParseTree PRE_WRITE_SECOND_HALF = lbrac(isRd(rbrac(equal(ra(
             term(p -> {
-                if(p.get(IMM) != null)
+                if (p.get(IMM) != null)
                     return new MemoryWriteInstruction((Register) p.get(RD), (Register) p.get(RA), (Integer) p.get(IMM), false, OffsetType.PRE);
                 return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) p.get(RB), false, OffsetType.PRE);
             }),
             chainflag(
                     p -> {
-                        if(p.get(IMM) != null)
+                        if (p.get(IMM) != null)
                             return new MemoryWriteInstruction((Register) p.get(RA), (Register) p.get(RD), (Integer) p.get(IMM), true, OffsetType.PRE);
                         return new MemoryWriteInstruction((Register) p.get(RA), (Register) p.get(RD), (Register) p.get(RB), true, OffsetType.PRE);
                     }
@@ -218,18 +218,23 @@ final class SugarParseTree {
                     imm16(
                             term(p -> new SubInstruction((Register) p.get(RD), (Register) p.get(RD), (Integer) p.get(IMM), false)),
                             chain(
-                                    keyword("flag", term(p -> new SubInstruction((Register) p.get(RD), (Register) p.get(RD), (Integer) p.get(IMM), true)))),
-                                    PRE_READ_SECOND_HALF.setConsumer(NEGATE_IMMEDIATE),
-                                    PRE_WRITE_SECOND_HALF.setConsumer(NEGATE_IMMEDIATE)
+                                    keyword("flag", term(p -> new SubInstruction((Register) p.get(RD), (Register) p.get(RD), (Integer) p.get(IMM), true))),
+                                    PRE_READ_SECOND_HALF.setConsumer(p -> {
+                                        SAVE_RA.accept(p);
+                                        NEGATE_IMMEDIATE.accept(p);
+                                    }),
+                                    PRE_WRITE_SECOND_HALF.setConsumer(p -> {
+                                        SAVE_RA.accept(p);
+                                        NEGATE_IMMEDIATE.accept(p);
+                                    })
                             )
                     ),
                     rb(
                             term(p -> new SubInstruction((Register) p.get(RD), (Register) p.get(RD), (Register) p.get(RB), false)),
                             chainflag(p -> new SubInstruction((Register) p.get(RD), (Register) p.get(RD), (Register) p.get(RB), true))
                     )
-            ).setErrorFunction(oversizedImmediate(16));
-
-
+            )
+    ).setErrorFunction(oversizedImmediate(16));
 
 
     //------------------------------------------------------------------------------------------------------------------
@@ -295,10 +300,10 @@ final class SugarParseTree {
     /**
      * Returns the second-order subtree for simple ALU instructions, which are defined with
      * notationally sugar syntax. For instance, "r1 += r2;".
-     * */
-    static ParseTree simpleALUInstruction(TokenType op, Class<? extends DuoDataInstruction> instructionClass){
+     */
+    static ParseTree simpleALUInstruction(TokenType op, Class<? extends DuoDataInstruction> instructionClass) {
         return new ParseTree(eq(op),
-                value(false, 16,
+                value(true, 16,
                         term(p -> createSimpleALUInstruction(instructionClass, p, false)),
                         chainflag(p -> createSimpleALUInstruction(instructionClass, p, true))
                 )
@@ -306,16 +311,16 @@ final class SugarParseTree {
     }
 
     private static @NotNull DuoDataInstruction createSimpleALUInstruction(Class<? extends DuoDataInstruction> instructionClass, ParseState p, boolean flag) {
-        if(p.get(RA) != null) {
+        if (p.get(RB) != null) {
             try {
                 return instructionClass
                         .getDeclaredConstructor(Register.class, Register.class, Register.class, Boolean.class)
-                        .newInstance((Register) p.get(RD), (Register) p.get(RD), (Register) p.get(RA), flag);
+                        .newInstance((Register) p.get(RD), (Register) p.get(RD), (Register) p.get(RB), flag);
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }else{
+        } else {
             try {
                 return instructionClass
                         .getDeclaredConstructor(Register.class, Register.class, Integer.class, Boolean.class)
@@ -435,6 +440,7 @@ final class SugarParseTree {
         );
     }
 
-    private SugarParseTree(){}
+    private SugarParseTree() {
+    }
 
 }

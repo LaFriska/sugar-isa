@@ -182,6 +182,38 @@ public class ParserTest {
         testInstructions("r3 ^= 12345;", "{^ r3, r3, 12345}");
         testInstructions("r3 << 12345;", "{<< r3, r3, 12345}");
         testInstructions("r3 >> 12345;", "{>> r3, r3, 12345}");
+
+        testInstructions("r3 += r4 -> flag;", "f{+ r3, r3, r4}");
+        testInstructions("r3 -= r4 -> flag;", "f{- r3, r3, r4}");
+        testInstructions("r3 *= r4 -> flag;", "f{* r3, r3, r4}");
+        testInstructions("r3 /= r4 -> flag;", "f{/ r3, r3, r4}");
+        testInstructions("r3 %= r4 -> flag;", "f{% r3, r3, r4}");
+        testInstructions("r3 &= r4 -> flag;", "f{& r3, r3, r4}");
+        testInstructions("r3 |= r4 -> flag;", "f{| r3, r3, r4}");
+        testInstructions("r3 ^= r4 -> flag;", "f{^ r3, r3, r4}");
+        testInstructions("r3 << r4 -> flag;", "f{<< r3, r3, r4}");
+        testInstructions("r3 >> r4 -> flag;", "f{>> r3, r3, r4}");
+
+        testInstructions("r3 += 12345 -> flag;", "f{+ r3, r3, 12345}");
+        testInstructions("r3 -= 12345 -> flag;", "f{- r3, r3, 12345}");
+        testInstructions("r3 *= 12345 -> flag;", "f{* r3, r3, 12345}");
+        testInstructions("r3 /= 12345 -> flag;", "f{/ r3, r3, 12345}");
+        testInstructions("r3 %= 12345 -> flag;", "f{% r3, r3, 12345}");
+        testInstructions("r3 &= 12345 -> flag;", "f{& r3, r3, 12345}");
+        testInstructions("r3 |= 12345 -> flag;", "f{| r3, r3, 12345}");
+        testInstructions("r3 ^= 12345 -> flag;", "f{^ r3, r3, 12345}");
+        testInstructions("r3 << 12345 -> flag;", "f{<< r3, r3, 12345}");
+        testInstructions("r3 >> 12345 -> flag;", "f{>> r3, r3, 12345}");
+    }
+
+    @Test
+    public void testPreRead(){
+        testInstructions("r3 += pc -> r5 = [r3];", "{preread r5, r3, pc}");
+        testInstructions("r1 += 0x1abc -> sp = [r1];", "{preread sp, r1, 6844}");
+        testInstructions("r7 -= 5 -> r0 = [r7];", "{preread r0, r7, -5}");
+        testInstructions("r3 += pc -> r5 = [r3] -> flag;", "f{preread r5, r3, pc}");
+        testInstructions("r1 += 0x1abc -> sp = [r1] -> flag;", "f{preread sp, r1, 6844}");
+        testInstructions("r7 -= 5 -> r0 = [r7] -> flag;", "f{preread r0, r7, -5}");
     }
 
     private void testInstructions(String assembly, String... expectedStrings){

@@ -43,7 +43,7 @@ public final class MemoryReadInstruction extends MemoryInstruction{
     @Override
     protected String getMnemonic() {
         if(offsetType == OffsetType.STANDARD) return "read";
-        return offsetType.toString().toLowerCase() + "_read";
+        return offsetType.toString().toLowerCase() + "read";
     }
 
 }
