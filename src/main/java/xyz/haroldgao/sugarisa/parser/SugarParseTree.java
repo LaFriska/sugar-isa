@@ -159,8 +159,6 @@ final class SugarParseTree {
     //Construction of the most complex subtree, which is the subtree starting with a register.
 
     static ParseTree START_REG = rd(
-            simpleALUInstruction(ADD_EQ, AddInstruction.class),
-            simpleALUInstruction(SUB_EQ, SubInstruction.class),
             simpleALUInstruction(MUL_EQ, MulInstruction.class),
             simpleALUInstruction(DIV_EQ, DivInstruction.class),
             simpleALUInstruction(MOD_EQ, ModInstruction.class),
@@ -168,7 +166,27 @@ final class SugarParseTree {
             simpleALUInstruction(OR_EQ, OrInstruction.class),
             simpleALUInstruction(XOR_EQ, XorInstruction.class),
             simpleALUInstruction(LEFT_SHIFT, LeftShiftInstruction.class),
-            simpleALUInstruction(RIGHT_SHIFT, RightShiftInstruction.class)
+            simpleALUInstruction(RIGHT_SHIFT, RightShiftInstruction.class),
+
+
+            new ParseTree(eq(ADD_EQ),
+                    value(false, 16,
+                            term(p -> createSimpleALUInstruction(AddInstruction.class, p, false)),
+                            chain(
+                                    keyword("flag", term(p -> createSimpleALUInstruction(AddInstruction.class, p, true)))
+                            )
+                    )
+            ).setErrorFunction(oversizedImmediate(16)),
+
+            new ParseTree(eq(SUB_EQ),
+                    value(false, 16,
+                            term(p -> createSimpleALUInstruction(SubInstruction.class, p, false)),
+                            chain(
+                                    keyword("flag", term(p -> createSimpleALUInstruction(SubInstruction.class, p, true)))
+                            )
+                    )
+            ).setErrorFunction(oversizedImmediate(16))
+
     );
 
     //------------------------------------------------------------------------------------------------------------------

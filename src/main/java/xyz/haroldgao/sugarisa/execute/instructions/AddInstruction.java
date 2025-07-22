@@ -8,11 +8,11 @@ import xyz.haroldgao.sugarisa.execute.Register;
  * */
 public final class AddInstruction extends DuoDataInstruction {
 
-    public AddInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Register rb, boolean setFlag) {
+    public AddInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Register rb, @NotNull Boolean setFlag) {
         super(rd, ra, rb, setFlag);
     }
 
-    public AddInstruction(@NotNull Register rd, @NotNull Register ra, int imm16, boolean setFlag) {
+    public AddInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Integer imm16, @NotNull Boolean setFlag) {
         super(rd, ra, imm16, setFlag);
     }
 

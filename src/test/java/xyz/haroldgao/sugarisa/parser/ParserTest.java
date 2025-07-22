@@ -159,6 +159,32 @@ public class ParserTest {
         testInstructions("[r0] = r8 -> r0 -= 12345->flag;", "f{postwrite r0, r8, -12345}");
     }
 
+    @Test
+    public void testALUSimpleNotation(){
+        testInstructions("r3 += r4;", "{+ r3, r3, r4}");
+        testInstructions("r3 -= r4;", "{- r3, r3, r4}");
+        testInstructions("r3 *= r4;", "{* r3, r3, r4}");
+        testInstructions("r3 /= r4;", "{/ r3, r3, r4}");
+        testInstructions("r3 %= r4;", "{% r3, r3, r4}");
+        testInstructions("r3 &= r4;", "{& r3, r3, r4}");
+        testInstructions("r3 |= r4;", "{| r3, r3, r4}");
+        testInstructions("r3 ^= r4;", "{^ r3, r3, r4}");
+        testInstructions("r3 << r4;", "{<< r3, r3, r4}");
+        testInstructions("r3 >> r4;", "{>> r3, r3, r4}");
+
+        testInstructions("r3 += 12345;", "{+ r3, r3, 12345}");
+        testInstructions("r3 -= 12345;", "{- r3, r3, 12345}");
+        testInstructions("r3 *= 12345;", "{* r3, r3, 12345}");
+        testInstructions("r3 /= 12345;", "{/ r3, r3, 12345}");
+        testInstructions("r3 %= 12345;", "{% r3, r3, 12345}");
+        testInstructions("r3 &= 12345;", "{& r3, r3, 12345}");
+        testInstructions("r3 |= 12345;", "{| r3, r3, 12345}");
+        testInstructions("r3 ^= 12345;", "{^ r3, r3, 12345}");
+        testInstructions("r3 << 12345;", "{<< r3, r3, 12345}");
+        testInstructions("r3 >> 12345;", "{>> r3, r3, 12345}");
+
+    }
+
     private void testInstructions(String assembly, String... expectedStrings){
         var actual = Parser.parse(assembly);
         for (int i = 0; i < actual.size(); i++) {
