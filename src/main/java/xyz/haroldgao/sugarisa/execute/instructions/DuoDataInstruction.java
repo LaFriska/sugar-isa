@@ -8,7 +8,7 @@ import xyz.haroldgao.sugarisa.execute.Register;
 /**
  * Represents a data instructions that accepts TWO arguments, involving in rd, ra and rb/imm16.
  * */
-abstract class DuoDataInstruction extends DataInstruction {
+public abstract class DuoDataInstruction extends DataInstruction {
 
     private final @Nullable Register rb;
 

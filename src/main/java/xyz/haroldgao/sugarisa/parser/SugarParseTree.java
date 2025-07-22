@@ -1,10 +1,12 @@
 package xyz.haroldgao.sugarisa.parser;
 
+import org.jetbrains.annotations.NotNull;
 import xyz.haroldgao.sugarisa.execute.OffsetType;
 import xyz.haroldgao.sugarisa.execute.Register;
 import xyz.haroldgao.sugarisa.execute.instructions.*;
 import xyz.haroldgao.sugarisa.tokeniser.TokenType;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 
 import static xyz.haroldgao.sugarisa.execute.Register.R0;
@@ -16,7 +18,7 @@ import static xyz.haroldgao.sugarisa.tokeniser.TokenType.*;
 /**
  * Here we place the messy construction of the parse tree in this class.
  */
-class SugarParseTree {
+final class SugarParseTree {
 
     //SIMPLE SUBTREES
 
@@ -154,10 +156,25 @@ class SugarParseTree {
     );
 
 
+    //Construction of the most complex subtree, which is the subtree starting with a register.
 
+    static ParseTree START_REG = rd(
+            simpleALUInstruction(ADD_EQ, AddInstruction.class),
+            simpleALUInstruction(SUB_EQ, SubInstruction.class),
+            simpleALUInstruction(MUL_EQ, MulInstruction.class),
+            simpleALUInstruction(DIV_EQ, DivInstruction.class),
+            simpleALUInstruction(MOD_EQ, ModInstruction.class),
+            simpleALUInstruction(AND_EQ, AndInstruction.class),
+            simpleALUInstruction(OR_EQ, OrInstruction.class),
+            simpleALUInstruction(XOR_EQ, XorInstruction.class),
+            simpleALUInstruction(LEFT_SHIFT, LeftShiftInstruction.class),
+            simpleALUInstruction(RIGHT_SHIFT, RightShiftInstruction.class)
+    );
+
+    //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Gets the parse tree.
+     * Returns the Sugar parse tree.
      */
     static ParseTree get() {
 
@@ -168,7 +185,8 @@ class SugarParseTree {
                 COMPARE,
                 PUSH,
                 POP,
-                MEMORY_WRITE
+                MEMORY_WRITE,
+                START_REG
         };
 
         return new ParseTree(
@@ -211,6 +229,41 @@ class SugarParseTree {
                 SAVE_RB,
                 children
         );
+    }
+
+    /**
+     * Returns the second-order subtree for simple ALU instructions, which are defined with
+     * notationally sugar syntax. For instance, "r1 += r2;".
+     * */
+    static ParseTree simpleALUInstruction(TokenType op, Class<? extends DuoDataInstruction> instructionClass){
+        return new ParseTree(eq(op),
+                value(false, 16,
+                        term(p -> createSimpleALUInstruction(instructionClass, p, false)),
+                        chainflag(p -> createSimpleALUInstruction(instructionClass, p, true))
+                )
+        ).setErrorFunction(oversizedImmediate(16));
+    }
+
+    private static @NotNull DuoDataInstruction createSimpleALUInstruction(Class<? extends DuoDataInstruction> instructionClass, ParseState p, boolean flag) {
+        if(p.get(RA) != null) {
+            try {
+                return instructionClass
+                        .getDeclaredConstructor(Register.class, Register.class, Register.class, Boolean.class)
+                        .newInstance((Register) p.get(RD), (Register) p.get(RD), (Register) p.get(RA), flag);
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }else{
+            try {
+                return instructionClass
+                        .getDeclaredConstructor(Register.class, Register.class, Integer.class, Boolean.class)
+                        .newInstance((Register) p.get(RD), (Register) p.get(RD), (Integer) p.get(IMM), flag);
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 
@@ -316,5 +369,7 @@ class SugarParseTree {
         return new ParseTree(isUnsignedImmediate(size), SAVE_IMMEDIATE, TRIVIAL_RETURN_INST, TRIVIAL_ERROR, children
         );
     }
+
+    private SugarParseTree(){}
 
 }
