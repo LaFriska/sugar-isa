@@ -180,16 +180,16 @@ final class SugarParseTree {
             term(p -> {
                 if (p.get(IMM) != null)
                     return new MemoryWriteInstruction((Register) p.get(RD), (Register) p.get(RA), (Integer) p.get(IMM), false, OffsetType.PRE);
-                return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) p.get(RB), false, OffsetType.PRE);
+                return new MemoryWriteInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) p.get(RB), false, OffsetType.PRE);
             }),
             chainflag(
                     p -> {
                         if (p.get(IMM) != null)
-                            return new MemoryWriteInstruction((Register) p.get(RA), (Register) p.get(RD), (Integer) p.get(IMM), true, OffsetType.PRE);
-                        return new MemoryWriteInstruction((Register) p.get(RA), (Register) p.get(RD), (Register) p.get(RB), true, OffsetType.PRE);
+                            return new MemoryWriteInstruction((Register) p.get(RD), (Register) p.get(RA), (Integer) p.get(IMM), true, OffsetType.PRE);
+                        return new MemoryWriteInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) p.get(RB), true, OffsetType.PRE);
                     }
             )
-    )))));
+    ))))).setErrorFunction(BAD_REGISTER);
 
 
     static ParseTree START_REG = rd(
@@ -210,7 +210,7 @@ final class SugarParseTree {
                                     keyword("flag", term(p -> createSimpleALUInstruction(AddInstruction.class, p, true))),
                                     PRE_READ_SECOND_HALF,
                                     PRE_WRITE_SECOND_HALF
-                            )
+                            ).setErrorFunction(BAD_REGISTER)
                     )
             ).setErrorFunction(oversizedImmediate(16)),
 
@@ -227,7 +227,7 @@ final class SugarParseTree {
                                         SAVE_RA.accept(p);
                                         NEGATE_IMMEDIATE.accept(p);
                                     })
-                            )
+                            ).setErrorFunction(BAD_REGISTER)
                     ),
                     rb(
                             term(p -> new SubInstruction((Register) p.get(RD), (Register) p.get(RD), (Register) p.get(RB), false)),

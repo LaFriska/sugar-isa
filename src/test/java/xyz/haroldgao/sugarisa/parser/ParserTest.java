@@ -216,10 +216,20 @@ public class ParserTest {
         testInstructions("r7 -= 5 -> r0 = [r7] -> flag;", "f{preread r0, r7, -5}");
     }
 
+    @Test
+    public void testPreWrite(){
+        testInstructions("r8 += pc -> [r8] = r5;", "{prewrite r8, r5, pc}");
+        testInstructions("r3 += 0b101 -> [r3] = r5;", "{prewrite r3, r5, 5}");
+        testInstructions("r3 -= 0b101 -> [r3] = r5;", "{prewrite r3, r5, -5}");
+        testInstructions("r3 += pc -> [r3] = r5 -> flag;", "f{prewrite r3, r5, pc}");
+        testInstructions("r3 += 0b001 -> [r3] = r5 -> flag;", "f{prewrite r3, r5, 1}");
+        testInstructions("r3 -= 0b111 -> [r3] = r5 -> flag;", "f{prewrite r3, r5, -7}");
+    }
+
     private void testInstructions(String assembly, String... expectedStrings){
         var actual = Parser.parse(assembly);
         for (int i = 0; i < actual.size(); i++) {
-            Assert.assertEquals(actual.get(i).toString(), expectedStrings[i]);
+            Assert.assertEquals(expectedStrings[i],actual.get(i).toString());
         }
     }
 
