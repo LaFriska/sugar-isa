@@ -158,6 +158,40 @@ final class SugarParseTree {
 
     //Construction of the most complex subtree, which is the subtree starting with a register.
 
+    /**
+     * Pre-offset read, syntax after first chain. Example: .... ra = [rd];
+     * */
+    static ParseTree PRE_READ_SECOND_HALF = ra(equal(lbrac(isRd(rbrac(
+            term(p -> {
+                if(p.get(IMM) != null)
+                    return new MemoryReadInstruction((Register) p.get(RA), (Register) p.get(RD), (Integer) p.get(IMM), false, OffsetType.PRE);
+                return new MemoryReadInstruction((Register) p.get(RA), (Register) p.get(RD), (Register) p.get(RB), false, OffsetType.PRE);
+            }),
+            chainflag(
+                    p -> {
+                        if(p.get(IMM) != null)
+                            return new MemoryReadInstruction((Register) p.get(RA), (Register) p.get(RD), (Integer) p.get(IMM), true, OffsetType.PRE);
+                        return new MemoryReadInstruction((Register) p.get(RA), (Register) p.get(RD), (Register) p.get(RB), true, OffsetType.PRE);
+                    }
+            )
+    )))));
+
+    static ParseTree PRE_WRITE_SECOND_HALF = lbrac(isRd(rbrac(equal(ra(
+            term(p -> {
+                if(p.get(IMM) != null)
+                    return new MemoryWriteInstruction((Register) p.get(RD), (Register) p.get(RA), (Integer) p.get(IMM), false, OffsetType.PRE);
+                return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) p.get(RB), false, OffsetType.PRE);
+            }),
+            chainflag(
+                    p -> {
+                        if(p.get(IMM) != null)
+                            return new MemoryWriteInstruction((Register) p.get(RA), (Register) p.get(RD), (Integer) p.get(IMM), true, OffsetType.PRE);
+                        return new MemoryWriteInstruction((Register) p.get(RA), (Register) p.get(RD), (Register) p.get(RB), true, OffsetType.PRE);
+                    }
+            )
+    )))));
+
+
     static ParseTree START_REG = rd(
             simpleALUInstruction(MUL_EQ, MulInstruction.class),
             simpleALUInstruction(DIV_EQ, DivInstruction.class),
@@ -170,24 +204,33 @@ final class SugarParseTree {
 
 
             new ParseTree(eq(ADD_EQ),
-                    value(false, 16,
+                    value(true, 16,
                             term(p -> createSimpleALUInstruction(AddInstruction.class, p, false)),
                             chain(
-                                    keyword("flag", term(p -> createSimpleALUInstruction(AddInstruction.class, p, true)))
+                                    keyword("flag", term(p -> createSimpleALUInstruction(AddInstruction.class, p, true))),
+                                    PRE_READ_SECOND_HALF,
+                                    PRE_WRITE_SECOND_HALF
                             )
                     )
             ).setErrorFunction(oversizedImmediate(16)),
 
             new ParseTree(eq(SUB_EQ),
-                    value(false, 16,
-                            term(p -> createSimpleALUInstruction(SubInstruction.class, p, false)),
+                    imm16(
+                            term(p -> new SubInstruction((Register) p.get(RD), (Register) p.get(RD), (Integer) p.get(IMM), false)),
                             chain(
-                                    keyword("flag", term(p -> createSimpleALUInstruction(SubInstruction.class, p, true)))
+                                    keyword("flag", term(p -> new SubInstruction((Register) p.get(RD), (Register) p.get(RD), (Integer) p.get(IMM), true)))),
+                                    PRE_READ_SECOND_HALF.setConsumer(NEGATE_IMMEDIATE),
+                                    PRE_WRITE_SECOND_HALF.setConsumer(NEGATE_IMMEDIATE)
                             )
+                    ),
+                    rb(
+                            term(p -> new SubInstruction((Register) p.get(RD), (Register) p.get(RD), (Register) p.get(RB), false)),
+                            chainflag(p -> new SubInstruction((Register) p.get(RD), (Register) p.get(RD), (Register) p.get(RB), true))
                     )
-            ).setErrorFunction(oversizedImmediate(16))
+            ).setErrorFunction(oversizedImmediate(16));
 
-    );
+
+
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -381,6 +424,10 @@ final class SugarParseTree {
 
     static ParseTree imm15(ParseTree... children) {
         return imm(15, children);
+    }
+
+    static ParseTree imm16(ParseTree... children) {
+        return imm(16, children);
     }
 
     private static ParseTree imm(int size, ParseTree... children) {

@@ -55,6 +55,11 @@ public class ParseTreeUtils {
         }));
     };
 
+    /**
+     * Multiplies immediate value by -1. Assume that IMM variable is well-defined.
+     */
+    static Consumer<Pair<Token, ParseState>> NEGATE_IMMEDIATE = p -> p.snd().put(IMM, (Integer) p.snd().get(IMM) * -1);
+
     //-----------------------------------PREDICATES----------------------------------
 
     static Predicate<Pair<Token, ParseState>> IS_REGISTER =
