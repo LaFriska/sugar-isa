@@ -6,7 +6,6 @@ import xyz.haroldgao.sugarisa.execute.Register;
 import xyz.haroldgao.sugarisa.execute.instructions.*;
 import xyz.haroldgao.sugarisa.tokeniser.TokenType;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 
 import static xyz.haroldgao.sugarisa.execute.Register.R0;
@@ -191,8 +190,89 @@ final class SugarParseTree {
             )
     ))))).setErrorFunction(BAD_REGISTER);
 
+    static ParseTree MEMORY_READ_OFFSET_LAST_BIT = rbrac(
+            term(p -> {
+                if(p.get(RB) != null)
+                    return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) p.get(RB), false, OffsetType.STANDARD);
+                return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Integer) p.get(IMM), false, OffsetType.STANDARD);
+            }),
+            chainflag(
+                    p -> {
+                        if(p.get(RB) != null)
+                            return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) p.get(RB), true, OffsetType.STANDARD);
+                        return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Integer) p.get(IMM), true, OffsetType.STANDARD);
+                    }
+            )
+    );
+
+    static ParseTree MEMORY_READ_SECOND_HALF = lbrac(ra(
+            rbrac(
+                    term(p -> new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), 0, false, OffsetType.STANDARD)),
+                    chain(
+                            keyword("flag", term(p -> new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), 0, true, OffsetType.STANDARD))),
+                            isRa(
+                                    addeq(
+                                            value(true, 16,
+                                                    term(p -> {
+                                                        if(p.get(RB) != null)
+                                                            return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) p.get(RB), false, OffsetType.POST);
+                                                        return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Integer) p.get(IMM), false, OffsetType.POST);
+                                                    }),
+                                                    chainflag(
+                                                            p -> {
+                                                                if(p.get(RB) != null)
+                                                                    return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Register) p.get(RB), true, OffsetType.POST);
+                                                                return new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), (Integer) p.get(IMM), true, OffsetType.POST);
+                                                            }
+                                                    )
+                                            )
+                                    ).setErrorFunction(oversizedImmediate(16)),
+                                    subeq(
+                                            imm16(
+                                                    term(p -> new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), -1 * (Integer) p.get(IMM), false, OffsetType.POST)),
+                                                    chainflag(p -> new MemoryReadInstruction((Register) p.get(RD), (Register) p.get(RA), -1 * (Integer) p.get(IMM), true, OffsetType.POST))
+                                            )
+                                    ).setErrorFunction(oversizedImmediate(16))
+                            )
+                    )
+            ),
+            add(value(true, 16, MEMORY_READ_OFFSET_LAST_BIT)),
+            sub(imm16(MEMORY_READ_OFFSET_LAST_BIT.setConsumer(NEGATE_IMMEDIATE)))
+    ));
+
+    /**
+     * Subtree for rd = something.
+     */
+    static ParseTree REG_EQ_SOMETHING = equal(
+            imm22(term(p -> new SetInstruction((Register) p.get(RD), (Integer) p.get(IMM)))),
+            not(
+                    ra(term(p -> new NotInstruction((Register) p.get(RD), (Register) p.get(RA)))),
+                    imm16(term(p -> new NotInstruction((Register) p.get(RD), (Integer) p.get(IMM))))
+            ).setErrorFunction(oversizedImmediate(16)),
+            ra(
+                    term(p -> new SetInstruction((Register) p.get(RD), (Register) p.get(RA))),
+                    normalALUInstruction(ADD, AddInstruction.class),
+                    normalALUInstruction(SUB, SubInstruction.class),
+                    normalALUInstruction(MUL, MulInstruction.class),
+                    normalALUInstruction(DIV, DivInstruction.class),
+                    normalALUInstruction(MOD, ModInstruction.class),
+                    normalALUInstruction(AND, AndInstruction.class),
+                    normalALUInstruction(OR, OrInstruction.class),
+                    normalALUInstruction(XOR, XorInstruction.class),
+                    normalALUInstruction(LEFT_SHIFT, LeftShiftInstruction.class),
+                    normalALUInstruction(RIGHT_SHIFT, RightShiftInstruction.class)
+            ),
+
+
+            MEMORY_READ_SECOND_HALF
+
+    ).setErrorFunction(oversizedImmediate(22));
+
 
     static ParseTree START_REG = rd(
+
+            REG_EQ_SOMETHING,
+
             simpleALUInstruction(MUL_EQ, MulInstruction.class),
             simpleALUInstruction(DIV_EQ, DivInstruction.class),
             simpleALUInstruction(MOD_EQ, ModInstruction.class),
@@ -239,6 +319,12 @@ final class SugarParseTree {
 
     //------------------------------------------------------------------------------------------------------------------
 
+    private SugarParseTree() {
+    }
+
+
+    //-------------------------------------------Utility ----------------------------------------------------------
+
     /**
      * Returns the Sugar parse tree.
      */
@@ -260,9 +346,6 @@ final class SugarParseTree {
                 sugarSubtrees
         );
     }
-
-
-    //-------------------------------------------Utility ----------------------------------------------------------
 
     static ParseTree chainflag(Function<ParseState, Instruction> returnInstruction) {
         return chain(keyword("flag", term(returnInstruction)));
@@ -310,12 +393,25 @@ final class SugarParseTree {
         ).setErrorFunction(oversizedImmediate(16));
     }
 
+    static ParseTree normalALUInstruction(TokenType op, Class<? extends DuoDataInstruction> instructionClass){
+        return new ParseTree(eq(op),
+                value(true, 16,
+                        term(p -> createSimpleALUInstruction(instructionClass, p, false, RA)),
+                        chainflag(p -> createSimpleALUInstruction(instructionClass, p, true, RA))
+                )
+        ).setErrorFunction(oversizedImmediate(16));
+    }
+
     private static @NotNull DuoDataInstruction createSimpleALUInstruction(Class<? extends DuoDataInstruction> instructionClass, ParseState p, boolean flag) {
+        return createSimpleALUInstruction(instructionClass, p, flag, RD);
+    }
+
+    private static @NotNull DuoDataInstruction createSimpleALUInstruction(Class<? extends DuoDataInstruction> instructionClass, ParseState p, boolean flag, ParseVariable secondRegister) {
         if (p.get(RB) != null) {
             try {
                 return instructionClass
                         .getDeclaredConstructor(Register.class, Register.class, Register.class, Boolean.class)
-                        .newInstance((Register) p.get(RD), (Register) p.get(RD), (Register) p.get(RB), flag);
+                        .newInstance((Register) p.get(RD), (Register) p.get(secondRegister), (Register) p.get(RB), flag);
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -324,14 +420,13 @@ final class SugarParseTree {
             try {
                 return instructionClass
                         .getDeclaredConstructor(Register.class, Register.class, Integer.class, Boolean.class)
-                        .newInstance((Register) p.get(RD), (Register) p.get(RD), (Integer) p.get(IMM), flag);
+                        .newInstance((Register) p.get(RD), (Register) p.get(secondRegister), (Integer) p.get(IMM), flag);
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
     }
-
 
     static ParseTree comma(ParseTree... children) {
         return specific(COMMA, children);
@@ -435,12 +530,13 @@ final class SugarParseTree {
         return imm(16, children);
     }
 
+    static ParseTree imm22(ParseTree... children) {
+        return imm(22, children);
+    }
+
     private static ParseTree imm(int size, ParseTree... children) {
         return new ParseTree(isUnsignedImmediate(size), SAVE_IMMEDIATE, TRIVIAL_RETURN_INST, TRIVIAL_ERROR, children
         );
-    }
-
-    private SugarParseTree() {
     }
 
 }

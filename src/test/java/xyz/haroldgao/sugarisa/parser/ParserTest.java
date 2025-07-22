@@ -226,6 +226,70 @@ public class ParserTest {
         testInstructions("r3 -= 0b111 -> [r3] = r5 -> flag;", "f{prewrite r3, r5, -7}");
     }
 
+    /**
+     * Tests set instructions.
+     * */
+    @Test
+    public void testSet(){
+        testInstructions("r1 = r2;", "{set r1, r2}");
+        testInstructions("r3 = 123;", "{set r3, 123}");
+    }
+
+    /**
+     *
+     * */
+    @Test
+    public void testNot(){
+        testInstructions("r1 = !lr;", "{! r1, lr}");
+        testInstructions("r1 = !5555;", "{! r1, 5555}");
+    }
+
+    @Test
+    public void testALU(){
+        testInstructions("r1 = r2 + r3;", "{+ r1, r2, r3}");
+        testInstructions("r1 = r2 - r3;", "{- r1, r2, r3}");
+        testInstructions("r1 = r2 * r3;", "{* r1, r2, r3}");
+        testInstructions("r1 = r2 / r3;", "{/ r1, r2, r3}");
+        testInstructions("r1 = r2 % r3;", "{% r1, r2, r3}");
+        testInstructions("r1 = r2 | r3;", "{| r1, r2, r3}");
+        testInstructions("r1 = r2 & r3;", "{& r1, r2, r3}");
+        testInstructions("r1 = r2 << r3;", "{<< r1, r2, r3}");
+        testInstructions("r1 = r2 >> r3;", "{>> r1, r2, r3}");
+        testInstructions("r1 = r2 ^ r3;", "{^ r1, r2, r3}");
+
+        testInstructions("r1 = r2 + r3 ->flag;", "f{+ r1, r2, r3}");
+        testInstructions("r1 = r2 - r3->flag;", "f{- r1, r2, r3}");
+        testInstructions("r1 = r2 * r3->flag;", "f{* r1, r2, r3}");
+        testInstructions("r1 = r2 / r3->flag;", "f{/ r1, r2, r3}");
+        testInstructions("r1 = r2 % r3->flag;", "f{% r1, r2, r3}");
+        testInstructions("r1 = r2 | r3->flag;", "f{| r1, r2, r3}");
+        testInstructions("r1 = r2 & r3->flag;", "f{& r1, r2, r3}");
+        testInstructions("r1 = r2 << r3->flag;", "f{<< r1, r2, r3}");
+        testInstructions("r1 = r2 >> r3->flag;", "f{>> r1, r2, r3}");
+        testInstructions("r1 = r2 ^ r3->flag;", "f{^ r1, r2, r3}");
+    }
+
+    @Test
+    public void testMemoryRead(){
+        testInstructions("r10 = [r1];", "{read r10, r1, 0}");
+        testInstructions("r10 = [r1]->flag;", "f{read r10, r1, 0}");
+        testInstructions("r10 = [r1] -> r1 += r3;", "{postread r10, r1, r3}");
+        testInstructions("r10 = [r1] -> r1 += 123;", "{postread r10, r1, 123}");
+        testInstructions("r10 = [r1] -> r1 -= 123;", "{postread r10, r1, -123}");
+        testInstructions("r10 = [r1] -> r1 += r3 -> flag;", "f{postread r10, r1, r3}");
+        testInstructions("r10 = [r1] -> r1 += 123 -> flag;", "f{postread r10, r1, 123}");
+        testInstructions("r10 = [r1] -> r1 -= 123 -> flag;", "f{postread r10, r1, -123}");
+
+        testInstructions("r5 = [r2 + r3];", "{read r5, r2, r3}");
+        testInstructions("r5 = [r2 + 4];", "{read r5, r2, 4}");
+        testInstructions("r5 = [r2 - 4];", "{read r5, r2, -4}");
+
+        testInstructions("r5 = [r2 + r3] -> flag;", "f{read r5, r2, r3}");
+        testInstructions("r5 = [r2 + 4] -> flag;", "f{read r5, r2, 4}");
+        testInstructions("r5 = [r2 - 4] -> flag;", "f{read r5, r2, -4}");
+
+    }
+
     private void testInstructions(String assembly, String... expectedStrings){
         var actual = Parser.parse(assembly);
         for (int i = 0; i < actual.size(); i++) {
