@@ -182,7 +182,6 @@ public class ParserTest {
         testInstructions("r3 ^= 12345;", "{^ r3, r3, 12345}");
         testInstructions("r3 << 12345;", "{<< r3, r3, 12345}");
         testInstructions("r3 >> 12345;", "{>> r3, r3, 12345}");
-
     }
 
     private void testInstructions(String assembly, String... expectedStrings){
