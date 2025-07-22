@@ -11,7 +11,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static xyz.haroldgao.sugarisa.execute.Register.*;
 import static xyz.haroldgao.sugarisa.parser.ParseVariable.*;
 import static xyz.haroldgao.sugarisa.tokeniser.TokenType.LABEL;
 
@@ -65,10 +64,19 @@ public class ParseTreeUtils {
     /**
      * Checks if a token is a register AND the same as the register ra stored in the parse state.
      */
-    static Predicate<Pair<Token, ParseState>> IS_RA =
-            p -> IS_REGISTER.test(p)
-                    && p.snd().get(RA) != null //Ra not null, then assume ra is register type.
-                    && p.snd().get(RA) == Register.getFromToken(p.fst().value());
+    static Predicate<Pair<Token, ParseState>> IS_RA = isSameRegister(RA);
+
+    /**
+     * Checks if a token is a register AND the same as the register rd stored in the parse state.
+     */
+    static Predicate<Pair<Token, ParseState>> IS_RD = isSameRegister(RD);
+
+    static Predicate<Pair<Token, ParseState>> isSameRegister(ParseVariable variable){
+        return p -> IS_REGISTER.test(p)
+                && p.snd().get(variable) != null
+                && p.snd().get(variable) == Register.getFromToken(p.fst().value());
+    }
+
 
     static Predicate<Pair<Token, ParseState>> TRUE = (p) -> true;
 
@@ -122,7 +130,10 @@ public class ParseTreeUtils {
         };
     }
 
-    static Function<Pair<Token, ParseState>, @Nullable ParseError> BAD_RA = p -> {
+    /**
+     * Thrown when a register token is detected but it is not a specific register held by the parse state.
+     * */
+    static Function<Pair<Token, ParseState>, @Nullable ParseError> BAD_REGISTER = p -> {
         if(IS_REGISTER.test(p)) return new BadRegisterOffsetError(p.fst().errorInfo());
         return null;
     };

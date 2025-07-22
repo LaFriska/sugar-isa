@@ -55,14 +55,14 @@ class SugarParseTree {
             label(term(p -> new PushInstruction((Integer) p.get(IMM)))),
             rd(term(p -> new PushInstruction((Register) p.get(RD)))),
             imm26(term(p -> new PushInstruction((Integer) p.get(IMM))))
-    );
+    ).setErrorFunction(oversizedImmediate(26));
 
     static ParseTree POP = keyword( //TODO add exception handling for when labels point to oversized PC address.
             "pop",
             label(term(p -> new PopInstruction((Integer) p.get(IMM)))),
             rd(term(p -> new PopInstruction((Register) p.get(RD)))),
             imm26(term(p -> new PopInstruction((Integer) p.get(IMM))))
-    );
+    ).setErrorFunction(oversizedImmediate(26));
 
     //SUBTREE STARTING WITH "["
 
@@ -83,7 +83,7 @@ class SugarParseTree {
             )
     );
 
-    static ParseTree MEMORY_WRITE_POST_OFFSET = isRa(
+    static ParseTree MEMORY_WRITE_POST_OFFSET = isRd(
             addeq(
                     value(true, 15,
                             term(
@@ -146,11 +146,12 @@ class SugarParseTree {
                                                             term(p -> new MemoryWriteInstruction((Register) p.get(RD), (Register) p.get(RA), R0, true, OffsetType.STANDARD))
                                                     ),
                                                     MEMORY_WRITE_POST_OFFSET
-                                            )
+                                            ).setErrorFunction(BAD_REGISTER)
                                     )
                             )
                     )
-            ));
+            )
+    );
 
 
 
@@ -199,6 +200,10 @@ class SugarParseTree {
 
     static ParseTree isRa(ParseTree... children) {
         return new ParseTree(IS_RA, children);
+    }
+
+    static ParseTree isRd(ParseTree... children) {
+        return new ParseTree(IS_RD, children);
     }
 
     static ParseTree rb(ParseTree... children) {

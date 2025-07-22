@@ -147,6 +147,18 @@ public class ParserTest {
         testInstructions("[r5 - 0b101000101001011] =  r11;", "{write r5, r11, -20811}");
     }
 
+    @Test
+    public void testWriteNoOffset(){
+        testInstructions("[r0] = r8;", "{write r0, r8, r0}");
+        testInstructions("[r0] = r8 -> flag;", "f{write r0, r8, r0}");
+        testInstructions("[r0] = r8 -> r0 += r3;", "{postwrite r0, r8, r3}");
+        testInstructions("[r0] = r8 -> r0 += r3->flag;", "f{postwrite r0, r8, r3}");
+        testInstructions("[r0] = r8 -> r0 += 0b100100001111011;", "{postwrite r0, r8, 18555}");
+        testInstructions("[r0] = r8 -> r0 += 12345->flag;", "f{postwrite r0, r8, 12345}");
+        testInstructions("[r0] = r8 -> r0 -= 0b100100001111011;", "{postwrite r0, r8, -18555}");
+        testInstructions("[r0] = r8 -> r0 -= 12345->flag;", "f{postwrite r0, r8, -12345}");
+    }
+
     private void testInstructions(String assembly, String... expectedStrings){
         var actual = Parser.parse(assembly);
         for (int i = 0; i < actual.size(); i++) {
