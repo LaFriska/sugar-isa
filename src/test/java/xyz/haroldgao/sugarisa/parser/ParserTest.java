@@ -287,7 +287,6 @@ public class ParserTest {
         testInstructions("r5 = [r2 + r3] -> flag;", "f{read r5, r2, r3}");
         testInstructions("r5 = [r2 + 4] -> flag;", "f{read r5, r2, 4}");
         testInstructions("r5 = [r2 - 4] -> flag;", "f{read r5, r2, -4}");
-
     }
 
     private void testInstructions(String assembly, String... expectedStrings){
