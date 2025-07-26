@@ -34,9 +34,7 @@ public interface ArchitecturalState {
      *                              operation. If the instruction executing this method is an arithmetic operation, then
      *                              these flags should be updated.
      */
-    default void flag(int input1, int input2, int result, boolean isArithmeticOperation){
-        //TODO
-    }
+    void flag(int input1, int input2, int result, boolean isArithmeticOperation);
 
     boolean readFlag(ALUFlag flag);
 

@@ -138,7 +138,7 @@ which replaces `ra` with `rd`.
 ### Logical Operations
 
 There are 6 logical operations.
-
+f
 1. and, `&`
 2. or, `|`
 4. not, `!`
