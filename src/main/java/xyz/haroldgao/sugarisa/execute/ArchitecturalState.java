@@ -5,6 +5,12 @@ package xyz.haroldgao.sugarisa.execute;
  * */
 public interface ArchitecturalState {
 
+    public enum CarryFlagMode{
+        ADD,
+        SUB,
+        NONE
+    }
+
     /**
      * Reads a value from a register.
      * @see Register
@@ -34,7 +40,12 @@ public interface ArchitecturalState {
      *                              operation. If the instruction executing this method is an arithmetic operation, then
      *                              these flags should be updated.
      */
-    void flag(int input1, int input2, int result, boolean isArithmeticOperation);
+    default void flag(int input1,
+                      int input2,
+                      int result,
+                      boolean isArithmeticOperation,
+                      CarryFlagMode carryMode){ //TODO refactor its input
+    }
 
     boolean readFlag(ALUFlag flag);
 

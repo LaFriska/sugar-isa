@@ -10,7 +10,7 @@ import xyz.haroldgao.sugarisa.execute.Register;
  * */
 public abstract class DuoDataInstruction extends DataInstruction {
 
-    private final @Nullable Register rb;
+    protected final @Nullable Register rb;
 
     /**
      * R-format constructor which sets isArithmeticOperation to false.
@@ -76,7 +76,7 @@ public abstract class DuoDataInstruction extends DataInstruction {
         int input1 = state.read(ra);
         int input2 = format == Format.I ? imm : state.read(rb);
         int result = operate(input1, input2);
-        if(setFlag) state.flag(input1, input2, result, isArithmeticOperation);
+        if(setFlag) state.flag(input1, input2, result, isArithmeticOperation, ArchitecturalState.CarryFlagMode.NONE);
         return result;
     }
 

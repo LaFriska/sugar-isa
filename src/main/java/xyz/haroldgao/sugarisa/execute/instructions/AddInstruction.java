@@ -1,6 +1,7 @@
 package xyz.haroldgao.sugarisa.execute.instructions;
 
 import org.jetbrains.annotations.NotNull;
+import xyz.haroldgao.sugarisa.execute.ArchitecturalState;
 import xyz.haroldgao.sugarisa.execute.Register;
 
 /**
@@ -14,6 +15,15 @@ public final class AddInstruction extends DuoDataInstruction {
 
     public AddInstruction(@NotNull Register rd, @NotNull Register ra, @NotNull Integer imm16, @NotNull Boolean setFlag) {
         super(rd, ra, imm16, setFlag);
+    }
+
+    @Override
+    protected int operateAndSetFlag(ArchitecturalState state){
+        int input1 = state.read(ra);
+        int input2 = format == Format.I ? imm : state.read(rb);
+        int result = operate(input1, input2);
+        if(setFlag) state.flag(input1, input2, result, isArithmeticOperation, ArchitecturalState.CarryFlagMode.ADD);
+        return result;
     }
 
     @Override
