@@ -12,7 +12,7 @@ import java.util.HashMap;
  * uses of this emulator will likely use a small portion of the memory address space.
  * Please also note that Sugar uses little endian.
  * */
-class Memory {
+final class Memory {
 
     private final HashMap<Integer, byte[]> internal;
 
@@ -20,14 +20,14 @@ class Memory {
 
     private static final int BYTE_ARRAY_SIZE = 65536;
 
-    public Memory(){
+    Memory(){
         internal = new HashMap<>();
     }
 
     /**
      * Reads a single byte from memory.
      * */
-    public byte read(int address){
+    byte read(int address){
         int key = address >> 16;
         if(!internal.containsKey(key)) return 0; //No allocated
         return internal.get(key)[address & ARRAY_INDEX_BITMASK];
@@ -36,7 +36,7 @@ class Memory {
     /**
      * Writes a single byte into memory, allocate more chunks if needed.
      * */
-    public void write(int address, byte value){
+    void write(int address, byte value){
         int key = address >> 16;
 
         //allocation
@@ -52,7 +52,7 @@ class Memory {
     /**
      * Reads a 32-bit word.
      * */
-    public int readWord(int address) {
+    int readWord(int address) {
         return ((read(address + 3) & 0xFF) << 24)
                 | ((read(address + 2) & 0xFF) << 16)
                 | ((read(address + 1) & 0xFF) << 8)
@@ -62,7 +62,7 @@ class Memory {
     /**
      * Writes to a 32-bit address.
      * */
-    public void writeWord(int address, int word) {
+    void writeWord(int address, int word) {
         write(address,     (byte) (word & 0xFF));
         write(address + 1, (byte) ((word >> 8) & 0xFF));
         write(address + 2, (byte) ((word >> 16) & 0xFF));
