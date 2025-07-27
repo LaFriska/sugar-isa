@@ -101,7 +101,7 @@ public class Decoder {
         return ((binary >> 16) & 1) == 1 ? OffsetType.POST : OffsetType.PRE;
     }
 
-    Decoder getInstance(){
+    static Decoder getInstance(){
         if(SINGLETON == null)
             SINGLETON = new Decoder();
         return SINGLETON;

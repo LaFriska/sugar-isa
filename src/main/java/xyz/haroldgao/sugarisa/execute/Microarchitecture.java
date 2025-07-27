@@ -44,6 +44,11 @@ class Microarchitecture implements ArchitecturalState {
     }
 
     @Override
+    public String getRegisterFileString() {
+        return registerFile.toString();
+    }
+
+    @Override
     public boolean readFlag(ALUFlag flag) {
         if(flag == null) return false;
         int fl = read(Register.FL);

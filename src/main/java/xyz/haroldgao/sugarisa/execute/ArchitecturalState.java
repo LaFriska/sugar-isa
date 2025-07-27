@@ -32,6 +32,8 @@ public interface ArchitecturalState {
      * */
     void flag(int data);
 
+    String getRegisterFileString();
+
     boolean readFlag(ALUFlag flag);
 
     /**

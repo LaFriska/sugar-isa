@@ -25,7 +25,7 @@ class Loader {
         return new Microarchitecture(memory, new RegisterFile());
     }
 
-    Loader getSingleton(){
+    static Loader getSingleton(){
         if(SINGLETON == null)
             SINGLETON = new Loader();
         return SINGLETON;
