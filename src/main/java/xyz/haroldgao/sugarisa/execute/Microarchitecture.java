@@ -5,6 +5,8 @@ package xyz.haroldgao.sugarisa.execute;
  * */
 class Microarchitecture implements ArchitecturalState {
 
+    boolean hasTerminated = false;
+
     private final Memory memory;
 
     private final RegisterFile registerFile;
@@ -51,5 +53,10 @@ class Microarchitecture implements ArchitecturalState {
             case C -> (fl & 0b100) == 0b100;
             case V -> (fl & 0b1000) == 0b1000;
         };
+    }
+
+    @Override
+    public void terminate() {
+        hasTerminated = true;
     }
 }

@@ -16,26 +16,26 @@ public class Decoder {
 
     Instruction decode(int binary){
         return switch (getOpcode(binary)){
-            case 0 -> getFormat(binary) == Format.I ? new SetInstruction(getRd(binary), getImmediate(binary, 22))
-                                                    : new SetInstruction(getRd(binary), getRb(binary));
-            case 1 -> getFormat(binary) == Format.I ? new AddInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
-                                                    : new AddInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
-            case 2 -> getFormat(binary) == Format.I ? new SubInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
-                                                    : new SubInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
-            case 3 -> getFormat(binary) == Format.I ? new MulInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
-                                                    : new MulInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
-            case 4 -> getFormat(binary) == Format.I ? new DivInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
-                                                    : new DivInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
-            case 5 -> getFormat(binary) == Format.I ? new ModInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
-                                                    : new ModInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
-            case 6 -> getFormat(binary) == Format.I ? new AndInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
-                                                    : new AndInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
-            case 7 -> getFormat(binary) == Format.I ? new OrInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
-                                                    : new OrInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
-            case 8 -> getFormat(binary) == Format.I ? new XorInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
-                                                    : new XorInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
-            case 9 -> getFormat(binary) == Format.I ? new NotInstruction(getRd(binary), getImmediate(binary, 22))
-                                                    : new NotInstruction(getRd(binary), getRb(binary));
+            case 0 -> getFormat(binary) == Format.I  ? new SetInstruction(getRd(binary), getImmediate(binary, 22))
+                                                     : new SetInstruction(getRd(binary), getRb(binary));
+            case 1 -> getFormat(binary) == Format.I  ? new AddInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
+                                                     : new AddInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
+            case 2 -> getFormat(binary) == Format.I  ? new SubInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
+                                                     : new SubInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
+            case 3 -> getFormat(binary) == Format.I  ? new MulInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
+                                                     : new MulInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
+            case 4 -> getFormat(binary) == Format.I  ? new DivInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
+                                                     : new DivInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
+            case 5 -> getFormat(binary) == Format.I  ? new ModInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
+                                                     : new ModInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
+            case 6 -> getFormat(binary) == Format.I  ? new AndInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
+                                                     : new AndInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
+            case 7 -> getFormat(binary) == Format.I  ? new OrInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
+                                                     : new OrInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
+            case 8 -> getFormat(binary) == Format.I  ? new XorInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
+                                                     : new XorInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
+            case 9 -> getFormat(binary) == Format.I  ? new NotInstruction(getRd(binary), getImmediate(binary, 22))
+                                                     : new NotInstruction(getRd(binary), getRb(binary));
             case 10 -> getFormat(binary) == Format.I ? new LeftShiftInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
                                                      : new LeftShiftInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
             case 11 -> getFormat(binary) == Format.I ? new RightShiftInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
@@ -60,7 +60,7 @@ public class Decoder {
             case 25 -> getFormat(binary) == Format.I ? new CallInstruction(getImmediate(binary, 26), ALUFlag.Z) : new CallInstruction(getRb(binary), ALUFlag.Z);
             case 26 -> getFormat(binary) == Format.I ? new CallInstruction(getImmediate(binary, 26), ALUFlag.C) : new CallInstruction(getRb(binary), ALUFlag.C);
             case 27 -> getFormat(binary) == Format.I ? new CallInstruction(getImmediate(binary, 26), ALUFlag.V) : new CallInstruction(getRb(binary), ALUFlag.V);
-            default -> Instructions.NULL;
+            default -> Terminator.getInstance();
         };
     }
 

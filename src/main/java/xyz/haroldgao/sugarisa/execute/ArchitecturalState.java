@@ -41,4 +41,9 @@ public interface ArchitecturalState {
         state.write(Register.PC, state.read(Register.PC) + 4);
     }
 
+    /**
+     * Terminate the program.
+     * */
+    void terminate();
+
 }
