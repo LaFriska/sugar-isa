@@ -81,6 +81,104 @@ public class ParserTest {
     }
 
     /**
+     * Tests branch instructions.
+     * */
+    @Test
+    public void testBranching(){
+        testInstructions("goto r3;", "{goto r3}");
+        testInstructions("goto 0xa82ee;", "{goto 688878}");
+        testInstructions("""
+                    ;
+                MAIN:
+                    ;
+                    goto MAIN;
+                """, "{set r0, r0}", "{set r0, r0}", "{goto 4}");
+
+        testInstructions("goton r3;", "{goton r3}");
+        testInstructions("goton 0xa82ee;", "{goton 688878}");
+        testInstructions("""
+                    ;
+                MAIN:
+                    ;
+                    goton MAIN;
+                """, "{set r0, r0}", "{set r0, r0}", "{goton 4}");
+
+        testInstructions("gotoz lr;", "{gotoz lr}");
+        testInstructions("gotoz 0xa82ee;", "{gotoz 688878}");
+        testInstructions("""
+                    ;
+                MAIN:
+                    ;
+                    gotoz MAIN;
+                """, "{set r0, r0}", "{set r0, r0}", "{gotoz 4}");
+
+        testInstructions("gotoc lr;", "{gotoc lr}");
+        testInstructions("gotoc 0xa82ee;", "{gotoc 688878}");
+        testInstructions("""
+                    ;
+                MAIN:
+                    ;
+                    gotoc MAIN;
+                """, "{set r0, r0}", "{set r0, r0}", "{gotoc 4}");
+
+        testInstructions("gotov lr;", "{gotov lr}");
+        testInstructions("gotov 0xa82ee;", "{gotov 688878}");
+        testInstructions("""
+                    ;
+                MAIN:
+                    ;
+                    gotov MAIN;
+                """, "{set r0, r0}", "{set r0, r0}", "{gotov 4}");
+
+
+        testInstructions("call r3;", "{call r3}");
+        testInstructions("call 0xa82ee;", "{call 688878}");
+        testInstructions("""
+                    ;
+                MAIN:
+                    ;
+                    call MAIN;
+                """, "{set r0, r0}", "{set r0, r0}", "{call 4}");
+
+        testInstructions("calln r3;", "{calln r3}");
+        testInstructions("calln 0xa82ee;", "{calln 688878}");
+        testInstructions("""
+                    ;
+                MAIN:
+                    ;
+                    calln MAIN;
+                """, "{set r0, r0}", "{set r0, r0}", "{calln 4}");
+
+        testInstructions("callz lr;", "{callz lr}");
+        testInstructions("callz 0xa82ee;", "{callz 688878}");
+        testInstructions("""
+                    ;
+                MAIN:
+                    ;
+                    callz MAIN;
+                """, "{set r0, r0}", "{set r0, r0}", "{callz 4}");
+
+        testInstructions("callc lr;", "{callc lr}");
+        testInstructions("callc 0xa82ee;", "{callc 688878}");
+        testInstructions("""
+                    ;
+                MAIN:
+                    ;
+                    callc MAIN;
+                """, "{set r0, r0}", "{set r0, r0}", "{callc 4}");
+
+        testInstructions("callv lr;", "{callv lr}");
+        testInstructions("callv 0xa82ee;", "{callv 688878}");
+        testInstructions("""
+                    ;
+                MAIN:
+                    ;
+                    callv MAIN;
+                """, "{set r0, r0}", "{set r0, r0}", "{callv 4}");
+
+    }
+
+    /**
      * Integration of simple subtrees.
      * */
     @Test

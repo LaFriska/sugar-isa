@@ -1,6 +1,7 @@
 package xyz.haroldgao.sugarisa.parser;
 
 import org.jetbrains.annotations.NotNull;
+import xyz.haroldgao.sugarisa.execute.ALUFlag;
 import xyz.haroldgao.sugarisa.execute.OffsetType;
 import xyz.haroldgao.sugarisa.execute.Register;
 import xyz.haroldgao.sugarisa.execute.instructions.*;
@@ -338,13 +339,39 @@ final class SugarParseTree {
                 PUSH,
                 POP,
                 MEMORY_WRITE,
-                START_REG
+                START_REG,
+                gotoo(null, "goto"),
+                gotoo(ALUFlag.N, "goton"),
+                gotoo(ALUFlag.Z, "gotoz"),
+                gotoo(ALUFlag.C, "gotoc"),
+                gotoo(ALUFlag.V, "gotov"),
+                call(null, "call"),
+                call(ALUFlag.N, "calln"),
+                call(ALUFlag.Z, "callz"),
+                call(ALUFlag.C, "callc"),
+                call(ALUFlag.V, "callv")
         };
 
         return new ParseTree(
                 TRUE,
                 sugarSubtrees
         );
+    }
+
+    static ParseTree gotoo(ALUFlag flag, String mnemonic){
+        return new ParseTree(isSpecificKeyword(mnemonic),
+                rd(term(p -> new GotoInstruction((Register) p.get(RD), flag))),
+                imm26(term(p -> new GotoInstruction((Integer) p.get(IMM), flag))),
+                label(term(p -> new GotoInstruction((Integer) p.get(IMM), flag)))
+        ).setErrorFunction(oversizedImmediate(26));
+    }
+
+    static ParseTree call(ALUFlag flag, String mnemonic){
+        return new ParseTree(isSpecificKeyword(mnemonic),
+                rd(term(p -> new CallInstruction((Register) p.get(RD), flag))),
+                imm26(term(p -> new CallInstruction((Integer) p.get(IMM), flag))),
+                label(term(p -> new CallInstruction((Integer) p.get(IMM), flag)))
+        ).setErrorFunction(oversizedImmediate(26));
     }
 
     static ParseTree chainflag(Function<ParseState, Instruction> returnInstruction) {
