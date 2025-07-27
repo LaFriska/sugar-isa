@@ -76,8 +76,18 @@ public abstract class DuoDataInstruction extends DataInstruction {
         int input1 = state.read(ra);
         int input2 = format == Format.I ? imm : state.read(rb);
         int result = operate(input1, input2);
-        if(setFlag) state.flag(input1, input2, result, isArithmeticOperation, ArchitecturalState.CarryFlagMode.NONE);
+        if(setFlag) setFlag(input1, input2, result, state);
         return result;
+    }
+
+    /**
+     * Default implementation to set register flags. Instructions defer on this method only through
+     * the way the carry (C) and overflow (V) flags are set. By default, they are not set at all.
+     * */
+    protected void setFlag(int input1, int input2, int result, ArchitecturalState state){
+        int flagN = result < 0 ? 1 : 0;
+        int flagZ = result == 0 ? 0b10 : 0;
+        state.flag(flagN | flagZ);
     }
 
 

@@ -18,12 +18,12 @@ public final class AddInstruction extends DuoDataInstruction {
     }
 
     @Override
-    protected int operateAndSetFlag(ArchitecturalState state){
-        int input1 = state.read(ra);
-        int input2 = format == Format.I ? imm : state.read(rb);
-        int result = operate(input1, input2);
-        if(setFlag) state.flag(input1, input2, result, isArithmeticOperation, ArchitecturalState.CarryFlagMode.ADD);
-        return result;
+    protected void setFlag(int input1, int input2, int result, ArchitecturalState state) {
+        int flagN = result < 0 ? 1 : 0;
+        int flagZ = result == 0 ? 0b10 : 0;
+        int flagC = Integer.compareUnsigned(result, input1) < 0 ? 0b100 : 0b0;
+        int flagV = ((input1 ^ result) & (input2 ^ result)) < 0 ? 0b1000 : 0;
+        state.flag(flagN | flagZ | flagC | flagV);
     }
 
     @Override
