@@ -3,7 +3,7 @@ package xyz.haroldgao.sugarisa.execute.instructions;
 /**
  * Represents an instruction format.
  * */
-enum Format {
+public enum Format {
     I,
     R
 }
