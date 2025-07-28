@@ -41,14 +41,24 @@ public class SugarExecutor implements Iterator<ArchitecturalState> {
 
     @Override
     public boolean hasNext() {
-        return nextInstruction instanceof Terminator;
+        return !(nextInstruction instanceof Terminator);
     }
 
     @Override
     public ArchitecturalState next() {
-        if(hasNext()) return astate;
+        if(!hasNext()) return astate;
         nextInstruction.execute(astate);
         nextInstruction = getNextInstruction();
+        return astate;
+    }
+
+    /**
+     * Executes until hasNext() returns false.
+     * */
+    public ArchitecturalState execute(){
+        while(hasNext()){
+            next();
+        }
         return astate;
     }
 

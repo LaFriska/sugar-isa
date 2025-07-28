@@ -1,6 +1,7 @@
 package xyz.haroldgao.sugarisa.execute.instructions;
 
 import org.jetbrains.annotations.NotNull;
+import xyz.haroldgao.sugarisa.execute.ArchitecturalState;
 import xyz.haroldgao.sugarisa.execute.Register;
 
 /**
@@ -29,5 +30,15 @@ public final class SetInstruction extends SoloDataInstruction {
     @Override
     protected String getMnemonic() {
         return "set";
+    }
+
+    @Override
+    public void execute(ArchitecturalState state) {
+        if(rd == Register.PC){
+            //Does not increment PC
+            state.write(Register.PC, format == Format.R ? state.read(ra) : imm);
+        }else {
+            super.execute(state);
+        }
     }
 }

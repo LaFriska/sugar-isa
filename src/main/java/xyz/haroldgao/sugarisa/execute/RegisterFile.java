@@ -12,7 +12,7 @@ class RegisterFile {
     int[] internal;
 
     RegisterFile(){
-        internal = new int[15];;
+        internal = new int[16];;
     }
 
     int read(Register register){

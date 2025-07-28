@@ -36,7 +36,7 @@ public abstract class SoloDataInstruction extends DataInstruction { //TODO chang
      * through the operate method. This method is declared fine as no further overwriting is necessary.
      * */
     @Override
-    final public void execute(ArchitecturalState state) {
+    public void execute(ArchitecturalState state) {
         state.write(rd, operate(format == Format.R ? state.read(ra) : imm));
         //Increments pc
         ArchitecturalState.incrementPC(state);
