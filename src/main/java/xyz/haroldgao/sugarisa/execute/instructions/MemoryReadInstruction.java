@@ -21,7 +21,10 @@ public final class MemoryReadInstruction extends MemoryInstruction{
     @Override
     public void execute(ArchitecturalState state) {
         switch (offsetType){
-            case STANDARD -> state.write(rd, state.read(operateAndSetFlag(state)));
+            case STANDARD -> {
+                System.out.println(state.read(operateAndSetFlag(state)));
+                state.write(rd, state.read(operateAndSetFlag(state)));
+            }
             case PRE -> {
                 state.write(ra, operateAndSetFlag(state));
                 state.write(rd, state.read(ra));

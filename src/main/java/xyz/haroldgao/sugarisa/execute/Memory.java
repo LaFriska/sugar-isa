@@ -39,13 +39,14 @@ final class Memory {
     void write(int address, byte value){
         int key = address >> 16;
 
-        //allocation
-        if (value != 0) {
-            internal.computeIfAbsent(key,
-                    i -> new byte[BYTE_ARRAY_SIZE])[address & ARRAY_INDEX_BITMASK] = value;
+        if(!internal.containsKey(key)){
+            if(value == 0) return;
+            byte[] array = new byte[BYTE_ARRAY_SIZE];
+            array[address & ARRAY_INDEX_BITMASK] = value;
+            internal.put(key, array);
+        }else {
+            internal.get(key)[address & ARRAY_INDEX_BITMASK] = value;
         }
-
-        internal.get(key)[address & ARRAY_INDEX_BITMASK] = value;
 
     }
 

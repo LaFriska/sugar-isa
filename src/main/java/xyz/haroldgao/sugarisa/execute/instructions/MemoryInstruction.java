@@ -25,7 +25,7 @@ abstract class MemoryInstruction extends DuoDataInstruction{
 
     protected MemoryInstruction(@NotNull Register rd,
                                 @NotNull Register ra,
-                                int imm16,
+                                int imm16, //TODO make it signed.
                                 boolean setFlag,
                                 @NotNull OffsetType offsetType
     ) {

@@ -23,7 +23,7 @@ public final class PushInstruction extends SimpleInstruction{
         state.write(Register.SP, newSp);
 
         //writes value into memory
-        state.write(state.read(newSp), format == Format.I ? imm26 : state.read(rd));
+        state.write(newSp, format == Format.I ? imm26 : state.read(rd));
 
         //Increments pc
         ArchitecturalState.incrementPC(state);

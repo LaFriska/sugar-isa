@@ -18,16 +18,27 @@ public final class MemoryWriteInstruction extends MemoryInstruction{
     }
 
     @Override
+    protected int operateAndSetFlag(ArchitecturalState state) {
+        int input1 = state.read(rd); //TODO extract duplicate
+        int input2 = format == Format.I ? imm : state.read(rb);
+        int result = operate(input1, input2);
+        if(setFlag) setFlag(input1, input2, result, state);
+        return result;
+    }
+
+    @Override
     public void execute(ArchitecturalState state) {
         switch (offsetType){
-            case STANDARD -> state.write(state.read(operateAndSetFlag(state)), state.read(rd));
+            case STANDARD -> {
+                state.write(operateAndSetFlag(state), state.read(ra));
+            }
             case PRE -> {
-                state.write(ra, operateAndSetFlag(state)); //compute offset
-                state.write(state.read(ra), state.read(rd)); //writes to memory
+                state.write(rd, operateAndSetFlag(state)); //compute offset
+                state.write(state.read(rd), state.read(ra)); //writes to memory
             }
             case POST -> {
-                state.write(state.read(ra), state.read(rd)); //writes to memory
-                state.write(ra, operateAndSetFlag(state)); //compute offset
+                state.write(state.read(rd), state.read(ra)); //writes to memory
+                state.write(rd, operateAndSetFlag(state)); //compute offset
             }
         }
         ArchitecturalState.incrementPC(state);

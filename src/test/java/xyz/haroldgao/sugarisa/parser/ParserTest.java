@@ -340,6 +340,7 @@ public class ParserTest {
     public void testNot(){
         testInstructions("r1 = !lr;", "{! r1, lr}");
         testInstructions("r1 = !5555;", "{! r1, 5555}");
+        testInstructions("r0 = !0x0;", "{! r0, 0}");
     }
 
     @Test
