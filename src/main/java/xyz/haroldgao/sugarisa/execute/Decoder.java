@@ -40,13 +40,13 @@ public class Decoder {
                                                      : new LeftShiftInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
             case 11 -> getFormat(binary) == Format.I ? new RightShiftInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary))
                                                      : new RightShiftInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary));
-            case 12 -> getFormat(binary) == Format.I ? new MemoryReadInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary), OffsetType.STANDARD)
+            case 12 -> getFormat(binary) == Format.I ? new MemoryReadInstruction(getRd(binary), getRa(binary), getSignedImmediate(binary, 16), getSf(binary), OffsetType.STANDARD)
                                                      : new MemoryReadInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary), OffsetType.STANDARD);
-            case 13 -> getFormat(binary) == Format.I ? new MemoryWriteInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary), OffsetType.STANDARD)
+            case 13 -> getFormat(binary) == Format.I ? new MemoryWriteInstruction(getRd(binary), getRa(binary), getSignedImmediate(binary, 16), getSf(binary), OffsetType.STANDARD)
                                                      : new MemoryWriteInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary), OffsetType.STANDARD);
-            case 14 -> getFormat(binary) == Format.I ? new MemoryReadInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary), getP(binary))
+            case 14 -> getFormat(binary) == Format.I ? new MemoryReadInstruction(getRd(binary), getRa(binary), getSignedImmediate(binary, 16), getSf(binary), getP(binary))
                                                      : new MemoryReadInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary), getP(binary));
-            case 15 -> getFormat(binary) == Format.I ? new MemoryWriteInstruction(getRd(binary), getRa(binary), getImmediate(binary, 16), getSf(binary), getP(binary))
+            case 15 -> getFormat(binary) == Format.I ? new MemoryWriteInstruction(getRd(binary), getRa(binary), getSignedImmediate(binary, 16), getSf(binary), getP(binary))
                                                      : new MemoryWriteInstruction(getRd(binary), getRa(binary), getRb(binary), getSf(binary), getP(binary));
             case 16 -> getFormat(binary) == Format.I ? new PushInstruction(getImmediate(binary, 26)) : new PushInstruction(getRb(binary));
             case 17 -> getFormat(binary) == Format.I ? new PopInstruction(getImmediate(binary, 26)) : new PopInstruction(getRb(binary));
@@ -64,13 +64,26 @@ public class Decoder {
         };
     }
 
-    private int getImmediate(int binary, int size){
+    private static int getImmediate(int binary, int size){
         int bitmask = 0;
         for(int i = 0; i < size; i++){
             bitmask <<= 1;
             bitmask |= 1;
         }
         return binary & bitmask;
+    }
+
+    /**
+     * Gets the immediate and sign extends.
+     * */
+    private static int getSignedImmediate(int binary, int size){
+        int imm = getImmediate(binary, size);
+
+        if(imm >> (size - 1) == 0b1){
+            return (imm << 32 - size) >> 32 - size;
+        }
+
+        return size;
     }
 
     private int getOpcode(int binary){

@@ -40,10 +40,18 @@ abstract class MemoryInstruction extends DuoDataInstruction{
 
     @Override
     public int getBinary() {
-        if(offsetType == OffsetType.POST){
-            return super.getBinary() | 0b1 << 16;
-        }
-        return super.getBinary();
+
+        int bitmask = 0xFFFF;
+
+        int f = rb == null ? 0b1 : 0b0;
+        int sf = setFlag ? 0b1 : 0b0;
+        return opcode() | f << 26
+                        | rd.id << 22
+                        | sf << 21
+                        | ra.id << 17
+                        | (rb == null ? (imm & bitmask) : rb.id)
+                        | (offsetType == OffsetType.POST ? 0b1 << 16 : 0);
+
     }
 
 }
