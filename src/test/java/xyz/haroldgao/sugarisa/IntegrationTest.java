@@ -112,6 +112,8 @@ public class IntegrationTest {
         test("r1 = 3; r2 = 4; compare r1, r2;", a -> a.readFlag(ALUFlag.N));
         test("r1 = 0b1; r1 << 31; r1 -= 3000 -> flag;", a -> a.readFlag(ALUFlag.V));
         test("r10 = 0b1; r10 << 31; !r10; r10 += 1 -> flag;", a -> a.readFlag(ALUFlag.V));
+        test("r1 = 10;r2=12;r3 = r1 - r2 -> flag;", a -> a.readFlag(ALUFlag.C));
+        test("r1 -= 1; r1 += 1 -> flag;", a -> a.readFlag(ALUFlag.C));
     }
 
     @Test
@@ -214,7 +216,7 @@ public class IntegrationTest {
     @Test
     public void testMemory(){
 
-        //No offsets
+        //standard offsets
 
         test("r1 = 0xFFFF; r2 = 123; [r1] = r2; r3 = [r1];",
                 a -> a.read(0xFFFF) == 123);
@@ -227,6 +229,31 @@ public class IntegrationTest {
 
         test("r1 = 100; r2 = 200; r3 -= 999; [r1 + 50] = r3; r4 = [r2 - 50];",
                 new int[]{0, 100, 200, -999, -999, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0});
+
+
+
+        // Post-Offset
+        test("""
+                r1 = 0xFF; //address
+                r2 = 100; //value
+                [r1] = r2 -> r1 += 16;
+                r3 = [r1 - 16];
+                """, new int[]{0, 0xFF + 16, 100, 100,0,0,0,0,0,0,0,0,0,0,16,0});
+
+        test("""
+                r1 = 0xFF; //address
+                r2 = 100; //value
+                r4 = 200;
+                [r1] = r2 -> r1 += r4;
+                r3 = [r1 - 200];
+                """, new int[]{0, 0xFF + 200, 100, 100,200,0,0,0,0,0,0,0,0,0,20,0});
+
+        test("""
+                r1 = 0xFF; //address
+                r2 = 100; //value
+                [r1] = r2 -> r1 -= 16;
+                r3 = [r1 + 16];
+                """, new int[]{0, 0xFF - 16, 100, 100,0,0,0,0,0,0,0,0,0,0,16,0});
 
     }
 

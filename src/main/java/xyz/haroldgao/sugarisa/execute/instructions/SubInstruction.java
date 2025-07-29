@@ -21,7 +21,7 @@ public final class SubInstruction extends DuoDataInstruction {
     protected void setFlag(int input1, int input2, int result, ArchitecturalState state) {
         int flagN = result < 0 ? 1 : 0;
         int flagZ = result == 0 ? 0b10 : 0;
-        int flagC = Integer.compareUnsigned(input1, input2) < 0 ? 0 : 0b100;
+        int flagC = unsignedAdditionOverflow(input1, ~input2 + 1) ? 0 : 0b100;
         int flagV = ((input1 ^ input2) & (input1 ^ result)) < 0 ? 0b1000 : 0;
         state.flag(flagN | flagZ | flagC | flagV);
     }

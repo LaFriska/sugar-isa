@@ -90,6 +90,12 @@ public abstract class DuoDataInstruction extends DataInstruction {
         state.flag(flagN | flagZ);
     }
 
+    protected static boolean unsignedAdditionOverflow(int input1, int input2){
+        long max = 0xFFFFFFFFL;
+        long result = Integer.toUnsignedLong(input1) + Integer.toUnsignedLong(input2);
+        return result > max;
+    }
+
 
     @Override
     public void execute(ArchitecturalState state) {
