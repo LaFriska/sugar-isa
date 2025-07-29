@@ -46,10 +46,9 @@ final class SugarParseTree {
     /**
      * Subtree for "!rd;" instructions.
      */
-    static ParseTree START_NOT = not(rd(term(p -> {
-        Register rd = (Register) p.get(RD);
-        return new NotInstruction(rd, rd);
-    })));
+    static ParseTree START_NOT = not(rd(
+            term(p -> {Register rd = (Register) p.get(RD); return new NotInstruction(rd, rd);})
+    ));
 
 
     static ParseTree PUSH = keyword( //TODO add exception handling for when labels point to oversized PC address.

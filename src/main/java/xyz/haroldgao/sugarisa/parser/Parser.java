@@ -45,7 +45,9 @@ public record Parser(@NotNull String assembly, List<Token> tokens, @NotNull Hash
                 if(t.type() == TokenType.TERM)
                     break;
             }
-            partition.add(current);
+
+            if(!current.isEmpty())
+                partition.add(current);
         }
         return partition;
     }

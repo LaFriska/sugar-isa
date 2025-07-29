@@ -12,7 +12,9 @@ class Linker {
         HashMap<String, Integer> result = new HashMap<>();
         for (int i = 0; i < tokens.size(); i++) { //i * 4 is the pc address for the given instruction.
             List<Token> current = tokens.get(i);
-            if(current.isEmpty()) throw new RuntimeException("This should not happen. One of the instruction token lists is empty.");
+            if(current.isEmpty())
+                throw new RuntimeException("This should not happen. One of the instruction token lists is empty.");
+
             Token tok = current.get(0);
             if(tok.type() != TokenType.LABEL) continue;
 

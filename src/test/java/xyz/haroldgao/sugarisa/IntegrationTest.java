@@ -2,12 +2,10 @@ package xyz.haroldgao.sugarisa;
 
 import org.junit.Assert;
 import org.junit.Test;
+import xyz.haroldgao.sugarisa.execute.ALUFlag;
 import xyz.haroldgao.sugarisa.execute.ArchitecturalState;
-import xyz.haroldgao.sugarisa.execute.Decoder;
 import xyz.haroldgao.sugarisa.execute.Register;
 import xyz.haroldgao.sugarisa.execute.SugarExecutor;
-import xyz.haroldgao.sugarisa.execute.instructions.MemoryWriteInstruction;
-import xyz.haroldgao.sugarisa.parser.Parser;
 
 import java.util.function.Predicate;
 
@@ -103,6 +101,114 @@ public class IntegrationTest {
                 """, new int[]{0,4,3,1,0,0,0,0,0,0,0,0,0,0,36,0});
     }
 
+    @Test
+    public void testFlags(){
+        test("r0 += r0 -> flag;", a -> a.readFlag(ALUFlag.Z));
+        test("r1 = 3; r2 = 3; r1 -= r2 -> flag;", a -> a.readFlag(ALUFlag.Z));
+        test("r1 = 12; r2 = r1 % 6 -> flag;", a -> a.readFlag(ALUFlag.Z));
+        test("r1 -= 1 -> flag;", a -> a.readFlag(ALUFlag.N) && !a.readFlag(ALUFlag.Z));
+        test("compare r1, r2;", a -> a.readFlag(ALUFlag.Z));
+        test("r1 = 3; r2 = 4; compare r1, r2;", a -> a.readFlag(ALUFlag.N));
+        test("r1 = 0b1; r1 << 31; r1 -= 3000 -> flag;", a -> a.readFlag(ALUFlag.V));
+        test("r10 = 0b1; r10 << 31; !r10; r10 += 1 -> flag;", a -> a.readFlag(ALUFlag.V));
+    }
+
+    @Test
+    public void testLogical(){
+        test("r1 = 0b1101; r2 = 0b0111; r3 = r1 & r2;", new int[]{
+                0, 13, 7, 5,0,0,0,0,0,0,0,0,0,0,12,0
+        });
+        test("r1 = 0b1101; r2 = 0b0111; r3 = r1 | r2;", new int[]{
+                0, 13, 7, 15,0,0,0,0,0,0,0,0,0,0,12,0
+        });
+        test("r1 = 0b1101; r2 = 0b0111; r3 = r1 ^ r2;", new int[]{
+                0, 13, 7, 10,0,0,0,0,0,0,0,0,0,0,12,0
+        });
+        test("r1 = 0b1101; r2 = r1 << 3;", new int[]{
+                0, 13, 104, 0,0,0,0,0,0,0,0,0,0,0,8,0
+        });
+
+        test("r1 = 0b1101; r2 = r1 >> 1;", new int[]{
+                0, 13, 6, 0,0,0,0,0,0,0,0,0,0,0,8,0
+        });
+
+        test("r1 = 0b1001; r2 = r1 & 0b0110 -> flag;", a -> a.readFlag(ALUFlag.Z));
+    }
+
+    @Test
+    public void testCall(){
+        test("""
+                MAIN:
+                    r1 = 2;
+                    call FUNCTION;
+                    r1 = 3;
+                FUNCTION:
+                    r2 = 3;
+                """, new int[]{
+                0, 2, 3, 0,0,0,0,0,0,0,0,0,0,8,16,0
+        });
+
+        test("""
+                MAIN:
+                    r1 = 2;
+                    call FUNCTION;
+                    r3 = 4;
+                    goto END;
+                FUNCTION:
+                    r2 = 3;
+                    return;
+                END:
+                    ;
+                """, new int[]{
+                0, 2, 3, 4,0,0,0,0,0,0,0,0,0,8,28,0
+        });
+
+        test("""
+                MAIN:
+                    r1 = 2;
+                    call FUNCTION;
+                    r3 = 4;
+                    call END;
+                FUNCTION:
+                    r2 = 3;
+                    return;
+                END:
+                    ;
+                """, new int[]{
+                0, 2, 3, 4,0,0,0,0,0,0,0,0,0,16,28,0
+        });
+
+        test("""
+                MAIN:
+                    push lr;            //0
+                    call INCREMENT;     //4
+                    call INCREMENT;     //8
+                    call INCREMENT;     //12
+                    pop lr;             //16
+                    goto END;           //20
+                INCREMENT:
+                    push lr;            //24
+                    call INCREMENT_R1;  //28
+                    call INCREMENT_R2;  //32
+                    call INCREMENT_R3;  //36
+                    pop lr;             //40
+                    return;             //44
+                INCREMENT_R1:
+                    r1 += 1;            //48
+                    return;             //52
+                INCREMENT_R2:
+                    r2 += 1;            //56
+                    return;             //60
+                INCREMENT_R3:
+                    r3 += 1;            //64
+                    return;             //68
+                END:
+                    ;                   //72
+                """, new int[]{
+                0, 3, 3, 3,0,0,0,0,0,0,0,0,0,0,76,0
+        });
+
+    }
 
     @Test
     public void testMemory(){
