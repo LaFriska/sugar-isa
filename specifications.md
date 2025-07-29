@@ -4,6 +4,8 @@
 ISA and ARM assembly, Sugar is designed to be more complex than QuAC. In this document, `bn` represents the 
 n'th least significant bit of an arbitrary bit string. 
 
+Please see [examples](examples) for examples of the assembly language. 
+
 ## Data Width
 
 Sugar uses 32-bit registers, byte-addressable memory with 32-bit addresses along with 32-bit instructions.
