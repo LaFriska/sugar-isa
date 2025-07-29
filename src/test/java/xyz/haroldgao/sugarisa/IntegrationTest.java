@@ -3,6 +3,7 @@ package xyz.haroldgao.sugarisa;
 import org.junit.Assert;
 import org.junit.Test;
 import xyz.haroldgao.sugarisa.execute.ArchitecturalState;
+import xyz.haroldgao.sugarisa.execute.Decoder;
 import xyz.haroldgao.sugarisa.execute.Register;
 import xyz.haroldgao.sugarisa.execute.SugarExecutor;
 import xyz.haroldgao.sugarisa.execute.instructions.MemoryWriteInstruction;
@@ -108,23 +109,18 @@ public class IntegrationTest {
 
         //No offsets
 
-//        test("r1 = 0xFFFF; r2 = 123; [r1] = r2; r3 = [r1];",
-//                a -> a.read(0xFFFF) == 123);
-//
-//        test("r1 = 0xFFFF; r2 = 123; [r1] = r2; r3 = [r1];",
-//                new int[]{0, 0xFFFF, 123, 123, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0});
-//
-//        test("r1 = 100; r2 = 5; r3 = 99; [r1 + r2] = r3; r11 = 150; r10 -= 45; r4 = [r11 + r10];",
-//                new int[]{0, 100, 5, 99, 99, 0, 0, 0, 0, 0, -45, 150, 0, 0, 28, 0});
+        test("r1 = 0xFFFF; r2 = 123; [r1] = r2; r3 = [r1];",
+                a -> a.read(0xFFFF) == 123);
+
+        test("r1 = 0xFFFF; r2 = 123; [r1] = r2; r3 = [r1];",
+                new int[]{0, 0xFFFF, 123, 123, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0});
+
+        test("r1 = 100; r2 = 5; r3 = 99; [r1 + r2] = r3; r11 = 150; r10 -= 45; r4 = [r11 + r10];",
+                new int[]{0, 100, 5, 99, 99, 0, 0, 0, 0, 0, -45, 150, 0, 0, 28, 0});
 
         test("r1 = 100; r2 = 200; r3 -= 999; [r1 + 50] = r3; r4 = [r2 - 50];",
                 new int[]{0, 100, 200, -999, -999, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0});
 
-
-    }
-
-    public static void main(String[] args) {
-        System.out.println(Parser.parse("r1 = 100; r2 = 200; r3 -= 999; [r1 + 50] = r3; r4 = [r2 - 50];").get(4).getBinary());
     }
 
     public void test(String assembly, int[] registerFile){

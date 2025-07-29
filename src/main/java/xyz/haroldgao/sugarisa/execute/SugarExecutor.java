@@ -26,7 +26,7 @@ public class SugarExecutor implements Iterator<ArchitecturalState> {
     }
 
     private Instruction getNextInstruction(){
-        return Decoder.getInstance().decode(astate.read(astate.read(Register.PC)));
+        return Decoder.decode(astate.read(astate.read(Register.PC)));
     }
 
     /**

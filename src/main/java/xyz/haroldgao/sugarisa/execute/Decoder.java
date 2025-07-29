@@ -10,11 +10,9 @@ import xyz.haroldgao.sugarisa.execute.instructions.*;
  * */
 public class Decoder {
 
-    private static Decoder SINGLETON = null;
-
     private Decoder(){}
 
-    Instruction decode(int binary){
+    public static Instruction decode(int binary){
         return switch (getOpcode(binary)){
             case 0 -> getFormat(binary) == Format.I  ? new SetInstruction(getRd(binary), getImmediate(binary, 22))
                                                      : new SetInstruction(getRd(binary), getRb(binary));
@@ -83,41 +81,35 @@ public class Decoder {
             return (imm << 32 - size) >> 32 - size;
         }
 
-        return size;
+        return imm;
     }
 
-    private int getOpcode(int binary){
+    private static int getOpcode(int binary){
         return (binary >> 27) & 0b11111;
     }
 
-    private @NotNull Format getFormat(int binary){
+    private static @NotNull Format getFormat(int binary){
         return ((binary >> 26) & 1) == 1 ? Format.I : Format.R;
     }
 
-    private @NotNull Register getRd(int binary){
+    private static @NotNull Register getRd(int binary){
         return Register.values()[(binary >> 22) & 0b1111];
     }
 
-    private @NotNull Register getRa(int binary){
+    private static @NotNull Register getRa(int binary){
         return Register.values()[(binary >> 17) & 0b1111];
     }
 
-    private @NotNull Register getRb(int binary){
+    private static @NotNull Register getRb(int binary){
         return Register.values()[binary & 0b1111];
     }
 
-    private boolean getSf(int binary){
+    private static boolean getSf(int binary){
         return ((binary >> 21) & 1) == 1;
     }
 
-    private OffsetType getP(int binary){
+    private static OffsetType getP(int binary){
         return ((binary >> 16) & 1) == 1 ? OffsetType.POST : OffsetType.PRE;
-    }
-
-    static Decoder getInstance(){
-        if(SINGLETON == null)
-            SINGLETON = new Decoder();
-        return SINGLETON;
     }
 
 }
