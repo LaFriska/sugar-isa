@@ -39,6 +39,8 @@ public class CallInstruction extends SimpleInstruction {
             //Branching
             int newpc = format == Format.I ? imm26 : state.read(rd);
             state.write(Register.PC, newpc);
+        }else{
+            ArchitecturalState.incrementPC(state);
         }
     }
 

@@ -1,0 +1,40 @@
+MAIN:
+    push lr;
+    r1 = 0xFFFC;
+    r2 = 109;
+    r1 += 4 -> [r1] = r2;
+    r2 = 122;
+    r1 += 4 -> [r1] = r2;
+    r2 = 0;
+    r2 -= 5;
+    r1 += 4 -> [r1] = r2;
+    r3 = 4;
+    r2 = 912;
+    r1 += r3 -> [r1] = r2;
+    r2 = 122;
+    r1 += r3 -> [r1] = r2;
+    r1 = 0xFFFF;
+    r1 += 1;
+    r2 = 5;
+    call SUM_OF_ARRAY;
+    pop lr;
+    goto END;
+
+//r1 is a pointer to the start of the array.
+//r2 is the size of the array.
+//Returns the sum of elements in the array.
+SUM_OF_ARRAY:
+    r5 = 0; //count;
+    r3 = 0; //sum
+    LOOP:
+        compare r5, r2;
+        gotoz END_LOOP;
+        r4 = [r1] -> r1 += 4;
+        r3 += r4;
+        r5 += 1;
+        goto LOOP;
+    END_LOOP:
+    r1 = r3;
+
+END:
+    ;

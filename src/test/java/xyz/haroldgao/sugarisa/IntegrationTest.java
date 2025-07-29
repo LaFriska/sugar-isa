@@ -2,6 +2,7 @@ package xyz.haroldgao.sugarisa;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import xyz.haroldgao.sugarisa.execute.ALUFlag;
 import xyz.haroldgao.sugarisa.execute.ArchitecturalState;
 import xyz.haroldgao.sugarisa.execute.Register;
@@ -227,6 +228,132 @@ public class IntegrationTest {
         test("r1 = 100; r2 = 200; r3 -= 999; [r1 + 50] = r3; r4 = [r2 - 50];",
                 new int[]{0, 100, 200, -999, -999, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0});
 
+    }
+
+    @Test
+    public void testCondBranch(){
+        test("""
+                compare r0, r0;
+                gotoz SET_2;
+                goto END;
+                SET_2:
+                    r1 = 2;
+                END:
+                    ;
+                """,
+                a -> a.read(Register.R1) == 2
+        );
+
+        test("""
+                r1 = 2;
+                compare r0, r1;
+                goton SET_3;
+                goto END;
+                SET_3:
+                    r1 = 3;
+                END:
+                    ;
+                """,
+                a -> a.read(Register.R1) == 3
+        );
+
+        test("""
+                goton END;
+                r1 = 2;
+                END: 
+                    ;
+                """,
+                a -> a.read(Register.R1) == 2
+        );
+
+    }
+
+
+    @Test
+    public void sumOfArray(){
+        String assembly = """
+                    MAIN:
+                        push lr;
+                        r1 = 0xFFFC;
+                        r2 = 109;
+                        r1 += 4 -> [r1] = r2;
+                        r2 = 122;
+                        r1 += 4 -> [r1] = r2;
+                        r2 = 0;
+                        r2 -= 5;
+                        r1 += 4 -> [r1] = r2;
+                        r3 = 4;
+                        r2 = 912;
+                        r1 += r3 -> [r1] = r2;
+                        r2 = 122;
+                        r1 += r3 -> [r1] = r2;
+                        r1 = 0xFFFF;
+                        r1 += 1;
+                        r2 = 1;
+                        call SUM_OF_ARRAY;
+                        pop lr;
+                        goto END;
+                    
+                    //r1 is a pointer to the start of the array.
+                    //r2 is the size of the array.
+                    //Returns the sum of elements in the array.
+                    SUM_OF_ARRAY:
+                        r5 = 0; //count;
+                        r3 = 0; //sum
+                        LOOP:
+                            compare r5, r2;
+                            gotoz END_LOOP;
+                            r4 = [r1] -> r1 += 4;
+                            r3 += r4;
+                            r5 += 1;
+                            goto LOOP;
+                        END_LOOP:
+                        r1 = r3;
+                    
+                    END:
+                        ;
+
+                """;
+
+        test(assembly, a -> a.read(Register.R1) == 1260);
+    }
+
+    @Test(timeout = 3000)
+    public void factorial(){
+        String assembly = """
+                MAIN:
+                    push lr;
+                
+                    r1 = 10;
+                    call FAC;
+                    goto END;
+                
+                // r1 holds n, returns n! through r1. 
+                FAC:
+                    push lr;
+                    r2 = 2;
+                    compare r1, r2;
+                    goton BASE_CASE;
+                    
+                    push r1;
+                    r1 -= 1;
+                    call FAC;
+                    pop r2;
+                    r1 *= r2;
+                    
+                    pop lr;
+                    return;
+                    
+                    BASE_CASE:
+                        r1 = 1;
+                        pop lr;
+                        return;
+                
+                END:
+                    pop lr;
+                """;
+
+        test(assembly, a -> a.read(Register.R1) == 3628800);
     }
 
     public void test(String assembly, int[] registerFile){

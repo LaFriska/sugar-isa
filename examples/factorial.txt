@@ -1,0 +1,30 @@
+MAIN:
+    push lr;
+
+    r1 = 10;
+    call FAC;
+    goto END;
+
+// r1 holds n, returns n! through r1.
+FAC:
+    push lr;
+    r2 = 2;
+    compare r1, r2;
+    goton BASE_CASE;
+
+    push r1;
+    r1 -= 1;
+    call FAC;
+    pop r2;
+    r1 *= r2;
+
+    pop lr;
+    return;
+
+BASE_CASE:
+    r1 = 1;
+    pop lr;
+    return;
+
+END:
+    pop lr;

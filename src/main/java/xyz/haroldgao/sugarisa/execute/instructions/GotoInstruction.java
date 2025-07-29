@@ -35,6 +35,8 @@ public final class GotoInstruction extends SimpleInstruction{
         if(flag == null || state.readFlag(flag)) {
             int newpc = format == Format.I ? imm26 : state.read(rd);
             state.write(Register.PC, newpc);
+        }else{
+            ArchitecturalState.incrementPC(state);
         }
     }
 
