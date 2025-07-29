@@ -2,7 +2,6 @@ package xyz.haroldgao.sugarisa;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.rules.Timeout;
 import xyz.haroldgao.sugarisa.execute.ALUFlag;
 import xyz.haroldgao.sugarisa.execute.ArchitecturalState;
 import xyz.haroldgao.sugarisa.execute.Register;

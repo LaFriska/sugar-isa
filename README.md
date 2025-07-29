@@ -51,6 +51,57 @@ END:
     pop lr;
 ```
 
+## User Guide 
+
+To use the emulator, first create a `SugarExecutor` instance.
+```java
+import xyz.haroldgao.sugarisa.execute.SugarExecutor;
+
+public class Example{
+  
+    public static void main(String[] args){
+        
+        String assembly = "r1 = r2 + 50;";
+        Sugar executor = SugarExecutor.load(assembly);  
+          
+    }
+  
+}
+```
+
+Then, with the instance, use `SugarExecutor#next()` to execute a single
+instruction, or `SugarExecutor#execute();`, which executes all instructions until
+it reads a termination instruction. When any of these methods are called, 
+an instance of `ArchitecturalState` is returned, which contains a maximum 4GB of emulated memory,
+along with a register file. `ArchitecturalState#read(int)` can be called
+to read from memory, while `ArchitecturalState#read(Register)` can be used to 
+read a register. Similarly, `ArchitecturalState#write(int, int)`, and `ArchitecturalState#write(Register, int)`
+can be used to write to memory, or the register file.
+
+```java
+import xyz.haroldgao.sugarisa.execute.ArchitecturalState;
+import xyz.haroldgao.sugarisa.execute.Register;
+import xyz.haroldgao.sugarisa.execute.SugarExecutor;
+
+public class Example {
+
+  public static void main(String[] args) {
+
+    String assembly = "r1 = r2 + 50;";
+    Sugar executor = SugarExecutor.load(assembly);
+
+    ArchitecturalState state = executor.execute();
+
+    //Should print 50.
+    System.out.println(state.read(Register.R1));
+
+  }
+
+}
+```
+
+
+
 ## Parser
 
 This project includes a parser which is capable of converting Sugar assembly into a list of internal representation
@@ -113,7 +164,27 @@ instructions: [
 
 labelMap:
     "FUNCTION" -> 0
-    "END" ->
+    "END" -> 12
 ```
 
+3. For each set of tokens for a specific instruction, The [Parser](src/main/java/xyz/haroldgao/sugarisa/parser/Parser.java) then takes
+the map produced by the linker and the tokens as input, and parses the tokens based on a single instance of 
+a [decision-parse-tree](src/main/java/xyz/haroldgao/sugarisa/parser/ParseTree.java). This data structure
+recurses through the list of tokens and its children, while potentially saving data to a [ParseState](src/main/java/xyz/haroldgao/sugarisa/parser/ParseState.java).
+Functional interfaces also generalises the process of error handling, and returning instructions. 
+See [SugarParseTree](src/main/java/xyz/haroldgao/sugarisa/parser/SugarParseTree.java) for the singleton
+construction of the tree specifically for Sugar. Hence, our example above will be converted to the following list of instructions.
 
+``` 
+instructions: [
+    {set r2, r3},
+    {goto END},
+    {set r0, r0}
+]
+```
+(Note that the instruction represented by a single semicolon is specifically `{set r0, r0}`, which does nothing.)
+
+## Program Execution
+
+With the same example as above, but transformed to a set of instructions, 
+this section describes how program execution is emulated. 
