@@ -1,22 +1,119 @@
-# Sugar ISA 
+# Sugar ISA, Parser, and Emulator
 
-Sugar is an educational ISA designed for the simplicity of its assembly code. As of today, assembly
-syntax tends to follow the `mnemonic, arguments` syntax. For instance, the syntax to add two values 
-in ARM is `ADD rd, ra, rb`. This syntax is simple, and perfectly represents the underlying instruction given
-to the microarchitecture. However, this syntax may often be unclear and difficult to read to beginners who
-are not particularly familiar with the microarchitecture and the way instructions are encoded in binary.
-Sugar ISA is designed to simplify assembly to follow C-style syntax. For instance, the `ADD` instruction
-is simply written as `rd = ra + rb;`, and memory write is written as `[rd] = ra;`. For the full Sugar
-specification, see the [specifications](specifications.md).
+This project achieves two goals. 
+1. Formally design and specify a distinctive RISC-ISA, including assembly syntax, for educational purposes.
+2. Emulate assembly parser and program execution using Java.
 
-## Emulator
- 
-This project achieves *two* goals: fully specify Sugar using markdowns, and emulate 
-Sugar assembly by implementing an Emulator library in Java. The emulator follows a 
-three-stage protocol.
-1. **Tokenise** - Sugar assembly as a string is processed into internal representation of tokens.
-2. **Parse** - The list of tokens are parsed and converted into internal representation of instructions.
-3. **Execute** - The list of instruction can then be executed sequentially in a simulated microarchitecture in Java. 
+## Personal Agenda
 
-Although not implemented in this project, a frontend interface may be implemented as a future project. 
+This project was implemented for my CV, to demonstrate my understanding of computer architecture at a very detailed level,
+and to also showcase my skills in software engineering, data structures and object-oriented programming. Most of these
+concepts were taught to me from courses at the Australian National University, such as COMP2300 and COMP2100.
+
+## ISA
+
+Sugar Instruction Set Architecture (ISA) is designed for the simplicity of its assembly code, and for education purposes,
+as it does not have any real-world practical uses. Sugar is a RISC ISA, inspired by ARM and ANU's QuAC ISAs. The assembly
+is purposely designed to use C-style syntax, for uniqueness and user-friendliness. For the full specification, see the [specifications](specifications.md).
+
+See below for an example of Sugar assembly code that calculates the factorial of a number.
+
+``` 
+MAIN:
+    push lr;
+
+    r1 = 10;
+    call FAC;
+    goto END;
+
+// r1 holds n, returns n! through r1.
+FAC:
+    push lr;
+    r2 = 2;
+    compare r1, r2;
+    goton BASE_CASE;
+
+    push r1;
+    r1 -= 1;
+    call FAC;
+    pop r2;
+    r1 *= r2;
+
+    pop lr;
+    return;
+
+BASE_CASE:
+    r1 = 1;
+    pop lr;
+    return;
+
+END:
+    pop lr;
+```
+
+## Parser
+
+This project includes a parser which is capable of converting Sugar assembly into a list of internal representation
+of instructions. This is achieved through the following pipeline. 
+
+For this section, the following example will be used to explain this process.
+
+``` 
+FUNCTION: //Comment
+    r2 = r3;
+    goto END;
+END:
+    ;
+```
+
+1. The [Tokeniser](src/main/java/xyz/haroldgao/sugarisa/tokeniser/Tokeniser.java) converts the code into a list of tokens.
+The assembly string in our example will be converted to the 
+following tokens.
+
+```
+tokens: [
+    {label, "FUNCTION"},
+    {colon, ":"},
+    {comment, "Comment"}, 
+    {keyword, "r2"}, 
+    {equals, "="}, 
+    {keyword, "r3"}, 
+    {terminator, ";"},
+    {keyword, "goto"}, 
+    {label, "END"},
+    {terminator, ";"}, 
+    {label, "END"},
+    {colon, ":"}, 
+    {terminator, ";"}
+]
+```
+
+The tokeniser takes care of whitespaces and invalid combinations of characters.
+2. A [Linker](src/main/java/xyz/haroldgao/sugarisa/parser/Linker.java) then removes all comment tokens, splits the list
+based on the terminator token, removes and links each label to the program address of the instruction it is pointing to.
+Hence, we have the following results.
+
+```
+instructions: [
+    [
+        {keyword, "r2"},
+        {equals, "="}, 
+        {keyword, "r3"},
+        {terminator, ";"}
+    ],
+    [
+        {keyword, "goto"}, 
+        {label, "END"}, 
+        {terminator, ";"}
+    ],
+    [
+        {terminator, ";"}
+    ]
+]
+
+labelMap:
+    "FUNCTION" -> 0
+    "END" ->
+```
+
 
