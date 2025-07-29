@@ -293,6 +293,59 @@ public class IntegrationTest {
                 a -> a.read(Register.R1) == 2
         );
 
+        test("""
+                gotoz END;
+                r1 = 2;
+                END: 
+                    ;
+                """,
+                a -> a.read(Register.R1) == 2
+        );
+
+        test("""
+                gotoc END;
+                r1 = 2;
+                END: 
+                    ;
+                """,
+                a -> a.read(Register.R1) == 2
+        );
+
+        test("""
+                gotov END;
+                r1 = 2;
+                END: 
+                    ;
+                """,
+                a -> a.read(Register.R1) == 2
+        );
+
+        test("""
+                r1 = 0b0111111111111111;
+                r1 << 16;
+                r1 |= 0xFFFF;
+                r1 += 1 -> flag;
+                gotov END;
+                r2 = 2;
+                END: 
+                    ;
+                """,
+                a -> a.read(Register.R2) == 0
+        );
+
+        test("""
+                r1 = 0b1111111111111111;
+                r1 << 16;
+                r1 |= 0xFFFF;
+                r1 += 1 -> flag;
+                gotoc END;
+                r2 = 2;
+                END: 
+                    ;
+                """,
+                a -> a.read(Register.R2) == 0
+        );
+
     }
 
 
