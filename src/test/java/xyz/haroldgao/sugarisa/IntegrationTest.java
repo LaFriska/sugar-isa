@@ -316,7 +316,7 @@ public class IntegrationTest {
                         r1 += r3 -> [r1] = r2;
                         r1 = 0xFFFF;
                         r1 += 1;
-                        r2 = 1;
+                        r2 = 5;
                         call SUM_OF_ARRAY;
                         pop lr;
                         goto END;

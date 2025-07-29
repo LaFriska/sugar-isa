@@ -26,10 +26,10 @@ public final class MemoryReadInstruction extends MemoryInstruction{
             }
             case PRE -> {
                 state.write(ra, operateAndSetFlag(state));
-                state.write(rd, state.read(ra));
+                state.write(rd, state.read(state.read(ra)));
             }
             case POST -> {
-                state.write(rd, state.read(ra));
+                state.write(rd, state.read(state.read(ra)));
                 state.write(ra, operateAndSetFlag(state));
             }
         }
