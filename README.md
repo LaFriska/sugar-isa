@@ -10,6 +10,8 @@ This project was implemented for my CV, to demonstrate my understanding of compu
 and to also showcase my skills in software engineering, data structures and object-oriented programming. Most of these
 concepts were taught to me from courses at the Australian National University, such as COMP2300 and COMP2100.
 
+Examples of Sugar assembly code snippets can be found [here](examples).
+
 ## ISA
 
 Sugar Instruction Set Architecture (ISA) is designed for the simplicity of its assembly code, and for education purposes,
@@ -186,5 +188,28 @@ instructions: [
 
 ## Program Execution
 
+### Memory
+
+Sugar's memory is 32-bit addressable, which gives us an address space of 4 gigabytes.
+Obviously if we allocate each possible memory address at once, the program becomes
+*very* inefficient. To solve this problem, a HashMap between integers and byte arrays are used, 
+where each key represents the upper half of a memory address, and each byte array is a chunk of
+$2^{16}$ possible memory slots. If more chunks of memory need to be allocated, the program will
+automatically do so. This memory emulator is *not* idiot-proof, if desired, one can purposely hack
+the "smart" memory allocation by writing a non-zero byte to an entry in the byte array identified by
+each possible upper half of memory address. In that case, the emulator becomes very inefficient.
+
+### Register File
+
+The register-file is trivially a mutable integer array with 16 entries. 
+
+### Instruction Transformation 
+
 With the same example as above, but transformed to a set of instructions, 
-this section describes how program execution is emulated. 
+this section describes how program execution is emulated. First, observe that
+the [Instruction](src/main/java/xyz/haroldgao/sugarisa/execute/instructions/Instruction.java)
+class contains an abstract method defining its binary representation. This obviously depends on the instruction,
+and with the list of instructions, the binaries are computed and stored in an emulated memory. The program memory
+of Sugar always starts at `0x00000000`, with no definitive bound for simplicity. Then,
+the [SugarExecutor](src/main/java/xyz/haroldgao/sugarisa/execute/SugarExecutor.java) uses the emulated memory and register file
+to execute instructions sequentially, reverse-engineering each binary back to the internal representation in Java.
