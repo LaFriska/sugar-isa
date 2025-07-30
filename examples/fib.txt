@@ -1,0 +1,60 @@
+MAIN:
+    push lr;
+    r1 = 19;
+    call FIB;
+    pop lr;
+    goto END;
+
+// r1 contains n, calculates the n'th fibonacci number.
+// Uses dynamic programming.
+// Returns -1 if an overflow occurs.
+FIB:
+    r2 = 0x10000;
+    r3 = 3;
+    compare r1, r0;
+    gotoz ZERO_CASE;
+    compare r1, r3;
+    goton ONE_CASE;
+
+    r1 -= 2;
+
+    r3 = 0;
+    [r2] = r3 -> r2 += 4;
+    r3 = 1;
+    [r2] = r3 -> r2 += 4;
+    [r2] = r3;
+
+    LOOP:
+        compare r1, r0;
+        gotoz RECURSIVE_CASE;
+
+        r3 = [r2 - 4];
+        r4 = [r2];
+        r3 += r4 -> flag;
+        gotov OVERFLOW_CASE;
+        r2 += 4 -> [r2] = r3;
+
+        r1 -= 1;
+        goto LOOP;
+
+
+    RECURSIVE_CASE:
+        r1 = [r2];
+        return;
+
+    OVERFLOW_CASE:
+        r1 = 0;
+        r1 -= 1;
+        return;
+
+    ZERO_CASE:
+        r1 = 0;
+        return;
+
+    ONE_CASE:
+        r1 = 1;
+        return;
+
+
+END:
+    ;
