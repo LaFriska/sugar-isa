@@ -6,9 +6,11 @@ This project achieves two goals.
 
 ## Personal Agenda
 
-This project was implemented for practice, and to revise COMP2300/COMP2100 concepts after taking these courses last year.
+This project was implemented for educational purposes. This project was made for practice (and for fun!)
 
 There's very little actual use for this instruction set, it's just for educational purposes.
+
+Future project ideas include simulating hardware support for this language, either in hardware simulator applications, or hardware description languages.
 
 Examples of Sugar assembly code snippets can be found [here](examples).
 
