@@ -6,9 +6,9 @@ This project achieves two goals.
 
 ## Personal Agenda
 
-This project was implemented for my CV, to demonstrate my understanding of computer architecture at a very detailed level,
-and to also showcase my skills in software engineering, data structures and object-oriented programming. Most of these
-concepts were taught to me from courses at the Australian National University, such as COMP2300 and COMP2100.
+This project was implemented for practice, and to revise COMP2300/COMP2100 concepts after taking these courses last year.
+
+There's very little actual use for this instruction set, it's just for educational purposes.
 
 Examples of Sugar assembly code snippets can be found [here](examples).
 
